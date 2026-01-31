@@ -1,0 +1,78 @@
+export const MOCK_STUDIOS = [
+    {
+        id: '1',
+        name: 'Luminary Studios',
+        email: 'contact@luminary.com',
+        eventCount: 24,
+        storageUsed: '156 GB',
+        status: 'active',
+    },
+    {
+        id: '2',
+        name: 'Eternal Frames',
+        email: 'hello@eternalframes.com',
+        eventCount: 12,
+        storageUsed: '45 GB',
+        status: 'active',
+    },
+    {
+        id: '3',
+        name: 'Vintage Vows',
+        email: 'info@vintagevows.com',
+        eventCount: 8,
+        storageUsed: '89 GB',
+        status: 'suspended',
+    },
+];
+
+export const MOCK_EVENTS = [
+    {
+        id: 'e1',
+        name: 'Wedding of Sarah & James',
+        type: 'Wedding',
+        location: 'Central Park, NY',
+        startDate: '2024-06-15',
+        endDate: '2024-06-16',
+        expiryDate: '2025-06-15',
+        status: 'published',
+        photoCount: 450,
+        visits: 1240,
+        thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=400',
+    },
+    {
+        id: 'e2',
+        name: 'TechConf 2024',
+        type: 'Corporate',
+        location: 'Convention Center, SF',
+        startDate: '2024-08-20',
+        endDate: '2024-08-22',
+        expiryDate: '2025-02-20',
+        status: 'unpublished',
+        photoCount: 1200,
+        visits: 0,
+        thumbnail: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&q=80&w=400',
+    },
+    {
+        id: 'e3',
+        name: 'Olivia\'s 1st Birthday',
+        type: 'Birthday',
+        location: 'The Garden Palace',
+        startDate: '2024-05-10',
+        endDate: '2024-05-10',
+        expiryDate: '2024-11-10',
+        status: 'published',
+        photoCount: 180,
+        visits: 320,
+        thumbnail: 'https://images.unsplash.com/photo-1530103043960-ef38714abb15?auto=format&fit=crop&q=80&w=400',
+    },
+];
+
+export const MOCK_PHOTOS = Array.from({ length: 40 }).map((_, i) => ({
+    id: `p${i}`,
+    url: `https://picsum.photos/seed/${i + 50}/800/1200`,
+    thumbnail: `https://picsum.photos/seed/${i + 50}/400/600`,
+    name: `DSC_${1000 + i}.jpg`,
+    size: '4.2 MB',
+    views: Math.floor(Math.random() * 100),
+    downloads: Math.floor(Math.random() * 20),
+}));
