@@ -19,6 +19,7 @@ import StudiosManagement from './pages/super-admin/Studios';
 import SuperAdminAnalytics from './pages/super-admin/Analytics';
 import SuperAdminSettings from './pages/super-admin/Settings';
 import SuperAdminPricing from './pages/super-admin/PricingPlans';
+import StudioDetails from './pages/super-admin/StudioDetails';
 
 // Studio Pages
 import StudioDashboard from './pages/studio/Dashboard';
@@ -84,6 +85,11 @@ const App = () => {
         <Route path="/super-admin/plans" element={
           <SuperAdminLayoutWrapper title="Subscription Plans">
             <SuperAdminPricing />
+          </SuperAdminLayoutWrapper>
+        } />
+        <Route path="/super-admin/studio/:studioId" element={
+          <SuperAdminLayoutWrapper title="Studio Profile">
+            <StudioDetails />
           </SuperAdminLayoutWrapper>
         } />
 
