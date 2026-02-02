@@ -6,7 +6,8 @@ import {
   Users,
   Settings,
   Image as ImageIcon,
-  BarChart3
+  BarChart3,
+  Plus
 } from 'lucide-react';
 
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -17,7 +18,8 @@ import StudiosManagement from './pages/super-admin/Studios';
 
 // Studio Pages
 import StudioDashboard from './pages/studio/Dashboard';
-import EventPhotos from './pages/studio/EventPhotos';
+import Events from './pages/studio/Events';
+import CreateEvent from './pages/studio/CreateEvent';
 
 // Guest Pages
 import GuestEventGallery from './pages/guest/EventGallery';
@@ -36,6 +38,7 @@ const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, t
   const items = [
     { name: 'Dashboard', href: '/studio/dashboard', icon: LayoutDashboard },
     { name: 'My Events', href: '/studio/events', icon: Camera },
+    { name: 'Create Event', href: '/studio/create-event', icon: Plus },
     { name: 'All Photos', href: '/studio/photos', icon: ImageIcon },
     { name: 'Analytics', href: '/studio/analytics', icon: BarChart3 },
     { name: 'Customization', href: '/studio/theme', icon: Settings },
@@ -70,12 +73,20 @@ const App = () => {
         } />
         <Route path="/studio/photos" element={
           <StudioLayoutWrapper title="Event Photography">
-            <EventPhotos />
+            <div className="p-8 text-center bg-card rounded-3xl border border-border">
+              <h2 className="text-2xl font-bold">Event Photos</h2>
+              <p className="text-muted-foreground">This page is under construction.</p>
+            </div>
           </StudioLayoutWrapper>
         } />
         <Route path="/studio/events" element={
           <StudioLayoutWrapper title="Events List">
-            <StudioDashboard />
+            <Events />
+          </StudioLayoutWrapper>
+        } />
+        <Route path="/studio/create-event" element={
+          <StudioLayoutWrapper title="Create New Event">
+            <CreateEvent />
           </StudioLayoutWrapper>
         } />
 

@@ -65,6 +65,19 @@ export const MOCK_EVENTS = [
         visits: 320,
         thumbnail: 'https://images.unsplash.com/photo-1530103043960-ef38714abb15?auto=format&fit=crop&q=80&w=400',
     },
+    {
+        id: 'e4',
+        name: 'Summer Fashion Shoot',
+        type: 'Portrait',
+        location: 'Miami Beach, FL',
+        startDate: '2024-07-01',
+        endDate: '2024-07-01',
+        expiryDate: '2025-07-01',
+        status: 'photo-selling',
+        photoCount: 120,
+        visits: 850,
+        thumbnail: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400',
+    },
 ];
 
 export const MOCK_PHOTOS = Array.from({ length: 40 }).map((_, i) => ({

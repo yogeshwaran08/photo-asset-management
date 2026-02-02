@@ -22,7 +22,7 @@ const GuestEventGallery = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white selection:bg-primary-500/30">
+        <div className="min-h-screen bg-background text-foreground selection:bg-primary-500/30">
             {/* Hero Section */}
             <div className="relative h-[60vh] overflow-hidden">
                 <img
@@ -30,7 +30,7 @@ const GuestEventGallery = () => {
                     alt="Hero"
                     className="w-full h-full object-cover opacity-60 scale-105 animate-slow-zoom"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                     <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 border border-white/20 animate-bounce-subtle">
                         <Camera size={32} />
@@ -38,7 +38,7 @@ const GuestEventGallery = () => {
                     <h1 className="text-4xl md:text-6xl font-serif font-bold mb-4 tracking-tight drop-shadow-2xl">
                         Sarah & James
                     </h1>
-                    <p className="text-lg md:text-xl text-slate-300 font-medium tracking-widest uppercase">
+                    <p className="text-lg md:text-xl text-muted-foreground font-medium tracking-widest uppercase">
                         June 15, 2024 • Central Park, NY
                     </p>
                 </div>
@@ -49,14 +49,14 @@ const GuestEventGallery = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
                     <div>
                         <h2 className="text-3xl font-bold mb-2">Our Moments</h2>
-                        <p className="text-slate-400">Capturing the beauty of our special day</p>
+                        <p className="text-muted-foreground">Capturing the beauty of our special day</p>
                     </div>
                     <div className="flex gap-4">
                         <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
                             <Download size={18} />
                             Download All
                         </button>
-                        <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-primary-600 hover:bg-primary-500 transition-all font-bold">
+                        <button className="flex items-center gap-2 px-6 py-3 rounded-full bg-accent-500 hover:bg-accent-600 transition-all font-bold text-white">
                             <Share2 size={18} />
                             Share
                         </button>
@@ -103,7 +103,7 @@ const GuestEventGallery = () => {
             {activePhoto && (
                 <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col animate-in fade-in duration-300">
                     <div className="flex items-center justify-between p-6">
-                        <span className="text-slate-500 font-medium">{activePhoto.name}</span>
+                        <span className="text-muted-foreground font-medium">{activePhoto.name}</span>
                         <div className="flex gap-4">
                             <button className="p-2 text-white/70 hover:text-white transition-colors">
                                 <Download size={24} />
@@ -134,11 +134,11 @@ const GuestEventGallery = () => {
             )}
 
             <footer className="py-20 text-center border-t border-white/5 mt-20">
-                <div className="flex items-center justify-center gap-2 mb-4 text-slate-500">
+                <div className="flex items-center justify-center gap-2 mb-4 text-muted-foreground">
                     <Camera size={20} />
                     <span className="font-bold tracking-tighter">SnapVault</span>
                 </div>
-                <p className="text-slate-600 text-sm italic">Captured with love by Luminary Studios</p>
+                <p className="text-muted-foreground/60 text-sm italic">Captured with love by Luminary Studios</p>
             </footer>
 
             <style>{`

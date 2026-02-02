@@ -1,33 +1,51 @@
 @import "tailwindcss";
 
 @theme {
-    --color-primary-50: #f0f9ff;
-    --color-primary-100: #e0f2fe;
-    --color-primary-200: #bae6fd;
-    --color-primary-300: #7dd3fc;
-    --color-primary-400: #38bdf8;
-    --color-primary-500: #0ea5e9;
-    --color-primary-600: #0284c7;
-    --color-primary-700: #0369a1;
-    --color-primary-800: #075985;
-    --color-primary-900: #0c4a6e;
-    --color-primary-950: #082f49;
+    /* Brand Colors (based on user palette) */
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    /* Electric Blue (Accent in user's prompt) */
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+    --color-primary-950: #172554;
 
-    --color-accent-50: #faf5ff;
-    --color-accent-100: #f3e8ff;
-    --color-accent-200: #e9d5ff;
-    --color-accent-300: #d8b4fe;
-    --color-accent-400: #c084fc;
-    --color-accent-500: #a855f7;
-    --color-accent-600: #9333ea;
-    --color-accent-700: #7e22ce;
-    --color-accent-800: #6b21a8;
-    --color-accent-900: #581c87;
-    --color-accent-950: #3b0764;
+    --color-accent-50: #f5f3ff;
+    --color-accent-100: #ede9fe;
+    --color-accent-200: #ddd6fe;
+    --color-accent-300: #c4b5fd;
+    --color-accent-400: #a78bfa;
+    --color-accent-500: #8b5cf6;
+    /* Soft Purple (Highlight in user's prompt) */
+    --color-accent-600: #7c3aed;
+    --color-accent-700: #6d28d9;
+    --color-accent-800: #5b21b6;
+    --color-accent-900: #4c1d95;
+    --color-accent-950: #2e1065;
 
-    --color-background: #ffffff;
-    --color-foreground: #020817;
-    --color-border: #e2e8f0;
+    /* Theme Layout Colors */
+    --color-background: #121212;
+    /* Primary BG: Charcoal Black */
+    --color-secondary-bg: #1e1e1e;
+    /* Secondary BG: Slate */
+    --color-card: #2a2a2a;
+    /* Cards: Dark Gray */
+    --color-foreground: #e5e7eb;
+    /* Text: Light Gray */
+    --color-muted-foreground: #9ca3af;
+    --color-muted: #1e293b;
+    --color-border: #334155;
+
+    /* Override slate to match user palette for existing slate classes */
+    --color-slate-950: #121212;
+    --color-slate-900: #1e1e1e;
+    --color-slate-800: #2a2a2a;
+    --color-slate-100: #e5e7eb;
 }
 
 @layer base {
@@ -38,15 +56,50 @@
 }
 
 .glass {
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(30, 30, 30, 0.6);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .premium-gradient {
-    background: linear-gradient(135deg, #0ea5e9 0%, #a855f7 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
 }
 
 .premium-shadow {
     box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted-foreground);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
 }
