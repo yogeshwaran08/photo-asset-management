@@ -7,7 +7,8 @@ import {
   Settings,
   Image as ImageIcon,
   BarChart3,
-  Plus
+  Plus,
+  CreditCard
 } from 'lucide-react';
 
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -17,6 +18,7 @@ import SuperAdminDashboard from './pages/super-admin/Dashboard';
 import StudiosManagement from './pages/super-admin/Studios';
 import SuperAdminAnalytics from './pages/super-admin/Analytics';
 import SuperAdminSettings from './pages/super-admin/Settings';
+import SuperAdminPricing from './pages/super-admin/PricingPlans';
 
 // Studio Pages
 import StudioDashboard from './pages/studio/Dashboard';
@@ -33,6 +35,7 @@ const SuperAdminLayoutWrapper = ({ children, title }: { children: React.ReactNod
     { name: 'Overview', href: '/super-admin/dashboard', icon: LayoutDashboard },
     { name: 'Studios', href: '/super-admin/studios', icon: Users },
     { name: 'Analytics', href: '/super-admin/analytics', icon: BarChart3 },
+    { name: 'Plans', href: '/super-admin/plans', icon: CreditCard },
     { name: 'Settings', href: '/super-admin/settings', icon: Settings },
   ];
   return <DashboardLayout items={items} title={title}>{children}</DashboardLayout>;
@@ -76,6 +79,11 @@ const App = () => {
         <Route path="/super-admin/settings" element={
           <SuperAdminLayoutWrapper title="System Settings">
             <SuperAdminSettings />
+          </SuperAdminLayoutWrapper>
+        } />
+        <Route path="/super-admin/plans" element={
+          <SuperAdminLayoutWrapper title="Subscription Plans">
+            <SuperAdminPricing />
           </SuperAdminLayoutWrapper>
         } />
 
