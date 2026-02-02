@@ -6,6 +6,7 @@ export const MOCK_STUDIOS = [
         eventCount: 24,
         storageUsed: '156 GB',
         status: 'active',
+        plan: 'Enterprise',
     },
     {
         id: '2',
@@ -14,6 +15,7 @@ export const MOCK_STUDIOS = [
         eventCount: 12,
         storageUsed: '45 GB',
         status: 'active',
+        plan: 'Pro',
     },
     {
         id: '3',
@@ -22,6 +24,7 @@ export const MOCK_STUDIOS = [
         eventCount: 8,
         storageUsed: '89 GB',
         status: 'suspended',
+        plan: 'Basic',
     },
 ];
 
