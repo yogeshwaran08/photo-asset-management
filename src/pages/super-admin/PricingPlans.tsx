@@ -12,8 +12,10 @@ import {
     DollarSign,
     Package
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../utils/cn';
+import { useState } from 'react';
+import { X } from 'lucide-react';
 import {
     BarChart,
     Bar,
@@ -33,7 +35,88 @@ const planMetrics = [
     { name: 'Premium', users: 12, revenue: 18000, color: '#8b5cf6' },
 ];
 
+
+interface Plan {
+    name: string;
+    price: string;
+    period: string;
+    studios: string;
+    features: string[];
+    color: string;
+    badge: string | null;
+}
+
 const PricingPlans = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [plans, setPlans] = useState<Plan[]>([
+        {
+            name: 'Basic',
+            price: '$49',
+            period: '/mo',
+            studios: '124 Studios',
+            features: ['Up to 10 events', '100 GB Storage', 'Standard Support', 'Guest Gallery'],
+            color: 'border-slate-200 dark:border-slate-800',
+            badge: null
+        },
+        {
+            name: 'Pro',
+            price: '$149',
+            period: '/mo',
+            studios: '56 Studios',
+            features: ['Unlimited events', '500 GB Storage', 'Priority Support', 'Custom Domain', 'Sales Features'],
+            color: 'border-primary-500 ring-4 ring-primary-500/10',
+            badge: 'Most Popular'
+        },
+        {
+            name: 'Enterprise',
+            price: 'Custom',
+            period: '',
+            studios: '12 Studios',
+            features: ['Unlimited everything', 'Dedicated Account Manager', 'SLA Guarantee', 'Custom Integrations', 'White-labeling'],
+            color: 'border-slate-200 dark:border-slate-800',
+            badge: 'High Scale'
+        }
+    ]);
+
+    const [newPlan, setNewPlan] = useState<Plan>({
+        name: '',
+        price: '',
+        period: '/mo',
+        studios: '0 Studios',
+        features: [''],
+        color: 'border-slate-200 dark:border-slate-800',
+        badge: null
+    });
+
+    const handleCreatePlan = () => {
+        setPlans([...plans, { ...newPlan, studios: '0 Studios' }]);
+        setIsModalOpen(false);
+        setNewPlan({
+            name: '',
+            price: '',
+            period: '/mo',
+            studios: '0 Studios',
+            features: [''],
+            color: 'border-slate-200 dark:border-slate-800',
+            badge: null
+        });
+    };
+
+    const addFeature = () => {
+        setNewPlan({ ...newPlan, features: [...newPlan.features, ''] });
+    };
+
+    const updateFeature = (index: number, value: string) => {
+        const updatedFeatures = [...newPlan.features];
+        updatedFeatures[index] = value;
+        setNewPlan({ ...newPlan, features: updatedFeatures });
+    };
+
+    const removeFeature = (index: number) => {
+        const updatedFeatures = newPlan.features.filter((_, i) => i !== index);
+        setNewPlan({ ...newPlan, features: updatedFeatures });
+    };
+
     return (
         <div className="space-y-8 max-w-7xl mx-auto pb-12">
             {/* Header */}
@@ -47,7 +130,10 @@ const PricingPlans = () => {
                         <Settings size={18} />
                         Gateway Config
                     </button>
-                    <button className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-500/20">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-500/20"
+                    >
                         <Plus size={18} />
                         Create New Plan
                     </button>
@@ -87,35 +173,7 @@ const PricingPlans = () => {
 
             {/* Plan Cards */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {[
-                    {
-                        name: 'Basic',
-                        price: '$49',
-                        period: '/mo',
-                        studios: '124 Studios',
-                        features: ['Up to 10 events', '100 GB Storage', 'Standard Support', 'Guest Gallery'],
-                        color: 'border-slate-200 dark:border-slate-800',
-                        badge: null
-                    },
-                    {
-                        name: 'Pro',
-                        price: '$149',
-                        period: '/mo',
-                        studios: '56 Studios',
-                        features: ['Unlimited events', '500 GB Storage', 'Priority Support', 'Custom Domain', 'Sales Features'],
-                        color: 'border-primary-500 ring-4 ring-primary-500/10',
-                        badge: 'Most Popular'
-                    },
-                    {
-                        name: 'Enterprise',
-                        price: 'Custom',
-                        period: '',
-                        studios: '12 Studios',
-                        features: ['Unlimited everything', 'Dedicated Account Manager', 'SLA Guarantee', 'Custom Integrations', 'White-labeling'],
-                        color: 'border-slate-200 dark:border-slate-800',
-                        badge: 'High Scale'
-                    }
-                ].map((plan, i) => (
+                {plans.map((plan, i) => (
                     <motion.div
                         key={i}
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -301,6 +359,141 @@ const PricingPlans = () => {
                     </table>
                 </div>
             </motion.div>
+            {/* Create Plan Modal */}
+            <AnimatePresence>
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="p-6 border-b border-border flex items-center justify-between bg-secondary-bg/30">
+                                <div>
+                                    <h2 className="text-xl font-bold">Create New Plan</h2>
+                                    <p className="text-sm text-muted-foreground">Define a new subscription tier for studios.</p>
+                                </div>
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="p-2 hover:bg-muted rounded-full transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold">Plan Name</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Starter"
+                                                className="w-full bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all"
+                                                value={newPlan.name}
+                                                onChange={(e) => setNewPlan({ ...newPlan, name: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold">Badge (Optional)</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Best Value"
+                                                className="w-full bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all"
+                                                value={newPlan.badge || ''}
+                                                onChange={(e) => setNewPlan({ ...newPlan, badge: e.target.value || null })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold">Price</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. $29"
+                                                className="w-full bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all"
+                                                value={newPlan.price}
+                                                onChange={(e) => setNewPlan({ ...newPlan, price: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold">Period</label>
+                                            <select
+                                                className="w-full bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all appearance-none"
+                                                value={newPlan.period}
+                                                onChange={(e) => setNewPlan({ ...newPlan, period: e.target.value })}
+                                            >
+                                                <option value="/mo">Per Month</option>
+                                                <option value="/yr">Per Year</option>
+                                                <option value="">One-time / Custom</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-sm font-bold">Features</label>
+                                            <button
+                                                onClick={addFeature}
+                                                className="text-xs font-bold text-primary-500 hover:underline flex items-center gap-1"
+                                            >
+                                                <Plus size={14} /> Add Feature
+                                            </button>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {newPlan.features.map((feature, idx) => (
+                                                <div key={idx} className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="e.g. 50 GB Storage"
+                                                        className="flex-1 bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all"
+                                                        value={feature}
+                                                        onChange={(e) => updateFeature(idx, e.target.value)}
+                                                    />
+                                                    {newPlan.features.length > 1 && (
+                                                        <button
+                                                            onClick={() => removeFeature(idx)}
+                                                            className="p-2.5 hover:bg-rose-500/10 text-rose-500 rounded-xl transition-colors"
+                                                        >
+                                                            <X size={18} />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 bg-secondary-bg/30 border-t border-border flex items-center gap-3">
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="flex-1 px-4 py-3 rounded-xl text-sm font-bold hover:bg-muted transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleCreatePlan}
+                                    disabled={!newPlan.name || !newPlan.price}
+                                    className="flex-[2] bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary-500/20"
+                                >
+                                    Create Plan
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
