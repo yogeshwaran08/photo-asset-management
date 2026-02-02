@@ -15,6 +15,8 @@ import DashboardLayout from './components/layout/DashboardLayout';
 // Super Admin Pages
 import SuperAdminDashboard from './pages/super-admin/Dashboard';
 import StudiosManagement from './pages/super-admin/Studios';
+import SuperAdminAnalytics from './pages/super-admin/Analytics';
+import SuperAdminSettings from './pages/super-admin/Settings';
 
 // Studio Pages
 import StudioDashboard from './pages/studio/Dashboard';
@@ -64,6 +66,16 @@ const App = () => {
         <Route path="/super-admin/studios" element={
           <SuperAdminLayoutWrapper title="Studio Management">
             <StudiosManagement />
+          </SuperAdminLayoutWrapper>
+        } />
+        <Route path="/super-admin/analytics" element={
+          <SuperAdminLayoutWrapper title="Platform Analytics">
+            <SuperAdminAnalytics />
+          </SuperAdminLayoutWrapper>
+        } />
+        <Route path="/super-admin/settings" element={
+          <SuperAdminLayoutWrapper title="System Settings">
+            <SuperAdminSettings />
           </SuperAdminLayoutWrapper>
         } />
 
