@@ -26,6 +26,15 @@ export const MOCK_STUDIOS = [
         status: 'suspended',
         plan: 'Basic',
     },
+    {
+        id: '4',
+        name: 'Retro Moments',
+        email: 'contact@retromoments.com',
+        eventCount: 4,
+        storageUsed: '12 GB',
+        status: 'expired',
+        plan: 'Basic',
+    },
 ];
 
 export const MOCK_EVENTS = [

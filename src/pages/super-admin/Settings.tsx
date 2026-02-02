@@ -90,10 +90,10 @@ const SuperAdminSettings = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto pb-20">
-            <div className="flex flex-col md:flex-row gap-8">
+        <div className="max-w-7xl pb-20">
+            <div className="flex flex-col md:flex-row gap-6">
                 {/* Sidebar Navigation */}
-                <aside className="md:w-64 shrink-0">
+                <aside className="md:w-56 shrink-0">
                     <div className="sticky top-24 space-y-1">
                         <div className="mb-4 hidden md:block">
                             <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider px-4">Settings</h2>

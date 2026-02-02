@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Plus, MoreVertical, Shield, ShieldOff, Mail, ExternalLink } from 'lucide-react';
+import { Search, Plus, MoreVertical, Mail, ExternalLink, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MOCK_STUDIOS } from '../../utils/mockData';
 import { cn } from '../../utils/cn';
@@ -21,6 +21,42 @@ const itemVariants = {
 
 const StudiosManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All Status');
+
+    const filteredStudios = MOCK_STUDIOS.filter((studio) => {
+        const matchesSearch = studio.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            studio.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus = statusFilter === 'All Status' ||
+            studio.status.toLowerCase() === statusFilter.toLowerCase();
+
+        return matchesSearch && matchesStatus;
+    });
+
+    const getStatusStyles = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'active':
+                return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+            case 'suspended':
+                return "bg-rose-500/10 text-rose-500 border-rose-500/20";
+            case 'pending':
+                return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+            case 'expired':
+                return "bg-slate-500/10 text-slate-500 border-slate-500/20";
+            default:
+                return "bg-slate-500/10 text-slate-500 border-slate-500/20";
+        }
+    };
+
+    const getStatusPulse = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'active': return "bg-emerald-500";
+            case 'suspended': return "bg-rose-500";
+            case 'pending': return "bg-amber-500";
+            case 'expired': return "bg-slate-500";
+            default: return "bg-slate-500";
+        }
+    };
 
     return (
         <motion.div
@@ -53,11 +89,16 @@ const StudiosManagement = () => {
                     />
                 </div>
                 <div className="relative">
-                    <select className="bg-card border border-border rounded-xl px-4 py-3 pr-10 focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 outline-none text-foreground font-bold shadow-sm appearance-none cursor-pointer text-sm">
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="bg-card border border-border rounded-xl px-4 py-3 pr-10 focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 outline-none text-foreground font-bold shadow-sm appearance-none cursor-pointer text-sm"
+                    >
                         <option>All Status</option>
                         <option>Active</option>
                         <option>Suspended</option>
                         <option>Pending</option>
+                        <option>Expired</option>
                     </select>
                     <MoreVertical className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none rotate-90" size={16} />
                 </div>
@@ -78,7 +119,7 @@ const StudiosManagement = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
-                            {MOCK_STUDIOS.map((studio) => (
+                            {filteredStudios.map((studio) => (
                                 <tr key={studio.id} className="hover:bg-primary-500/5 transition-colors group">
                                     <td className="px-5 py-4">
                                         <div className="flex items-center gap-3">
@@ -130,21 +171,21 @@ const StudiosManagement = () => {
                                     <td className="px-5 py-4 text-center">
                                         <span className={cn(
                                             "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm",
-                                            studio.status === 'active'
-                                                ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                                                : "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                                            getStatusStyles(studio.status)
                                         )}>
-                                            <div className={cn("w-1 h-1 rounded-full animate-pulse", studio.status === 'active' ? "bg-emerald-500" : "bg-rose-500")} />
+                                            <div className={cn("w-1 h-1 rounded-full animate-pulse", getStatusPulse(studio.status))} />
                                             {studio.status}
                                         </span>
                                     </td>
                                     <td className="px-5 py-4">
                                         <div className="flex items-center justify-end gap-2">
+                                            {studio.status === 'expired' && (
+                                                <button className="w-8 h-8 flex items-center justify-center bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white rounded-lg transition-all border border-amber-500/20 shadow-sm" title="Call Studio">
+                                                    <Phone size={14} />
+                                                </button>
+                                            )}
                                             <button className="w-8 h-8 flex items-center justify-center bg-secondary-bg hover:bg-primary-500/10 hover:text-primary-400 rounded-lg transition-all border border-border/50 shadow-sm" title="View Details">
                                                 <ExternalLink size={14} />
-                                            </button>
-                                            <button className="w-8 h-8 flex items-center justify-center bg-secondary-bg hover:bg-primary-500/10 rounded-lg transition-all border border-border/50 shadow-sm" title="Manage Account">
-                                                {studio.status === 'active' ? <ShieldOff size={14} className="text-rose-400" /> : <Shield size={14} className="text-emerald-400" />}
                                             </button>
                                             <button className="w-8 h-8 flex items-center justify-center bg-secondary-bg hover:bg-primary-500/10 hover:text-primary-400 rounded-lg transition-all border border-border/50 shadow-sm">
                                                 <MoreVertical size={14} />

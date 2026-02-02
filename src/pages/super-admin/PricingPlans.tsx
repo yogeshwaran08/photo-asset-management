@@ -485,7 +485,7 @@ const PricingPlans = () => {
                                 <button
                                     onClick={handleCreatePlan}
                                     disabled={!newPlan.name || !newPlan.price}
-                                    className="flex-[2] bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary-500/20"
+                                    className="flex-2 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary-500/20"
                                 >
                                     Create Plan
                                 </button>
