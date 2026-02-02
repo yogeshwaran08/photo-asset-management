@@ -20,6 +20,8 @@ import StudiosManagement from './pages/super-admin/Studios';
 import StudioDashboard from './pages/studio/Dashboard';
 import Events from './pages/studio/Events';
 import CreateEvent from './pages/studio/CreateEvent';
+import Analytics from './pages/studio/Analytics';
+import SettingsPage from './pages/studio/Settings';
 
 // Guest Pages
 import GuestEventGallery from './pages/guest/EventGallery';
@@ -41,7 +43,7 @@ const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, t
     { name: 'Create Event', href: '/studio/create-event', icon: Plus },
     { name: 'All Photos', href: '/studio/photos', icon: ImageIcon },
     { name: 'Analytics', href: '/studio/analytics', icon: BarChart3 },
-    { name: 'Customization', href: '/studio/theme', icon: Settings },
+    { name: 'Settings', href: '/studio/settings', icon: Settings },
   ];
   return <DashboardLayout items={items} title={title}>{children}</DashboardLayout>;
 };
@@ -87,6 +89,16 @@ const App = () => {
         <Route path="/studio/create-event" element={
           <StudioLayoutWrapper title="Create New Event">
             <CreateEvent />
+          </StudioLayoutWrapper>
+        } />
+        <Route path="/studio/analytics" element={
+          <StudioLayoutWrapper title="Analytics">
+            <Analytics />
+          </StudioLayoutWrapper>
+        } />
+        <Route path="/studio/settings" element={
+          <StudioLayoutWrapper title="Settings">
+            <SettingsPage />
           </StudioLayoutWrapper>
         } />
 
