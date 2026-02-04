@@ -30,6 +30,11 @@ import SettingsPage from './pages/studio/Settings';
 
 // Guest Pages
 import GuestEventGallery from './pages/guest/EventGallery';
+
+// Auth Pages
+import Login from './pages/auth/login';
+import Signup from './pages/auth/signup';
+
 import { backend_url } from './config/backend';
 import axios from 'axios';
 
@@ -85,8 +90,12 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Redirect Root to Studio Dashboard for demo purposes */}
-        <Route path="/" element={<Navigate to="/studio/dashboard" replace />} />
+        {/* Auth Routes */}
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/signup" element={<Signup />} />
+
+        {/* Redirect Root to Login for demo purposes */}
+        <Route path="/" element={<Navigate to="/auth/login" replace />} />
 
         {/* Super Admin Routes */}
         <Route path="/super-admin/dashboard" element={
