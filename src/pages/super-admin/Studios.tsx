@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Plus, MoreVertical, Mail, ExternalLink, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MOCK_STUDIOS } from '../../utils/mockData';
@@ -20,6 +21,7 @@ const itemVariants = {
 };
 
 const StudiosManagement = () => {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('All Status');
 
@@ -122,12 +124,15 @@ const StudiosManagement = () => {
                             {filteredStudios.map((studio) => (
                                 <tr key={studio.id} className="hover:bg-primary-500/5 transition-colors group">
                                     <td className="px-5 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center font-black text-primary-500 text-lg border border-primary-500/20 shadow-inner group-hover:scale-105 transition-transform">
+                                        <div
+                                            className="flex items-center gap-3 cursor-pointer group/name"
+                                            onClick={() => navigate(`/super-admin/studio/${studio.id}`)}
+                                        >
+                                            <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center font-black text-primary-500 text-lg border border-primary-500/20 shadow-inner group-hover/name:scale-105 transition-transform">
                                                 {studio.name.charAt(0)}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="font-bold text-base text-foreground group-hover:text-primary-400 transition-colors uppercase tracking-tight line-clamp-1">{studio.name}</span>
+                                                <span className="font-bold text-base text-foreground group-hover/name:text-primary-400 transition-colors uppercase tracking-tight line-clamp-1 border-b border-transparent group-hover/name:border-primary-400/30">{studio.name}</span>
                                                 <span className="text-[10px] text-muted-foreground font-medium">ID: {studio.id}</span>
                                             </div>
                                         </div>
