@@ -7,6 +7,7 @@ import {
     ExternalLink,
     Calendar,
     MapPin
+    
 } from 'lucide-react';
 import { MOCK_EVENTS } from '../../utils/mockData';
 import { cn } from '../../utils/cn';
