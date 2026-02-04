@@ -32,8 +32,8 @@ import SettingsPage from './pages/studio/Settings';
 import GuestEventGallery from './pages/guest/EventGallery';
 
 // Auth Pages
-import Login from './pages/auth/login';
-import Signup from './pages/auth/signup';
+import Login from './pages/auth/Login';
+import Signup from './pages/auth/Signup';
 
 import { backend_url } from './config/backend';
 import axios from 'axios';
