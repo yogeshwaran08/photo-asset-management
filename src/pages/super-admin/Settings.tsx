@@ -8,338 +8,429 @@ import {
     Activity,
     Bell,
     Smartphone,
-    Mail,
     Lock,
-    Eye,
     Cloud,
-    Server,
-    Image as ImageIcon
+    Loader2,
+    CheckCircle2,
+    AlertCircle,
+    ChevronDown,
+    Building2,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { cn } from '../../utils/cn';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Switch } from '@/components/ui/switch';
+import {
+    pageVariants,
+    buttonVariants,
+} from '@/lib/motion-config';
 
-const SettingsSection = ({ id, title, description, children, icon: Icon }: any) => (
-    <motion.section
-        id={id}
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="bg-card rounded-3xl border border-border overflow-hidden mb-8 scroll-mt-24"
-    >
-        <div className="p-6 border-b border-border flex items-center gap-4 bg-secondary-bg/30">
-            <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500 font-bold">
+const MotionButton = motion(Button);
+
+const SettingsCard = ({ title, description, children, icon: Icon }: any) => (
+    <Card className="rounded-3xl border-border/50 overflow-hidden shadow-sm bg-card">
+        <CardHeader className="flex flex-row items-center gap-4 border-b border-border/50 bg-muted/10 py-5">
+            <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500 border border-primary-500/20 shrink-0">
                 <Icon size={20} />
             </div>
             <div>
-                <h3 className="text-lg font-bold">{title}</h3>
-                <p className="text-sm text-muted-foreground">{description}</p>
+                <CardTitle className="text-lg font-bold tracking-tight">{title}</CardTitle>
+                <CardDescription className="text-xs font-medium">{description}</CardDescription>
             </div>
-        </div>
-        <div className="p-6 space-y-6">
+        </CardHeader>
+        <CardContent className="p-6 space-y-6">
             {children}
-        </div>
-    </motion.section>
+        </CardContent>
+    </Card>
 );
 
-const Toggle = ({ active, onChange }: { active: boolean, onChange: () => void }) => (
-    <button
-        onClick={onChange}
-        className={cn(
-            "w-12 h-6 rounded-full relative transition-colors duration-200 outline-none",
-            active ? "bg-primary-500" : "bg-muted"
-        )}
-    >
-        <motion.div
-            animate={{ x: active ? 26 : 2 }}
-            className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
-        />
-    </button>
-);
+
+
+interface SuperAdminSettings {
+    id: number;
+    platform_name: string;
+    system_domain: string;
+    support_email: string;
+    maintenance_mode: boolean;
+    total_storage_tb: number;
+    active_regions: number;
+    total_assets: number;
+    image_compression_enabled: boolean;
+    cdn_enabled: boolean;
+    default_currency: string;
+    tax_rate: number;
+    stripe_live_key?: string | null;
+    google_workspace_connected: boolean;
+    aws_rekognition_active: boolean;
+    whatsapp_api_connected: boolean;
+    forced_2fa: boolean;
+    session_timeout_minutes: number;
+    auto_approval_enabled: boolean;
+    email_notifications_enabled: boolean;
+}
+
+const API_BASE_URL = 'http://localhost:8000/api/v1/super-admin-settings';
 
 const SuperAdminSettings = () => {
-    const [activeTab, setActiveTab] = useState('general');
-    const [toggles, setToggles] = useState({
-        twoFactor: true,
-        maintenance: false,
-        autoApproval: true,
-        emailNotifications: true,
-        compression: true,
-        cdn: true
-    });
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [settings, setSettings] = useState<SuperAdminSettings | null>(null);
 
-    const handleToggle = (key: keyof typeof toggles) => {
-        setToggles(prev => ({ ...prev, [key]: !prev[key] }));
-    };
+    useEffect(() => {
+        fetchSettings();
+    }, []);
 
-    const navItems = [
-        { id: 'general', label: 'General', icon: Globe },
-        { id: 'storage', label: 'Storage', icon: Database },
-        { id: 'billing', label: 'Billing', icon: CreditCard },
-        { id: 'integrations', label: 'Integrations', icon: Zap },
-        { id: 'security', label: 'Security', icon: Shield },
-        { id: 'notifications', label: 'Notifications', icon: Bell },
-    ];
-
-    const scrollToSection = (id: string) => {
-        setActiveTab(id);
-        const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+    const fetchSettings = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            const response = await fetch(`${API_BASE_URL}/`);
+            if (!response.ok) {
+                if (response.status === 404) {
+                    await initializeSettings();
+                    return;
+                }
+                throw new Error('Failed to fetch settings');
+            }
+            const data = await response.json();
+            setSettings(data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to load settings');
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    return (
-        <div className="max-w-7xl pb-20">
-            <div className="flex flex-col md:flex-row gap-6">
-                {/* Sidebar Navigation */}
-                <aside className="md:w-56 shrink-0">
-                    <div className="sticky top-24 space-y-1">
-                        <div className="mb-4 hidden md:block">
-                            <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider px-4">Settings</h2>
-                        </div>
-                        {navItems.map((item) => (
-                            <button
-                                key={item.id}
-                                onClick={() => scrollToSection(item.id)}
-                                className={cn(
-                                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
-                                    activeTab === item.id
-                                        ? "bg-primary-500/10 text-primary-500 shadow-sm"
-                                        : "text-muted-foreground hover:bg-secondary-bg hover:text-foreground"
-                                )}
-                            >
-                                <item.icon size={18} />
-                                {item.label}
-                            </button>
-                        ))}
-                    </div>
-                </aside>
+    const initializeSettings = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/initialize`, { method: 'POST' });
+            if (!response.ok) throw new Error('Failed to initialize settings');
+            const data = await response.json();
+            setSettings(data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to initialize settings');
+        }
+    };
 
-                {/* Main Content */}
-                <div className="flex-1">
-                    <div className="mb-8 flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight">System Settings</h1>
-                            <p className="text-muted-foreground mt-1">Global platform configuration and management.</p>
-                        </div>
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-rose-500/10 text-rose-500 rounded-full text-xs font-bold animate-pulse">
-                            <Activity size={14} />
-                            Live System
-                        </div>
-                    </div>
+    const updateSettings = async (updates: Partial<SuperAdminSettings>) => {
+        try {
+            setError(null);
+            const response = await fetch(`${API_BASE_URL}/`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates),
+            });
+            if (!response.ok) throw new Error('Failed to update settings');
+            const data = await response.json();
+            setSettings(data);
+            return data;
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to update settings');
+            throw err;
+        }
+    };
 
-                    <div className="space-y-2">
-                        {/* General Section */}
-                        <SettingsSection
-                            id="general"
-                            title="Platform Configuration"
-                            description="Core branding and platform identity settings."
-                            icon={Globe}
-                        >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Platform Name</label>
-                                    <input type="text" defaultValue="SnapVault" className="w-full bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500/20 outline-none transition-all" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">System Domain</label>
-                                    <input type="text" defaultValue="app.snapvault.com" className="w-full bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500/20 outline-none transition-all" />
-                                </div>
-                                <div className="space-y-2 md:col-span-2">
-                                    <label className="text-sm font-medium">Support Email Address</label>
-                                    <input type="email" defaultValue="admin-support@snapvault.com" className="w-full bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500/20 outline-none transition-all" />
-                                </div>
-                            </div>
-                            <div className="pt-4 border-t border-border flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-bold">Maintenance Mode</p>
-                                    <p className="text-xs text-muted-foreground">Disables public access for all studios and guests.</p>
-                                </div>
-                                <Toggle active={toggles.maintenance} onChange={() => handleToggle('maintenance')} />
-                            </div>
-                        </SettingsSection>
+    const handleToggle = async (field: keyof SuperAdminSettings) => {
+        if (!settings) return;
+        const currentValue = settings[field];
+        if (typeof currentValue !== 'boolean') return;
+        try {
+            await updateSettings({ [field]: !currentValue });
+            showSuccess('Setting updated successfully');
+        } catch (err) { }
+    };
 
-                        {/* Storage Section */}
-                        <SettingsSection
-                            id="storage"
-                            title="Storage & Assets"
-                            description="Infrastructure and asset management rules."
-                            icon={Database}
-                        >
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="p-4 bg-secondary-bg rounded-2xl border border-border/50">
-                                        <div className="flex items-center gap-2 text-primary-500 mb-2">
-                                            <Cloud size={16} />
-                                            <span className="text-xs font-bold uppercase">AWS S3</span>
-                                        </div>
-                                        <p className="text-xl font-bold">12.4 TB</p>
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Total Consumption</p>
-                                    </div>
-                                    <div className="p-4 bg-secondary-bg rounded-2xl border border-border/50">
-                                        <div className="flex items-center gap-2 text-emerald-500 mb-2">
-                                            <Server size={16} />
-                                            <span className="text-xs font-bold uppercase">Regions</span>
-                                        </div>
-                                        <p className="text-xl font-bold">4 Active</p>
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Global Coverage</p>
-                                    </div>
-                                    <div className="p-4 bg-secondary-bg rounded-2xl border border-border/50">
-                                        <div className="flex items-center gap-2 text-accent-500 mb-2">
-                                            <ImageIcon size={16} />
-                                            <span className="text-xs font-bold uppercase">Assets</span>
-                                        </div>
-                                        <p className="text-xl font-bold">8.2M</p>
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Processed Files</p>
-                                    </div>
-                                </div>
+    const handleInputChange = (field: keyof SuperAdminSettings, value: any) => {
+        if (!settings) return;
+        setSettings({ ...settings, [field]: value });
+    };
 
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-4 border border-border rounded-2xl">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                                                <Zap size={20} className="text-amber-500" />
-                                            </div>
-                                            <div>
-                                                <p className="font-bold">Image Compression</p>
-                                                <p className="text-xs text-muted-foreground">Automatically optimize images on upload.</p>
-                                            </div>
-                                        </div>
-                                        <Toggle active={toggles.compression} onChange={() => handleToggle('compression')} />
-                                    </div>
-                                    <div className="flex items-center justify-between p-4 border border-border rounded-2xl">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                                                <Smartphone size={20} className="text-blue-500" />
-                                            </div>
-                                            <div>
-                                                <p className="font-bold">Global CDN</p>
-                                                <p className="text-xs text-muted-foreground">Deliver assets via edge nodes (Cloudflare).</p>
-                                            </div>
-                                        </div>
-                                        <Toggle active={toggles.cdn} onChange={() => handleToggle('cdn')} />
-                                    </div>
-                                </div>
-                            </div>
-                        </SettingsSection>
+    const handleSaveChanges = async () => {
+        if (!settings) return;
+        try {
+            setIsSaving(true);
+            await updateSettings({
+                platform_name: settings.platform_name,
+                system_domain: settings.system_domain,
+                support_email: settings.support_email,
+                default_currency: settings.default_currency,
+                tax_rate: settings.tax_rate,
+                session_timeout_minutes: settings.session_timeout_minutes,
+            });
+            showSuccess('Settings saved successfully!');
+        } catch (err) {
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
-                        {/* Billing Section */}
-                        <SettingsSection
-                            id="billing"
-                            title="Billing & Monetization"
-                            description="Handle currency, plans, and payment gateways."
-                            icon={CreditCard}
-                        >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Default Currency</label>
-                                    <select className="w-full bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm outline-none">
-                                        <option>USD ($)</option>
-                                        <option>EUR (€)</option>
-                                        <option>GBP (£)</option>
-                                        <option>INR (₹)</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Tax Rate (%)</label>
-                                    <input type="number" defaultValue="18" className="w-full bg-secondary-bg border border-border rounded-xl px-4 py-2.5 text-sm outline-none" />
-                                </div>
-                            </div>
-                            <div className="p-4 bg-primary-500/5 border border-primary-500/20 rounded-2xl">
-                                <h4 className="text-sm font-bold text-primary-500 mb-2">Active Payment Gateway</h4>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-12 h-8 bg-white rounded-md flex items-center justify-center shadow-sm border border-border">
-                                            <span className="text-[10px] font-black italic text-blue-800">Stripe</span>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-foreground">Stripe Connect</p>
-                                            <p className="text-xs text-muted-foreground truncate max-w-[200px]">Live Key: sk_live_••••••••••••</p>
-                                        </div>
-                                    </div>
-                                    <button className="text-xs font-bold text-primary-500 hover:underline">Configure</button>
-                                </div>
-                            </div>
-                        </SettingsSection>
+    const showSuccess = (message: string) => {
+        setSuccessMessage(message);
+        setTimeout(() => setSuccessMessage(null), 3000);
+    };
 
-                        {/* Integrations Section */}
-                        <SettingsSection
-                            id="integrations"
-                            title="Third-party Integrations"
-                            description="Connect SnapVault with external services."
-                            icon={Zap}
-                        >
-                            <div className="space-y-4">
-                                {[
-                                    { name: 'Google Workspace', status: 'Connected', icon: Mail, color: 'text-rose-500' },
-                                    { name: 'AWS Rekognition', status: 'Active', icon: Eye, color: 'text-amber-500' },
-                                    { name: 'WhatsApp API', status: 'Disconnected', icon: Activity, color: 'text-emerald-500' },
-                                ].map((integration) => (
-                                    <div key={integration.name} className="flex items-center justify-between p-4 bg-secondary-bg/50 rounded-2xl border border-border/50">
-                                        <div className="flex items-center gap-3">
-                                            <integration.icon size={20} className={integration.color} />
-                                            <span className="font-medium text-sm">{integration.name}</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className={cn(
-                                                "text-[10px] font-bold uppercase",
-                                                integration.status === 'Disconnected' ? "text-muted-foreground" : "text-emerald-500"
-                                            )}>{integration.status}</span>
-                                            <button className="text-xs font-bold text-primary-500">Manage</button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </SettingsSection>
-
-                        {/* Security Section */}
-                        <SettingsSection
-                            id="security"
-                            title="Security & Access"
-                            description="Protect the platform and its data."
-                            icon={Shield}
-                        >
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-bold">Forced 2FA</p>
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold leading-tight">Minimum Security Requirement</p>
-                                    </div>
-                                    <Toggle active={toggles.twoFactor} onChange={() => handleToggle('twoFactor')} />
-                                </div>
-                                <div className="pt-4 border-t border-border space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <Lock size={18} className="text-muted-foreground" />
-                                            <span className="text-sm font-medium">Session Timeout (Minutes)</span>
-                                        </div>
-                                        <input type="number" defaultValue="30" className="w-16 bg-muted border-none rounded-lg px-2 py-1 text-center text-sm" />
-                                    </div>
-                                    <button className="w-full py-2.5 rounded-xl border border-border text-sm font-bold hover:bg-muted transition-all">
-                                        View Security Audit History
-                                    </button>
-                                </div>
-                            </div>
-                        </SettingsSection>
-                    </div>
-
-                    {/* Footer Actions */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="fixed bottom-0 right-0 left-0 md:left-64 p-6 bg-background/80 backdrop-blur-md border-t border-border flex justify-end gap-3 z-40"
-                    >
-                        <button className="px-6 py-2.5 rounded-xl border border-border font-bold text-sm hover:bg-card transition-all">Discard Changes</button>
-                        <button className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-primary-500 text-white font-bold text-sm hover:bg-primary-600 transition-all shadow-lg shadow-primary-500/20">
-                            <Save size={18} />
-                            Save Configuration
-                        </button>
-                    </motion.div>
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="text-center">
+                    <Loader2 className="animate-spin text-primary-500 mx-auto mb-4" size={40} />
+                    <p className="text-muted-foreground font-bold text-sm tracking-tight">Accessing system configuration...</p>
                 </div>
             </div>
-        </div>
+        );
+    }
+
+    if (!settings) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="text-center">
+                    <AlertCircle className="text-destructive mx-auto mb-4" size={40} />
+                    <p className="text-destructive font-bold">Failed to load system settings.</p>
+                    <Button onClick={fetchSettings} className="mt-4 rounded-xl">Retry</Button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <motion.div
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="space-y-8 max-w-7xl mx-auto pb-20"
+        >
+            <AnimatePresence>
+                {successMessage && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed top-24 left-1/2 -translate-x-1/2 z-50 p-4 bg-emerald-500 text-white rounded-2xl flex items-center gap-3 shadow-xl px-8"
+                    >
+                        <CheckCircle2 size={18} />
+                        <p className="font-bold text-sm">{successMessage}</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Header Area */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">System Settings</h1>
+                    <p className="text-muted-foreground mt-1 font-medium">Fine-tune global platform parameters and infrastructure.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 font-bold rounded-full">
+                        <Activity size={14} className="animate-pulse" />
+                        System Online
+                    </Badge>
+                </div>
+            </div>
+
+            <Tabs defaultValue="general" className="space-y-8">
+                <TabsList className="bg-muted/50 p-1 rounded-2xl border border-border/50 overflow-x-auto h-auto flex flex-nowrap md:inline-flex">
+                    <TabsTrigger value="general" className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <Globe size={16} className="mr-2" /> General
+                    </TabsTrigger>
+                    <TabsTrigger value="storage" className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <Database size={16} className="mr-2" /> Storage
+                    </TabsTrigger>
+                    <TabsTrigger value="billing" className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <CreditCard size={16} className="mr-2" /> Billing
+                    </TabsTrigger>
+                    <TabsTrigger value="security" className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <Shield size={16} className="mr-2" /> Security
+                    </TabsTrigger>
+                    <TabsTrigger value="notifications" className="rounded-xl px-6 py-2.5 font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <Bell size={16} className="mr-2" /> Notifications
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="general" className="space-y-6 focus-visible:outline-none">
+                    <SettingsCard
+                        title="Platform Identity"
+                        description="Configure how the platform appears to studios and guests."
+                        icon={Building2}
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-muted-foreground ml-1">Platform Name</label>
+                                <Input
+                                    value={settings.platform_name}
+                                    onChange={(e) => handleInputChange('platform_name', e.target.value)}
+                                    className="h-11 rounded-xl bg-muted/20 border-border/50"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-muted-foreground ml-1">System Domain</label>
+                                <Input
+                                    value={settings.system_domain}
+                                    onChange={(e) => handleInputChange('system_domain', e.target.value)}
+                                    className="h-11 rounded-xl bg-muted/20 border-border/50"
+                                />
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <label className="text-xs font-bold text-muted-foreground ml-1">Support Email</label>
+                                <Input
+                                    value={settings.support_email}
+                                    onChange={(e) => handleInputChange('support_email', e.target.value)}
+                                    className="h-11 rounded-xl bg-muted/20 border-border/50"
+                                />
+                            </div>
+                        </div>
+                        <div className="pt-6 border-t border-border/50 flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-bold">Maintenance Mode</p>
+                                <p className="text-xs text-muted-foreground">Temporarily disable platform access for everyone except admins.</p>
+                            </div>
+                            <Switch checked={settings.maintenance_mode} onCheckedChange={() => handleToggle('maintenance_mode')} />
+                        </div>
+                    </SettingsCard>
+                </TabsContent>
+
+                <TabsContent value="storage" className="space-y-6 focus-visible:outline-none">
+                    <SettingsCard
+                        title="Storage & Asset Logic"
+                        description="Monitor your infrastructure and configure optimization rules."
+                        icon={Cloud}
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="p-4 rounded-2xl border border-border/50 bg-muted/20">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Total Storage</p>
+                                <p className="text-2xl font-bold">{settings.total_storage_tb} TB</p>
+                            </div>
+                            <div className="p-4 rounded-2xl border border-border/50 bg-muted/20">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Active Regions</p>
+                                <p className="text-2xl font-bold">{settings.active_regions}</p>
+                            </div>
+                            <div className="p-4 rounded-2xl border border-border/50 bg-muted/20">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Assets Managed</p>
+                                <p className="text-2xl font-bold">{settings.total_assets}M</p>
+                            </div>
+                        </div>
+                        <div className="space-y-4 pt-4">
+                            <div className="flex items-center justify-between p-4 rounded-xl hover:bg-muted/20 transition-colors border border-transparent hover:border-border/50">
+                                <div className="flex items-center gap-3">
+                                    <Zap size={18} className="text-amber-500" />
+                                    <div>
+                                        <p className="text-sm font-bold">Image Compression</p>
+                                        <p className="text-xs text-muted-foreground">Optimize uploads automatically before storage.</p>
+                                    </div>
+                                </div>
+                                <Switch checked={settings.image_compression_enabled} onCheckedChange={() => handleToggle('image_compression_enabled')} />
+                            </div>
+                            <div className="flex items-center justify-between p-4 rounded-xl hover:bg-muted/20 transition-colors border border-transparent hover:border-border/50">
+                                <div className="flex items-center gap-3">
+                                    <Smartphone size={18} className="text-blue-500" />
+                                    <div>
+                                        <p className="text-sm font-bold">Global CDN</p>
+                                        <p className="text-xs text-muted-foreground">Speed up asset delivery via edge nodes.</p>
+                                    </div>
+                                </div>
+                                <Switch checked={settings.cdn_enabled} onCheckedChange={() => handleToggle('cdn_enabled')} />
+                            </div>
+                        </div>
+                    </SettingsCard>
+                </TabsContent>
+
+                <TabsContent value="billing" className="space-y-6 focus-visible:outline-none">
+                    <SettingsCard
+                        title="Revenue Configuration"
+                        description="Manage local currency and global tax parameters."
+                        icon={DollarSign}
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-muted-foreground ml-1">Default Currency</label>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="w-full justify-between h-11 rounded-xl bg-muted/20 border-border/50">
+                                            {settings.default_currency}
+                                            <ChevronDown size={16} />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] rounded-xl">
+                                        <DropdownMenuItem onClick={() => handleInputChange('default_currency', 'USD')}>USD ($)</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleInputChange('default_currency', 'EUR')}>EUR (€)</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleInputChange('default_currency', 'INR')}>INR (₹)</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-muted-foreground ml-1">Tax Rate (%)</label>
+                                <Input
+                                    type="number"
+                                    value={settings.tax_rate}
+                                    onChange={(e) => handleInputChange('tax_rate', parseFloat(e.target.value))}
+                                    className="h-11 rounded-xl bg-muted/20 border-border/50"
+                                />
+                            </div>
+                        </div>
+                    </SettingsCard>
+                </TabsContent>
+
+                <TabsContent value="security" className="space-y-6 focus-visible:outline-none">
+                    <SettingsCard
+                        title="Security Guardrails"
+                        description="Protect admin and studio workspace integrity."
+                        icon={Lock}
+                    >
+                        <div className="flex items-center justify-between p-4 rounded-xl bg-rose-500/5 border border-rose-500/10 mb-4">
+                            <div className="flex items-center gap-3">
+                                <Shield size={18} className="text-rose-500" />
+                                <div>
+                                    <p className="text-sm font-bold">Forced 2FA</p>
+                                    <p className="text-xs text-muted-foreground">Require two-factor authentication for all staff.</p>
+                                </div>
+                            </div>
+                            <Switch checked={settings.forced_2fa} onCheckedChange={() => handleToggle('forced_2fa')} />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold text-muted-foreground ml-1">Session Inactivity Timeout (Minutes)</label>
+                            <Input
+                                type="number"
+                                value={settings.session_timeout_minutes}
+                                onChange={(e) => handleInputChange('session_timeout_minutes', parseInt(e.target.value))}
+                                className="h-11 rounded-xl bg-muted/20 border-border/50 w-full md:w-48"
+                            />
+                        </div>
+                    </SettingsCard>
+                </TabsContent>
+            </Tabs>
+
+            {/* Save Button Sidebar-like sticky but centered for the layout */}
+            <div className="fixed bottom-8 right-8 z-50">
+                <MotionButton
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    onClick={handleSaveChanges}
+                    disabled={isSaving}
+                    className="h-14 px-8 rounded-2xl bg-primary-500 hover:bg-primary-600 text-white shadow-lg shadow-primary-500/20 font-bold gap-2"
+                >
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                    {isSaving ? "Saving..." : "Save Changes"}
+                </MotionButton>
+            </div>
+        </motion.div>
     );
 };
+
+const DollarSign = (props: any) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+);
 
 export default SuperAdminSettings;

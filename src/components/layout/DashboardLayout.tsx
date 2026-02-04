@@ -4,10 +4,27 @@ import {
     Camera,
     ChevronLeft,
     Menu,
-    X
+    X,
+    User,
+    LogOut,
+    Bell
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../utils/cn';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from '@/components/ui/avatar';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface SidebarItem {
     name: string;
@@ -26,91 +43,102 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
-        <div className="flex h-screen bg-background text-foreground overflow-hidden">
+        <div className="flex h-screen bg-white text-foreground overflow-hidden font-sans">
             {/* Sidebar for Desktop */}
             <motion.aside
                 initial={false}
-                animate={{ width: isSidebarOpen ? 256 : 80 }}
-                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                className="hidden md:flex flex-col border-r border-border bg-secondary-bg h-screen sticky top-0 overflow-hidden"
+                animate={{ width: isSidebarOpen ? 280 : 80 }}
+                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                className="hidden md:flex flex-col border-r border-border/50 h-screen sticky top-0 overflow-hidden glass z-40"
             >
-                <div className="p-6 flex items-center min-w-[256px]">
-                    <div className="w-8 h-8 rounded-lg bg-primary-500 shrink-0 flex items-center justify-center text-white shadow-lg shadow-primary-500/20 translate-x-[4px]">
-                        <Camera size={20} />
+                <div className={cn(
+                    "h-20 flex items-center shrink-0 transition-all duration-400",
+                    isSidebarOpen ? "px-8" : "justify-center"
+                )}>
+                    <div className="w-11 h-11 rounded-2xl bg-primary-500 shrink-0 flex items-center justify-center text-foreground shadow-lg shadow-primary-500/20">
+                        <Camera size={24} strokeWidth={3} />
                     </div>
-                    <AnimatePresence>
+                    <AnimatePresence mode="wait">
                         {isSidebarOpen && (
-                            <motion.span
+                            <motion.div
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -10 }}
                                 transition={{ duration: 0.2, delay: 0.1 }}
-                                className="ml-3 font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-accent-500 whitespace-nowrap"
+                                className="ml-4"
                             >
-                                SnapVault
-                            </motion.span>
+                                <span className="font-black text-xl tracking-tighter uppercase whitespace-nowrap">
+                                    SnapVault
+                                </span>
+                                <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest leading-none mt-0.5">Studio Core</p>
+                            </motion.div>
                         )}
                     </AnimatePresence>
                 </div>
 
-                <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto custom-scrollbar">
+                <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar">
                     {items.map((item) => (
                         <NavLink
                             key={item.href}
                             to={item.href}
                             className={({ isActive }) => cn(
-                                "flex items-center h-11 rounded-xl transition-all duration-200 group relative overflow-hidden",
+                                "flex items-center h-12 rounded-2xl transition-all duration-300 group relative overflow-hidden",
                                 isActive
-                                    ? "bg-primary-900/20 text-primary-400"
-                                    : "hover:bg-card text-muted-foreground"
+                                    ? "bg-primary-500/10 text-foreground ring-1 ring-primary-500/20"
+                                    : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
                             )}
                         >
-                            <div className="w-12 h-11 shrink-0 flex items-center justify-center translate-x-[2px]">
-                                <item.icon size={20} className={cn("transition-colors", "group-hover:text-primary-400")} />
-                            </div>
-                            <AnimatePresence mode="popLayout">
-                                {isSidebarOpen && (
-                                    <motion.span
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="font-medium whitespace-nowrap"
-                                    >
-                                        {item.name}
-                                    </motion.span>
-                                )}
-                            </AnimatePresence>
-                            {!isSidebarOpen && (
-                                <div className="absolute left-16 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                                    {item.name}
-                                </div>
+                            {({ isActive }) => (
+                                <>
+                                    <div className="w-14 h-12 shrink-0 flex items-center justify-center">
+                                        <item.icon size={20} strokeWidth={isActive ? 3 : 2} className={cn("transition-colors", isActive ? "text-primary-600" : "group-hover:text-foreground")} />
+                                    </div>
+                                    <AnimatePresence mode="popLayout">
+                                        {isSidebarOpen && (
+                                            <motion.span
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -10 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="font-black text-[10px] uppercase tracking-widest whitespace-nowrap"
+                                            >
+                                                {item.name}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
+                                    {!isSidebarOpen && (
+                                        <div className="absolute left-16 px-3 py-1.5 bg-foreground text-background text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+                                            {item.name}
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </NavLink>
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+                <div className="p-3 border-t border-border/50">
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="w-full flex items-center h-10 rounded-lg hover:bg-card transition-colors overflow-hidden"
+                        className="w-full flex items-center h-12 rounded-2xl hover:bg-muted/50 transition-all overflow-hidden group"
                     >
-                        <motion.div
-                            animate={{ rotate: isSidebarOpen ? 0 : 180 }}
-                            transition={{ duration: 0.3 }}
-                            className="w-12 h-10 shrink-0 flex items-center justify-center translate-x-[2px]"
-                        >
-                            <ChevronLeft size={20} />
-                        </motion.div>
+                        <div className="w-14 h-12 shrink-0 flex items-center justify-center">
+                            <motion.div
+                                animate={{ rotate: isSidebarOpen ? 0 : 180 }}
+                                transition={{ duration: 0.4 }}
+                            >
+                                <ChevronLeft size={20} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+                            </motion.div>
+                        </div>
                         <AnimatePresence>
                             {isSidebarOpen && (
                                 <motion.span
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="text-sm font-medium"
+                                    className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors whitespace-nowrap"
                                 >
-                                    Collapse
+                                    Collapse Interface
                                 </motion.span>
                             )}
                         </AnimatePresence>
@@ -119,61 +147,104 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
             </motion.aside>
 
             {/* Mobile Header */}
-            <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-secondary-bg border-b border-border flex items-center justify-between px-4 z-50">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center text-white">
-                        <Camera size={20} />
+            <div className="md:hidden fixed top-0 left-0 right-0 h-16 border-b border-border/50 flex items-center justify-between px-6 z-50 glass">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center text-foreground">
+                        <Camera size={18} strokeWidth={3} />
                     </div>
-                    <span className="font-bold text-lg">SnapVault</span>
+                    <span className="font-black uppercase tracking-tighter">SnapVault</span>
                 </div>
-                <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                     {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
+                </Button>
             </div>
 
             {/* Mobile Menu */}
-            {isMobileMenuOpen && (
-                <div className="md:hidden fixed inset-0 bg-background/50 backdrop-blur-sm z-40" onClick={() => setIsMobileMenuOpen(false)}>
-                    <div className="absolute left-0 top-0 bottom-0 w-64 bg-secondary-bg p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center gap-3 mb-8">
-                            <Camera size={24} className="text-primary-500" />
-                            <span className="font-bold text-xl">SnapVault</span>
-                        </div>
-                        <nav className="space-y-2">
-                            {items.map((item) => (
-                                <NavLink
-                                    key={item.href}
-                                    to={item.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className={({ isActive }) => cn(
-                                        "flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
-                                        isActive ? "bg-primary-900/20 text-primary-400" : "text-muted-foreground"
-                                    )}
-                                >
-                                    <item.icon size={20} />
-                                    <span className="font-medium">{item.name}</span>
-                                </NavLink>
-                            ))}
-                        </nav>
-                    </div>
-                </div>
-            )}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="md:hidden fixed inset-0 bg-white/80 backdrop-blur-xl z-50"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ x: -280 }}
+                            animate={{ x: 0 }}
+                            exit={{ x: -280 }}
+                            className="absolute left-0 top-0 bottom-0 w-[280px] bg-white p-8 shadow-2xl border-r border-border/50"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex items-center gap-3 mb-12">
+                                <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center text-foreground">
+                                    <Camera size={22} strokeWidth={3} />
+                                </div>
+                                <span className="font-black text-xl uppercase tracking-tighter">SnapVault</span>
+                            </div>
+                            <nav className="space-y-3">
+                                {items.map((item) => (
+                                    <NavLink
+                                        key={item.href}
+                                        to={item.href}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className={({ isActive }) => cn(
+                                            "flex items-center gap-4 px-4 py-4 rounded-2xl transition-all",
+                                            isActive ? "bg-primary-500/10 text-foreground ring-1 ring-primary-500/20" : "text-muted-foreground hover:text-foreground"
+                                        )}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <item.icon size={20} strokeWidth={isActive ? 3 : 2} />
+                                                <span className="font-black text-[10px] uppercase tracking-widest">{item.name}</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+                                ))}
+                            </nav>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden md:pt-0 pt-16">
-                <header className="h-16 hidden md:flex items-center justify-between px-8 bg-background/50 backdrop-blur-sm border-b border-border">
-                    <h1 className="text-xl font-semibold">{title}</h1>
-                    <div className="flex items-center gap-4">
-                        <div className="flex flex-col items-end">
-                            <span className="text-sm font-medium">Alex Studio</span>
-                            <span className="text-xs text-muted-foreground">Super Admin</span>
-                        </div>
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary-400 to-accent-500 flex items-center justify-center text-white font-bold">
-                            AS
-                        </div>
+                <header className="h-20 hidden md:flex items-center justify-between px-10 border-b border-border/50 sticky top-0 glass z-30">
+                    <h1 className="text-sm font-black uppercase tracking-[0.1em] text-muted-foreground">{title}</h1>
+                    <div className="flex items-center gap-6">
+                        <Button variant="ghost" size="icon" className="w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground relative">
+                            <Bell size={20} />
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-primary-500 rounded-full border-2 border-white"></span>
+                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button className="flex items-center gap-4 group outline-none">
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-[10px] font-black uppercase tracking-tight leading-none group-hover:text-primary-600 transition-colors">Luminary Studios</span>
+                                        <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest mt-1 opacity-60">Verified Admin</span>
+                                    </div>
+                                    <Avatar className="w-11 h-11 rounded-2xl border border-border/50 transition-all group-hover:ring-4 group-hover:ring-primary-500/10 group-hover:border-primary-500 shadow-sm">
+                                        <AvatarImage src="https://ui-avatars.com/api/?name=Luminary+Studios&background=93ea7d&color=111411&size=128" />
+                                        <AvatarFallback className="rounded-2xl font-black text-xs">LS</AvatarFallback>
+                                    </Avatar>
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56 rounded-[1.5rem] p-2 glass border-border/50 shadow-2xl">
+                                <DropdownMenuLabel className="font-black uppercase text-[10px] tracking-widest p-4 pb-2 opacity-50">Identity Matrix</DropdownMenuLabel>
+                                <DropdownMenuItem className="rounded-xl font-bold p-3 gap-3 focus:bg-primary-500/10">
+                                    <User size={16} className="text-primary-500" />
+                                    <span className="text-xs uppercase tracking-tight">Studio Profile</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="bg-border/50 my-2" />
+                                <DropdownMenuItem className="rounded-xl font-bold p-3 gap-3 text-error focus:bg-error/10 focus:text-error">
+                                    <LogOut size={16} />
+                                    <span className="text-xs uppercase tracking-tight">Disconnect Node</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </header>
-                <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-white/50">
                     {children}
                 </div>
             </main>

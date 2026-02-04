@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -32,11 +32,8 @@ import SettingsPage from './pages/studio/Settings';
 import GuestEventGallery from './pages/guest/EventGallery';
 
 // Auth Pages
-import Login from './pages/auth/login';
-import Signup from './pages/auth/signup';
-
-import { backend_url } from './config/backend';
-import axios from 'axios';
+import Login from './pages/auth/Login';
+import Signup from './pages/auth/Signup';
 
 const SuperAdminLayoutWrapper = ({ children, title }: { children: React.ReactNode, title: string }) => {
   const items = [
@@ -62,31 +59,6 @@ const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, t
 };
 
 const App = () => {
-  const backendHealthCheck = async () => {
-    const url = `${backend_url}/health`;
-    const res = await axios.get(url);
-    if (res && res.status === 200 && res.data?.status === "ok") {
-      console.log("Backend is healthy");
-    } else {
-      console.log("Backend is not healthy");
-    }
-  }
-  const test = async () => {
-    const url = `${backend_url}/test`;
-    const res = await axios.post(url, { a: 10, b: 20 });
-    console.log(res.data);
-  }
-  const sample = async () => {
-    const url = `${backend_url}/sample`
-    const res = await axios.get(url);
-    console.log(res.data);
-  }
-
-  useEffect(() => {
-    backendHealthCheck();
-    test();
-    sample();
-  }, []);
   return (
     <Router>
       <Routes>
