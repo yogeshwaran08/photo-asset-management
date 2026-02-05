@@ -63,10 +63,7 @@ const StudioDetails = () => {
                 >
                     <ChevronLeft size={20} />
                 </MotionButton>
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Studio Profile</h1>
-                    <p className="text-sm text-muted-foreground font-medium">Viewing deep insights for <span className="text-foreground font-bold">{studio.name}</span></p>
-                </div>
+                <div></div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

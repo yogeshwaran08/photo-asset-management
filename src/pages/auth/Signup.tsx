@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Camera, Mail, Lock, Eye, EyeOff, User, Building2, ArrowRight, Check, ShieldCheck, Sparkles } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Lock, Eye, EyeOff, User, Building2, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
     pageVariants,
     listItemVariants,
-    staggerContainer,
-    buttonVariants
+    staggerContainer
 } from '@/lib/motion-config';
 
 export default function Signup() {
@@ -64,15 +63,15 @@ export default function Signup() {
                     className="hidden lg:flex flex-col items-start justify-center flex-1 space-y-10"
                 >
                     <motion.div variants={listItemVariants} className="space-y-6">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="w-14 h-14 rounded-[1.5rem] bg-primary-500 flex items-center justify-center text-foreground shadow-xl shadow-primary-500/20">
-                                <Camera className="w-8 h-8" strokeWidth={3} />
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-16 h-16 rounded-[1.5rem] bg-white flex items-center justify-center text-foreground shadow-xl shadow-primary-500/20 overflow-hidden p-2.5">
+                                <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">
+                                <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground leading-none">
                                     SnapVault
                                 </h1>
-                                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mt-1 opacity-70">Creative Cloud</p>
+                                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mt-1.5 opacity-70">Creative Cloud</p>
                             </div>
                         </div>
 
@@ -114,6 +113,14 @@ export default function Signup() {
                     className="w-full max-w-[500px]"
                 >
                     <Card className="rounded-[3rem] p-10 shadow-2xl border-border/50 glass relative overflow-hidden">
+                        {/* Mobile Brand */}
+                        <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
+                            <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-foreground font-black overflow-hidden p-2">
+                                <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
+                            </div>
+                            <h1 className="text-2xl font-black uppercase tracking-tighter">SnapVault</h1>
+                        </div>
+
                         <div className="mb-10 text-center lg:text-left">
                             <h3 className="text-2xl font-black text-foreground uppercase tracking-tight mb-2">Create Node</h3>
                             <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-60">Initialize your studio on the network</p>
@@ -125,14 +132,14 @@ export default function Signup() {
                                     <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Identity</Label>
                                     <div className="relative group">
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
-                                        <Input className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500" placeholder="FULL NAME" />
+                                        <Input className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" placeholder="FULL NAME" />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Studio</Label>
                                     <div className="relative group">
                                         <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
-                                        <Input className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500" placeholder="STUDIO NAME" />
+                                        <Input className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" placeholder="STUDIO NAME" />
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +148,7 @@ export default function Signup() {
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Communication / Email</Label>
                                 <div className="relative group">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
-                                    <Input type="email" className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500" placeholder="EMAIL@DOMAIN.COM" />
+                                    <Input type="email" className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" placeholder="EMAIL@DOMAIN.COM" />
                                 </div>
                             </div>
 
@@ -153,7 +160,7 @@ export default function Signup() {
                                         type={showPassword ? 'text' : 'password'}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500"
+                                        className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs"
                                         placeholder="••••••••"
                                     />
                                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
@@ -179,7 +186,7 @@ export default function Signup() {
                                 </Label>
                             </div>
 
-                            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                 <Button
                                     type="submit"
                                     disabled={isLoading}

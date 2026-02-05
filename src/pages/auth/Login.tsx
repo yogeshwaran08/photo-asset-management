@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Camera, Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Card } from '@/components/ui/card';
 import {
     pageVariants,
     listItemVariants,
@@ -49,15 +49,15 @@ export default function Login() {
                     className="hidden lg:flex flex-col items-start justify-center flex-1 space-y-10"
                 >
                     <motion.div variants={listItemVariants} className="space-y-6">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="w-14 h-14 rounded-[1.5rem] bg-primary-500 flex items-center justify-center text-foreground shadow-xl shadow-primary-500/20">
-                                <Camera className="w-8 h-8" strokeWidth={3} />
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-16 h-16 rounded-[1.5rem] bg-white flex items-center justify-center text-foreground shadow-xl shadow-primary-500/20 overflow-hidden p-2.5">
+                                <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">
+                                <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground leading-none">
                                     SnapVault
                                 </h1>
-                                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mt-1 opacity-70">Asset Management</p>
+                                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mt-1.5 opacity-70">Asset Management</p>
                             </div>
                         </div>
 
@@ -97,10 +97,10 @@ export default function Login() {
                     <Card className="rounded-[3rem] p-10 shadow-2xl border-border/50 glass relative overflow-hidden">
                         {/* Mobile Brand */}
                         <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
-                            <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center text-foreground font-black">
-                                <Camera size={22} strokeWidth={3} />
+                            <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-foreground font-black overflow-hidden p-2">
+                                <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                             </div>
-                            <h1 className="text-xl font-black uppercase tracking-tighter">SnapVault</h1>
+                            <h1 className="text-2xl font-black uppercase tracking-tighter">SnapVault</h1>
                         </div>
 
                         <div className="mb-10 text-center lg:text-left">
@@ -116,7 +116,7 @@ export default function Login() {
                                     <Input
                                         type="email"
                                         required
-                                        className="h-14 pl-14 bg-muted/30 border-border/50 rounded-2xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500"
+                                        className="h-14 pl-14 bg-muted/30 border-border/50 rounded-2xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs placeholder:text-muted-foreground/30 uppercase tracking-widest"
                                         placeholder="SYNC@LUMINARY.COM"
                                     />
                                 </div>
@@ -132,7 +132,7 @@ export default function Login() {
                                     <Input
                                         type={showPassword ? 'text' : 'password'}
                                         required
-                                        className="h-14 pl-14 pr-14 bg-muted/30 border-border/50 rounded-2xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500"
+                                        className="h-14 pl-14 pr-14 bg-muted/30 border-border/50 rounded-2xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs"
                                         placeholder="••••••••"
                                     />
                                     <button

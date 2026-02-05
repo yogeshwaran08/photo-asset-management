@@ -3,10 +3,8 @@ import {
     Download,
     Share2,
     Heart,
-    Camera,
     ChevronLeft,
     X,
-    Maximize2,
     DownloadCloud
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,8 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import {
     pageVariants,
     listItemVariants,
-    staggerContainer,
-    buttonVariants
+    staggerContainer
 } from '@/lib/motion-config';
 
 const GuestEventGallery = () => {
@@ -42,8 +39,8 @@ const GuestEventGallery = () => {
             {/* Nav Header */}
             <header className="fixed top-0 inset-x-0 h-16 glass z-50 border-b border-border/50 flex items-center justify-between px-8">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center text-foreground">
-                        <Camera size={18} strokeWidth={3} />
+                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-foreground overflow-hidden p-1 border border-border/50">
+                        <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                     </div>
                     <span className="font-black uppercase tracking-tighter text-sm">SnapVault</span>
                 </div>
@@ -198,8 +195,8 @@ const GuestEventGallery = () => {
 
             <footer className="py-24 text-center border-t border-border/50 mt-24">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center text-foreground">
-                        <Camera size={18} strokeWidth={3} />
+                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-foreground overflow-hidden p-1 border border-border/50">
+                        <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                     </div>
                     <span className="font-black uppercase tracking-tighter text-sm">SnapVault</span>
                 </div>

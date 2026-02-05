@@ -277,10 +277,7 @@ const Settings = () => {
             className="max-w-7xl mx-auto pb-12"
         >
             <div className="flex items-center justify-between mb-10">
-                <div>
-                    <h1 className="text-4xl font-black tracking-tight uppercase">Settings</h1>
-                    <p className="text-muted-foreground font-bold text-sm uppercase opacity-70 mt-1">Configure your environment and workspace</p>
-                </div>
+                <div></div>
                 <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
                     <Button className="bg-primary-500 hover:bg-primary-600 text-foreground h-11 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest gap-2 shadow-lg shadow-primary-500/20">
                         <Save size={16} strokeWidth={3} />

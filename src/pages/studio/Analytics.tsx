@@ -117,10 +117,7 @@ const Analytics = () => {
         >
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-4xl font-black tracking-tight uppercase">Analytics</h1>
-                    <p className="text-muted-foreground font-bold text-sm uppercase opacity-70 mt-1">Track studio performance and engagement metrics</p>
-                </div>
+                <div></div>
                 <div className="flex items-center gap-3">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>

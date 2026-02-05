@@ -228,10 +228,7 @@ const SuperAdminSettings = () => {
 
             {/* Header Area */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">System Settings</h1>
-                    <p className="text-muted-foreground mt-1 font-medium">Fine-tune global platform parameters and infrastructure.</p>
-                </div>
+                <div></div>
                 <div className="flex items-center gap-3">
                     <Badge variant="outline" className="gap-2 px-3 py-1 bg-emerald-500/10 text-emerald-500 border-emerald-500/20 font-bold rounded-full">
                         <Activity size={14} className="animate-pulse" />

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-    Camera,
     ChevronLeft,
     Menu,
     X,
@@ -55,8 +54,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                     "h-20 flex items-center shrink-0 transition-all duration-400",
                     isSidebarOpen ? "px-8" : "justify-center"
                 )}>
-                    <div className="w-11 h-11 rounded-2xl bg-primary-500 shrink-0 flex items-center justify-center text-foreground shadow-lg shadow-primary-500/20">
-                        <Camera size={24} strokeWidth={3} />
+                    <div className="w-11 h-11 rounded-2xl bg-white shrink-0 flex items-center justify-center text-foreground shadow-lg shadow-primary-500/20 overflow-hidden p-1">
+                        <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                     </div>
                     <AnimatePresence mode="wait">
                         {isSidebarOpen && (
@@ -149,8 +148,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
             {/* Mobile Header */}
             <div className="md:hidden fixed top-0 left-0 right-0 h-16 border-b border-border/50 flex items-center justify-between px-6 z-50 glass">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center text-foreground">
-                        <Camera size={18} strokeWidth={3} />
+                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-foreground overflow-hidden p-1">
+                        <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                     </div>
                     <span className="font-black uppercase tracking-tighter">SnapVault</span>
                 </div>
@@ -177,8 +176,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="flex items-center gap-3 mb-12">
-                                <div className="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center text-foreground">
-                                    <Camera size={22} strokeWidth={3} />
+                                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-foreground overflow-hidden p-1">
+                                    <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                                 </div>
                                 <span className="font-black text-xl uppercase tracking-tighter">SnapVault</span>
                             </div>

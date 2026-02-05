@@ -156,10 +156,7 @@ const PricingPlans = () => {
         >
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Plans & Pricing</h1>
-                    <p className="text-muted-foreground mt-1">Manage subscription tiers and platform monetization.</p>
-                </div>
+                <div></div>
                 <div className="flex items-center gap-3">
                     <Button variant="outline" className="gap-2 h-11 px-6 rounded-xl font-bold">
                         <Settings size={18} />

@@ -121,10 +121,7 @@ const SuperAdminAnalytics = () => {
         >
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Platform Analytics</h1>
-                    <p className="text-muted-foreground mt-1 font-medium">Comprehensive overview of platform performance and growth.</p>
-                </div>
+                <div></div>
                 <div className="flex items-center gap-3">
                     <div className="relative hidden lg:block group">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary-500 transition-colors" size={18} />

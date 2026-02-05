@@ -3,14 +3,13 @@ import {
     Calendar,
     MapPin,
     ChevronDown,
-    AlertCircle,
     ArrowRight,
     ArrowLeft,
     Check,
     LayoutTemplate,
     Info,
-    Sparkles,
-    CheckCircle2
+    CheckCircle2,
+    Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,13 +19,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 import {
-    pageVariants,
-    listItemVariants,
-    staggerContainer,
-    buttonVariants,
-    springTransition
+    pageVariants
 } from '@/lib/motion-config';
+import { eventService } from '@/services/eventService';
 
 interface Template {
     id: string;
@@ -70,7 +67,18 @@ const TEMPLATES: Template[] = [
 const CreateEvent = () => {
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState<number>(1);
-    const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    // Form State
+    const [formData, setFormData] = useState({
+        name: '',
+        start_date: '',
+        end_date: '',
+        event_type: '',
+        location: '',
+        description: '',
+        template_id: ''
+    });
 
     const handleBack = () => {
         if (currentStep === 1) {
@@ -80,8 +88,29 @@ const CreateEvent = () => {
         }
     };
 
-    const handleFinalize = () => {
-        navigate('/studio/events');
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleFinalize = async () => {
+        if (!formData.name) {
+            toast.error("Event name is required");
+            setCurrentStep(1);
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await eventService.create(formData);
+            toast.success("Event created successfully!");
+            navigate('/studio/events');
+        } catch (error) {
+            console.error("Failed to create event:", error);
+            toast.error("Failed to create event. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -89,7 +118,7 @@ const CreateEvent = () => {
             initial="initial"
             animate="animate"
             variants={pageVariants}
-            className="max-w-4xl mx-auto space-y-6 pb-20"
+            className="w-full space-y-6 pb-20"
         >
             {/* Header / Breadcrumb Style */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-10">
@@ -151,32 +180,43 @@ const CreateEvent = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 className="space-y-8"
+                                onSubmit={(e) => { e.preventDefault(); setCurrentStep(2); }}
                             >
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Event Identity (Required)</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Event Name  (Required)</Label>
                                     <Input
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleInputChange}
                                         placeholder="E.G. WEDDING OF SARAH & JAMES"
+                                        required
                                         className="bg-muted/30 border-border/50 rounded-2xl h-14 font-black uppercase text-xs tracking-widest px-6 focus-visible:ring-primary-500/20 focus-visible:border-primary-500"
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="space-y-3 relative">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Capture Start</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Start Date</Label>
                                         <div className="relative">
                                             <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={18} />
                                             <Input
                                                 type="date"
+                                                name="start_date"
+                                                value={formData.start_date}
+                                                onChange={handleInputChange}
                                                 className="bg-muted/30 border-border/50 rounded-2xl h-14 font-bold pl-14 pr-6"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Capture End</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">End Date</Label>
                                         <div className="relative">
                                             <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={18} />
                                             <Input
                                                 type="date"
+                                                name="end_date"
+                                                value={formData.end_date}
+                                                onChange={handleInputChange}
                                                 className="bg-muted/30 border-border/50 rounded-2xl h-14 font-bold pl-14 pr-6"
                                             />
                                         </div>
@@ -185,23 +225,31 @@ const CreateEvent = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Collection Type</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Event Type</Label>
                                         <div className="relative">
-                                            <select className="w-full bg-muted/30 border border-border/50 rounded-2xl h-14 font-black uppercase text-[10px] tracking-widest px-6 appearance-none focus:border-primary-500 focus:bg-white/40 transition-all outline-none">
+                                            <select
+                                                name="event_type"
+                                                value={formData.event_type}
+                                                onChange={handleInputChange}
+                                                className="w-full bg-muted/30 border border-border/50 rounded-2xl h-14 font-black uppercase text-[10px] tracking-widest px-6 appearance-none focus:border-primary-500 focus:bg-white/40 transition-all outline-none"
+                                            >
                                                 <option value="">SELECT TYPE...</option>
-                                                <option value="wedding">WEDDING</option>
-                                                <option value="corporate">CORPORATE</option>
-                                                <option value="birthday">BIRTHDAY</option>
-                                                <option value="portrait">PORTRAIT</option>
+                                                <option value="Wedding">WEDDING</option>
+                                                <option value="Corporate">CORPORATE</option>
+                                                <option value="Birthday">BIRTHDAY</option>
+                                                <option value="Portrait">PORTRAIT</option>
                                             </select>
                                             <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={18} />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Physical Location</Label>
+                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Location</Label>
                                         <div className="relative">
                                             <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={18} />
                                             <Input
+                                                name="location"
+                                                value={formData.location}
+                                                onChange={handleInputChange}
                                                 placeholder="VENUE OR CITY"
                                                 className="bg-muted/30 border-border/50 rounded-2xl h-14 font-black uppercase text-[10px] tracking-widest pl-14 pr-6"
                                             />
@@ -210,9 +258,12 @@ const CreateEvent = () => {
                                 </div>
 
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Collection Meta / Notes</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Description</Label>
                                     <textarea
                                         rows={4}
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleInputChange}
                                         placeholder="ADDITIONAL DETAILS FOR THE PRIVATE LOG..."
                                         className="w-full bg-muted/30 border border-border/50 rounded-2xl p-6 font-bold text-sm resize-none focus:border-primary-500 focus:bg-white/40 transition-all outline-none"
                                     />
@@ -226,15 +277,15 @@ const CreateEvent = () => {
                                 exit={{ opacity: 0, y: -10 }}
                                 className="space-y-8"
                             >
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                                     {TEMPLATES.map((tpl) => (
                                         <motion.div
                                             key={tpl.id}
                                             whileHover={{ y: -4 }}
-                                            onClick={() => setSelectedTemplate(tpl.id)}
+                                            onClick={() => setFormData(prev => ({ ...prev, template_id: tpl.id }))}
                                             className={cn(
                                                 "group relative cursor-pointer rounded-[2rem] border-4 overflow-hidden transition-all duration-300",
-                                                selectedTemplate === tpl.id
+                                                formData.template_id === tpl.id
                                                     ? "border-primary-500 shadow-2xl shadow-primary-500/10"
                                                     : "border-transparent hover:border-primary-500/20"
                                             )}
@@ -247,7 +298,7 @@ const CreateEvent = () => {
                                                 />
                                                 <div className={cn(
                                                     "absolute inset-0 bg-primary-500/80 backdrop-blur-[2px] flex items-center justify-center transition-opacity duration-300",
-                                                    selectedTemplate === tpl.id ? "opacity-100" : "opacity-0"
+                                                    formData.template_id === tpl.id ? "opacity-100" : "opacity-0"
                                                 )}>
                                                     <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-primary-500 shadow-2xl scale-110">
                                                         <Check size={28} strokeWidth={4} />
@@ -283,6 +334,7 @@ const CreateEvent = () => {
                             </Button>
                             <Button
                                 onClick={() => setCurrentStep(2)}
+                                disabled={!formData.name}
                                 className="flex-[2] h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest bg-primary-500 hover:bg-primary-600 text-foreground shadow-lg shadow-primary-500/20 gap-3"
                             >
                                 PROCEED TO INTERFACE
@@ -301,16 +353,25 @@ const CreateEvent = () => {
                             </Button>
                             <Button
                                 onClick={handleFinalize}
-                                disabled={!selectedTemplate}
+                                disabled={!formData.template_id || loading}
                                 className={cn(
                                     "flex-1 h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl transition-all",
-                                    selectedTemplate
+                                    formData.template_id
                                         ? "bg-foreground text-background hover:bg-foreground/90"
                                         : "bg-muted text-muted-foreground cursor-not-allowed shadow-none"
                                 )}
                             >
-                                FINALIZE COLLECTION
-                                <CheckCircle2 size={18} strokeWidth={3} />
+                                {loading ? (
+                                    <>
+                                        CREATING...
+                                        <Loader2 size={18} className="animate-spin" />
+                                    </>
+                                ) : (
+                                    <>
+                                        FINALIZE COLLECTION
+                                        <CheckCircle2 size={18} strokeWidth={3} />
+                                    </>
+                                )}
                             </Button>
                         </>
                     )}
@@ -321,3 +382,4 @@ const CreateEvent = () => {
 };
 
 export default CreateEvent;
+

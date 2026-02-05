@@ -64,14 +64,7 @@ const StudioDashboard = () => {
             variants={pageVariants}
             className="space-y-10 max-w-7xl mx-auto pb-12"
         >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-4xl font-black tracking-tight uppercase">Dashboard</h1>
-                    <p className="text-muted-foreground font-bold text-sm uppercase opacity-70 mt-1">
-                        Welcome back, <span className="text-foreground">Luminary Studios</span>
-                    </p>
-                </div>
-            </div>
+            <div></div>
 
             <motion.div
                 variants={staggerContainer}
