@@ -1,4 +1,5 @@
 import React from 'react';
+import { Toaster } from "@/components/ui/sonner";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -61,6 +62,7 @@ const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, t
 const App = () => {
   return (
     <Router>
+      <Toaster />
       <Routes>
         {/* Auth Routes */}
         <Route path="/auth/login" element={<Login />} />

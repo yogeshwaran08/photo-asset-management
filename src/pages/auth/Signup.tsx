@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, User, Building2, Check } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
+import useUserStore from '@/store/userStore';
 import {
     pageVariants,
     listItemVariants,
@@ -16,17 +17,40 @@ import {
 
 export default function Signup() {
     const navigate = useNavigate();
+    const { register, loading } = useUserStore();
     const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    
+    // Form State
+    const [fullName, setFullName] = useState('');
+    const [studioName, setStudioName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            navigate('/studio/dashboard');
-        }, 1200);
+        
+        if (password !== confirmPassword) {
+            toast.error("Passwords don't match");
+            return;
+        }
+
+        try {
+            const res = await register({ 
+                email, 
+                password, 
+                full_name: fullName, 
+                studio_name: studioName 
+            });
+            
+            if (res.type === 'success') {
+                toast.success('Account created successfully!');
+                navigate('/studio/dashboard');
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const passwordStrength = (password: string) => {
@@ -49,15 +73,13 @@ export default function Signup() {
             variants={pageVariants}
             className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-white"
         >
-            {/* Background Decorative Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[5%] right-[5%] w-[45rem] h-[45rem] bg-primary-500/5 rounded-full blur-[130px]" />
                 <div className="absolute bottom-[5%] left-[5%] w-[35rem] h-[35rem] bg-primary-500/10 rounded-full blur-[110px]" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.02] bg-[radial-gradient(#93ea7d_1.5px,transparent_1px)] [background-size:40px_40px]" />
             </div>
 
-            <div className="relative z-10 w-full max-w-6xl mx-auto px-6 py-12 flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-24">
-                {/* Left Side - Branding Content */}
+            <div className="relative z-10 w-full max-w-6xl mx-auto px-4 py-6 lg:px-6 lg:py-12 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24">
                 <motion.div
                     variants={staggerContainer}
                     className="hidden lg:flex flex-col items-start justify-center flex-1 space-y-10"
@@ -85,35 +107,13 @@ export default function Signup() {
                             Join the world's most advanced photography management ecosystem. Secure, intelligent, and designed for scale.
                         </p>
                     </motion.div>
-
-                    <motion.div variants={staggerContainer} className="space-y-4">
-                        {[
-                            'O-SYNC REAL-TIME DISTRIBUTION',
-                            'AI-DRIVEN THERMAL CLASSIFICATION',
-                            'UNLIMITED CROSS-NETWORK STORAGE',
-                            'MULTI-NODE COLLABORATION CORE'
-                        ].map((benefit, idx) => (
-                            <motion.div
-                                key={idx}
-                                variants={listItemVariants}
-                                className="flex items-center gap-4 text-foreground/80"
-                            >
-                                <div className="w-6 h-6 rounded-lg bg-primary-500/10 flex items-center justify-center border border-primary-500/20">
-                                    <Check className="w-3.5 h-3.5 text-primary-500" strokeWidth={4} />
-                                </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest">{benefit}</span>
-                            </motion.div>
-                        ))}
-                    </motion.div>
                 </motion.div>
 
-                {/* Right Side - Signup Form */}
                 <motion.div
                     variants={listItemVariants}
                     className="w-full max-w-[500px]"
                 >
-                    <Card className="rounded-[3rem] p-10 shadow-2xl border-border/50 glass relative overflow-hidden">
-                        {/* Mobile Brand */}
+                    <Card className="rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 shadow-2xl border-border/50 glass relative overflow-hidden">
                         <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
                             <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-foreground font-black overflow-hidden p-2">
                                 <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
@@ -129,35 +129,54 @@ export default function Signup() {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Identity</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Full Name</Label>
                                     <div className="relative group">
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
-                                        <Input className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" placeholder="FULL NAME" />
+                                        <Input 
+                                            required
+                                            value={fullName}
+                                            onChange={(e) => setFullName(e.target.value)}
+                                            className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" 
+                                            placeholder="John doe" 
+                                        />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Studio</Label>
                                     <div className="relative group">
                                         <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
-                                        <Input className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" placeholder="STUDIO NAME" />
+                                        <Input 
+                                            value={studioName}
+                                            onChange={(e) => setStudioName(e.target.value)}
+                                            className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" 
+                                            placeholder="STUDIO NAME" 
+                                        />
                                     </div>
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Communication / Email</Label>
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Email</Label>
                                 <div className="relative group">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
-                                    <Input type="email" className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" placeholder="EMAIL@DOMAIN.COM" />
+                                    <Input 
+                                        type="email" 
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" 
+                                        placeholder="EMAIL@DOMAIN.COM" 
+                                    />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Security Sequence</Label>
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Password</Label>
                                 <div className="relative group">
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
                                     <Input
                                         type={showPassword ? 'text' : 'password'}
+                                        required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs"
@@ -179,20 +198,31 @@ export default function Signup() {
                                 )}
                             </div>
 
-                            <div className="flex items-start gap-3 px-1">
-                                <Checkbox id="terms" className="mt-0.5 rounded-lg border-border/50 data-[state=checked]:bg-primary-500 data-[state=checked]:border-none" />
-                                <Label htmlFor="terms" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest leading-relaxed cursor-pointer">
-                                    I ACCEPT THE <Link to="#" className="text-primary-600">DISTRIBUTION PROTOCOLS</Link> AND <Link to="#" className="text-primary-600">PRIVACY FRAMEWORK</Link>
-                                </Label>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Confirm Password</Label>
+                                <div className="relative group">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
+                                    <Input
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        required
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs"
+                                        placeholder="••••••••"
+                                    />
+                                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                        {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                </div>
                             </div>
 
                             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                 <Button
                                     type="submit"
-                                    disabled={isLoading}
+                                    disabled={loading}
                                     className="w-full h-14 rounded-2xl bg-foreground text-background hover:bg-foreground/90 font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-foreground/10 mt-4"
                                 >
-                                    {isLoading ? "INITIALIZING..." : "GENERATE ACCOUNT"}
+                                    {loading ? "INITIALIZING..." : "GENERATE ACCOUNT"}
                                 </Button>
                             </motion.div>
                         </form>
@@ -204,6 +234,15 @@ export default function Signup() {
                             </p>
                         </div>
                     </Card>
+
+                    <div className="mt-8 text-center opacity-40">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                            By signing up you are accepting our{' '}
+                            <Link to="#" className="underline hover:text-foreground transition-colors">Terms and Conditions</Link>
+                            ,{' '}
+                            <Link to="#" className="underline hover:text-foreground transition-colors">Privacy Policy</Link>
+                        </p>
+                    </div>
                 </motion.div>
             </div>
         </motion.div>

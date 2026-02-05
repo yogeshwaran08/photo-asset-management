@@ -1,3 +1,5 @@
+import type { AxiosRequestConfig } from "axios";
+
 export interface IUser {
   id: string;
   email: string;
@@ -16,4 +18,32 @@ export interface IStatus {
 export interface IUserCreds {
   email: string;
   password: string;
+}
+
+export interface AuthOptions {
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  url: string;
+  data?: Record<string, any>;
+  options?: AxiosRequestConfig;
+}
+
+export interface NoAuthOptions {
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  url: string;
+  data?: Record<string, any>;
+  options?: AxiosRequestConfig;
+}
+
+export interface IForgotPasswordRequest {
+  email: string;
+}
+
+export interface IForgotPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface IResetPasswordRequest {
+  token: string;
+  newPassword: string;
 }

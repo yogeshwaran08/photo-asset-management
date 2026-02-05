@@ -1,35 +1,69 @@
-import type { IStatus, IUserCreds } from "../types/index";
+import type { IForgotPasswordRequest, IResetPasswordRequest, IUserCreds } from "@/types/index.ts";
+import { auth } from "./handleHttp.ts";
 
-export const refreshToken = async (): Promise<IStatus> => {
-    return { type: "success", data: { accessToken: "mock_token" } };
+export const loginUser = async (credientials: IUserCreds) => {
+  const url = "auth/login";
+  const res = await auth({
+    method: "POST",
+    url,
+    data: credientials,
+  });
+  return res;
 };
 
-export const loginUser = async (_creds: IUserCreds): Promise<IStatus> => {
-    return { type: "success", data: { accessToken: "mock_token" } };
+export const registerUser = async (credientials: any) => {
+  const url = "auth/register";
+  const res = await auth({
+    method: "POST",
+    url,
+    data: credientials,
+  });
+  return res;
 };
 
-export const registerUser = async (_creds: any): Promise<IStatus> => {
-    return { type: "success", data: { access: "mock_token" } };
+export const refreshToken = async () => {
+  const url = `auth/refresh`;
+  const res = await auth({
+    method: "POST",
+    url,
+  });
+  return res;
 };
 
-export const logout = async (): Promise<IStatus> => {
-    return { type: "success", data: null };
+export const getAboutMe = async () => {
+  const url = "auth/me";
+  const res = await auth({
+    method: "GET",
+    url,
+  });
+  return res;
 };
 
-export const getAboutMe = async (): Promise<IStatus> => {
-    return {
-        type: "success",
-        data: {
-            user: {
-                id: "1",
-                email: "test@example.com",
-                firstName: "Test",
-                lastName: "User",
-                plan: "free",
-                availableCredits: 100,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            }
-        }
-    };
+export const logout = async () => {
+  const url = "auth/logout";
+  const res = await auth({
+    method: "POST",
+    url,
+  });
+  return res;
+};
+
+export const forgotPassword = async (email: IForgotPasswordRequest) => {
+  const url = "auth/forgot-password";
+  const res = await auth({
+    method: "POST",
+    url,
+    data: email,
+  });
+  return res;
+};
+
+export const resetPassword = async (resetData: IResetPasswordRequest) => {
+  const url = "auth/reset-password";
+  const res = await auth({
+    method: "POST",
+    url,
+    data: resetData,
+  });
+  return res;
 };

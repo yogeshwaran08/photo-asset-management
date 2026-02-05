@@ -37,7 +37,7 @@ const useUserStore = create<IUserStore>()(
         if (res.type === "success") {
           const abt = await getAboutMe();
           if (abt.type === "success") {
-            set((state) => ({ ...state, user: abt.data?.user }));
+            set((state) => ({ ...state, user: abt.data }));
           }
         }
         return res;
@@ -56,7 +56,7 @@ const useUserStore = create<IUserStore>()(
         set((state) => ({ ...state, loading: true }));
         const res = await registerUser(creds);
         set((state) => ({ ...state, loading: false }));
-        set((state) => ({ ...state, jwtToken: res.data?.access }));
+        set((state) => ({ ...state, jwtToken: res.data?.accessToken }));
         if (res.type === "success") {
           await get().fetchUser();
         }
@@ -67,7 +67,7 @@ const useUserStore = create<IUserStore>()(
         const res = await getAboutMe();
         set((state) => ({ ...state, loading: false }));
         if (res.type === "success") {
-          set((state) => ({ ...state, user: res.data?.user }));
+          set((state) => ({ ...state, user: res.data }));
         }
         return res;
       },
