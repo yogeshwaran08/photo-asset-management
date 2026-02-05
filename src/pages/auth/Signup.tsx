@@ -176,7 +176,8 @@ export default function Signup() {
                                         </div>
                                         <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-2">ENTROPY RATING: <span className="text-foreground">{strengthLabels[strength - 1]}</span></p>
                                     </div>
-                                </div>
+                                )}
+                            </div>
 
                             <div className="flex items-start gap-3 px-1">
                                 <Checkbox id="terms" className="mt-0.5 rounded-lg border-border/50 data-[state=checked]:bg-primary-500 data-[state=checked]:border-none" />
