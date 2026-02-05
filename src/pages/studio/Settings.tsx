@@ -1,259 +1,346 @@
 import { useState } from 'react';
 import {
     User,
-    Palette,
-    Globe,
-    QrCode,
-    Share2,
     CreditCard,
-    FileText,
+    Bell,
+    Shield,
+    Globe,
+    Save,
     Camera,
-    Mail,
-    Phone,
-    MapPin,
-    Briefcase,
-    Building,
-    Globe2,
-    Save
+    Eye,
+    Cloud,
+    Database,
+    HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../utils/cn';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import {
+    pageVariants,
+    staggerContainer,
+    buttonVariants
+} from '@/lib/motion-config';
 
-const subMenus = [
-    { id: 'profile', name: 'Profile', icon: User },
-    { id: 'branding', name: 'Branding', icon: Palette },
-    { id: 'domains', name: 'Domains', icon: Globe },
-    { id: 'qr', name: 'My One QR', icon: QrCode },
-    { id: 'integrations', name: 'Integrations', icon: Share2 },
-    { id: 'plan', name: 'My Plan', icon: CreditCard },
-    { id: 'invoices', name: 'Invoices', icon: FileText },
-];
+type SettingsTab = 'profile' | 'studio' | 'billing' | 'notifications' | 'security' | 'sharing';
 
 const Settings = () => {
-    const [activeTab, setActiveTab] = useState('profile');
+    const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
+
+    const tabs: { id: SettingsTab; label: string; icon: any }[] = [
+        { id: 'profile', label: 'Personal Profile', icon: User },
+        { id: 'studio', label: 'Studio Identity', icon: Camera },
+        { id: 'billing', label: 'Billing & Plans', icon: CreditCard },
+        { id: 'notifications', label: 'Alert Preferences', icon: Bell },
+        { id: 'security', label: 'Access & Security', icon: Shield },
+        { id: 'sharing', label: 'Global Defaults', icon: Globe },
+    ];
+
+    const tabContent = {
+        profile: (
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+                <Card className="border-border/50 glass shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="text-lg font-black uppercase tracking-tight">Public Information</CardTitle>
+                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Manage your identity as an account owner</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="flex flex-col sm:flex-row items-center gap-8 pb-4">
+                            <div className="relative group">
+                                <div className="w-24 h-24 rounded-full bg-muted border-4 border-white shadow-xl overflow-hidden glass">
+                                    <img src="https://ui-avatars.com/api/?name=Alex+Studio&background=93ea7d&color=111411&size=128" alt="Avatar" className="w-full h-full object-cover" />
+                                </div>
+                                <button className="absolute bottom-0 right-0 p-2 bg-foreground text-background rounded-full shadow-xl hover:scale-110 transition-transform">
+                                    <Camera size={14} strokeWidth={3} />
+                                </button>
+                            </div>
+                            <div className="space-y-1 text-center sm:text-left">
+                                <h4 className="font-black uppercase text-sm tracking-tight text-foreground">AVATAR SELECTION</h4>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-70 mb-3">Recommend size: 256x256 PX (Max 2MB)</p>
+                                <div className="flex gap-2 justify-center sm:justify-start">
+                                    <Button variant="outline" size="sm" className="h-8 rounded-lg font-black uppercase text-[10px] tracking-widest px-4">Upload</Button>
+                                    <Button variant="ghost" size="sm" className="h-8 rounded-lg font-black uppercase text-[10px] tracking-widest text-error px-4 hover:bg-error/5">Remove</Button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">First Name</Label>
+                                <Input defaultValue="Alex" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Last Name</Label>
+                                <Input defaultValue="Johnson" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Email Address</Label>
+                                <Input defaultValue="alex@luminarystudios.com" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        ),
+        studio: (
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+                <Card className="border-border/50 glass shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="text-lg font-black uppercase tracking-tight">Studio Identity</CardTitle>
+                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Customize how your studio appears to guests</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Studio Name</Label>
+                            <Input defaultValue="Luminary Studios" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Brand Bio</Label>
+                            <Input defaultValue="Luxury wedding and fashion photography." className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                        </div>
+                        <Separator className="my-2 border-border/50" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Support Phone</Label>
+                                <Input defaultValue="+1 (555) 000-0000" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Office Address</Label>
+                                <Input defaultValue="123 Creative Way, NY" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        ),
+        billing: (
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+                <Card className="border-border/50 glass shadow-sm overflow-hidden">
+                    <div className="bg-primary-500/5 p-8 flex flex-col sm:flex-row items-center justify-between border-b border-border/50">
+                        <div className="flex items-center gap-4 mb-4 sm:mb-0">
+                            <div className="w-12 h-12 rounded-2xl bg-primary-500/10 flex items-center justify-center text-primary-500 shadow-sm border border-primary-500/10">
+                                <Cloud size={24} />
+                            </div>
+                            <div>
+                                <h4 className="text-xl font-black uppercase tracking-tight">Pro Plan</h4>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary-600">Active Subscription</p>
+                            </div>
+                        </div>
+                        <Badge className="bg-primary-500 text-foreground font-black uppercase tracking-widest text-[9px] px-3 py-1.5 rounded-full border-none">Next Bill: March 12, 2024</Badge>
+                    </div>
+                    <CardContent className="p-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="p-6 bg-muted/20 border border-border/50 rounded-3xl flex flex-col items-center text-center">
+                                <Database size={24} className="text-muted-foreground mb-4" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Storage Used</span>
+                                <span className="text-2xl font-black tracking-tight">156 GB / 1 TB</span>
+                                <div className="w-full h-1.5 bg-muted rounded-full mt-4 overflow-hidden border border-border/20">
+                                    <div className="h-full bg-primary-500 w-[15.6%] rounded-full" />
+                                </div>
+                            </div>
+                            <div className="p-6 bg-muted/20 border border-border/50 rounded-3xl flex flex-col items-center text-center">
+                                <Camera size={24} className="text-muted-foreground mb-4" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Monthly Events</span>
+                                <span className="text-2xl font-black tracking-tight">24 / 50</span>
+                                <div className="w-full h-1.5 bg-muted rounded-full mt-4 overflow-hidden border border-border/20">
+                                    <div className="h-full bg-info w-[48%] rounded-full" />
+                                </div>
+                            </div>
+                            <div className="p-6 bg-muted/20 border border-border/50 rounded-3xl flex flex-col items-center text-center">
+                                <User size={24} className="text-muted-foreground mb-4" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Team Slots</span>
+                                <span className="text-2xl font-black tracking-tight">3 / 5</span>
+                                <div className="w-full h-1.5 bg-muted rounded-full mt-4 overflow-hidden border border-border/20">
+                                    <div className="h-full bg-success w-[60%] rounded-full" />
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        ),
+        notifications: (
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+                <Card className="border-border/50 glass shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="text-lg font-black uppercase tracking-tight">Alert Preferences</CardTitle>
+                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Control how and when you want to be notified</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        {[
+                            { title: 'EVENT PUBLICATIONS', desc: 'Secure an alert when your gallery goes live', icon: Globe },
+                            { title: 'BILLING NOTICES', desc: 'Alerts for payments and subscription updates', icon: CreditCard },
+                            { title: 'SYSTEM ALERTS', desc: 'Critical infrastructure and maintenance updates', icon: Database },
+                            { title: 'GUEST ACTIVITY', desc: 'Summary of new guest visits and shares', icon: Eye },
+                        ].map((item, i) => (
+                            <div key={i} className="flex items-center justify-between p-4 rounded-2xl hover:bg-muted/20 transition-colors border border-transparent hover:border-border/30">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground">
+                                        <item.icon size={18} />
+                                    </div>
+                                    <div>
+                                        <h5 className="text-[10px] font-black uppercase tracking-widest">{item.title}</h5>
+                                        <p className="text-[10px] font-bold text-muted-foreground tracking-tight opacity-70 uppercase">{item.desc}</p>
+                                    </div>
+                                </div>
+                                <Switch defaultChecked className="data-[state=checked]:bg-primary-500" />
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+            </motion.div>
+        ),
+        security: (
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+                <Card className="border-border/50 glass shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="text-lg font-black uppercase tracking-tight">Access & Security</CardTitle>
+                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Secure your account with advanced authentication</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="flex items-center justify-between p-5 rounded-2xl bg-muted/20 border border-border/50">
+                            <div className="flex gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-success/10 text-success flex items-center justify-center border border-success/10">
+                                    <Shield size={24} />
+                                </div>
+                                <div>
+                                    <h5 className="font-black uppercase text-sm tracking-tight mb-0.5">Two-Factor Authentication</h5>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-70">Account status: ENHANCED PROTECTION ACTIVE</p>
+                                </div>
+                            </div>
+                            <Button variant="outline" className="h-10 rounded-xl px-6 font-black uppercase text-[10px] tracking-widest border-border/50">REFIGURE</Button>
+                        </div>
+                        <Separator className="border-border/50" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">New Password</Label>
+                                <Input type="password" placeholder="••••••••" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Confirm Sequence</Label>
+                                <Input type="password" placeholder="••••••••" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        ),
+        sharing: (
+            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+                <Card className="border-border/50 glass shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="text-lg font-black uppercase tracking-tight">Global Defaults</CardTitle>
+                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Set universal rules for new photography events</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-1">
+                            <div className="flex items-center justify-between py-4">
+                                <div>
+                                    <h6 className="text-[10px] font-black uppercase tracking-widest mb-1">Auto-Publication</h6>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight opacity-70">Publish events as soon as upload completes</p>
+                                </div>
+                                <Switch className="data-[state=checked]:bg-primary-500" />
+                            </div>
+                            <Separator className="border-border/50" />
+                            <div className="flex items-center justify-between py-4">
+                                <div>
+                                    <h6 className="text-[10px] font-black uppercase tracking-widest mb-1">Guest Registration</h6>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight opacity-70">Require name and phone for gallery access</p>
+                                </div>
+                                <Switch defaultChecked className="data-[state=checked]:bg-primary-500" />
+                            </div>
+                            <Separator className="border-border/50" />
+                            <div className="flex items-center justify-between py-4">
+                                <div>
+                                    <h6 className="text-[10px] font-black uppercase tracking-widest mb-1">Smart Sorting</h6>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight opacity-70">Sort photos by AI relevance and detected faces</p>
+                                </div>
+                                <Switch defaultChecked className="data-[state=checked]:bg-primary-500" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        )
+    };
 
     return (
-        <div className="max-w-7xl mx-auto pb-12">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Studio Settings</h1>
-                <p className="text-muted-foreground mt-1">Manage your studio profile, branding, and billing preferences.</p>
+        <motion.div
+            initial="initial"
+            animate="animate"
+            variants={pageVariants}
+            className="max-w-7xl mx-auto pb-12"
+        >
+            <div className="flex items-center justify-between mb-10">
+                <div></div>
+                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                    <Button className="bg-primary-500 hover:bg-primary-600 text-foreground h-11 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest gap-2 shadow-lg shadow-primary-500/20">
+                        <Save size={16} strokeWidth={3} />
+                        Save Sync
+                    </Button>
+                </motion.div>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col lg:flex-row gap-10">
                 {/* Sidebar Navigation */}
-                <aside className="lg:w-64 space-y-2">
-                    {subMenus.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id)}
-                            className={cn(
-                                "w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 group text-left",
-                                activeTab === item.id
-                                    ? "bg-primary-500 text-white shadow-lg shadow-primary-500/25"
-                                    : "hover:bg-card text-muted-foreground hover:text-foreground"
-                            )}
-                        >
-                            <item.icon size={20} className={cn(
-                                "transition-colors",
-                                activeTab === item.id ? "text-white" : "group-hover:text-primary-400"
-                            )} />
-                            <span className="font-medium">{item.name}</span>
-                        </button>
-                    ))}
-                </aside>
+                <Card className="w-full lg:w-80 h-fit border-border/50 glass shadow-sm p-4 rounded-[2rem]">
+                    <div className="space-y-1.5">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={cn(
+                                    "w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group",
+                                    activeTab === tab.id
+                                        ? "bg-primary-50 text-foreground ring-1 ring-border/30"
+                                        : "hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                <div className={cn(
+                                    "w-9 h-9 rounded-xl flex items-center justify-center transition-colors",
+                                    activeTab === tab.id ? "bg-white text-primary-500 shadow-sm" : "bg-muted/50 text-muted-foreground group-hover:text-foreground"
+                                )}>
+                                    <tab.icon size={18} />
+                                </div>
+                                <span className="font-black uppercase text-[10px] tracking-widest text-left flex-1">{tab.label}</span>
+                                {activeTab === tab.id && (
+                                    <motion.div layoutId="active-indicator" className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                    <Separator className="my-6 border-border/50" />
+                    <div className="px-4 py-2 space-y-4">
+                        <div className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group">
+                            <div className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center group-hover:bg-muted/80">
+                                <HelpCircle size={18} />
+                            </div>
+                            <span className="font-black uppercase text-[10px] tracking-widest">Support Core</span>
+                        </div>
+                    </div>
+                </Card>
 
-                {/* Main Content Area */}
+                {/* Content Area */}
                 <div className="flex-1 min-w-0">
                     <AnimatePresence mode="wait">
-                        {activeTab === 'profile' && (
-                            <motion.div
-                                key="profile"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.2 }}
-                                className="space-y-6"
-                            >
-                                {/* Profile Picture Section */}
-                                <div className="bg-card p-8 rounded-3xl border border-border shadow-sm">
-                                    <div className="flex flex-col md:flex-row items-center gap-6">
-                                        <div className="relative group">
-                                            <div className="w-24 h-24 rounded-full bg-linear-to-tr from-primary-400 to-accent-500 flex items-center justify-center text-white text-3xl font-bold border-4 border-background shadow-xl">
-                                                AS
-                                            </div>
-                                            <button className="absolute bottom-0 right-0 p-2 bg-primary-500 rounded-full text-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Camera size={16} />
-                                            </button>
-                                        </div>
-                                        <div className="text-center md:text-left">
-                                            <h3 className="text-xl font-bold">Studio Profile Photo</h3>
-                                            <p className="text-sm text-muted-foreground mt-1">Update your studio logo or profile picture.</p>
-                                            <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-4">
-                                                <button className="px-4 py-2 bg-primary-500/10 text-primary-400 text-sm font-bold rounded-xl hover:bg-primary-500/20 transition-all">
-                                                    Upload New photo
-                                                </button>
-                                                <button className="px-4 py-2 bg-secondary-bg text-muted-foreground text-sm font-bold rounded-xl hover:bg-card transition-all border border-border">
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Personal Details */}
-                                <div className="bg-card p-8 rounded-3xl border border-border shadow-sm overflow-hidden relative">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500">
-                                            <User size={20} />
-                                        </div>
-                                        <h3 className="text-xl font-bold">Personal Details</h3>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-muted-foreground ml-1">Full Name</label>
-                                            <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
-                                                    <User size={18} />
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    defaultValue="Alex Johnson"
-                                                    className="w-full pl-11 pr-4 py-3 bg-secondary-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                                    placeholder="Enter your name"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-muted-foreground ml-1">Email Address</label>
-                                            <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
-                                                    <Mail size={18} />
-                                                </div>
-                                                <input
-                                                    type="email"
-                                                    defaultValue="alex@luminarystudios.com"
-                                                    className="w-full pl-11 pr-4 py-3 bg-secondary-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                                    placeholder="Enter email"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-muted-foreground ml-1">Phone Number</label>
-                                            <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
-                                                    <Phone size={18} />
-                                                </div>
-                                                <input
-                                                    type="tel"
-                                                    defaultValue="+1 (555) 123-4567"
-                                                    className="w-full pl-11 pr-4 py-3 bg-secondary-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                                    placeholder="Enter phone number"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-muted-foreground ml-1">Job Title</label>
-                                            <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
-                                                    <Briefcase size={18} />
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    defaultValue="Owner / Principal Photographer"
-                                                    className="w-full pl-11 pr-4 py-3 bg-secondary-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all"
-                                                    placeholder="Enter your role"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Company Details */}
-                                <div className="bg-card p-8 rounded-3xl border border-border shadow-sm overflow-hidden relative">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <div className="w-10 h-10 rounded-xl bg-accent-500/10 flex items-center justify-center text-accent-500">
-                                            <Building size={20} />
-                                        </div>
-                                        <h3 className="text-xl font-bold">Company Details</h3>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-muted-foreground ml-1">Company Name</label>
-                                            <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-accent-500 transition-colors">
-                                                    <Building size={18} />
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    defaultValue="Luminary Studios NY"
-                                                    className="w-full pl-11 pr-4 py-3 bg-secondary-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all"
-                                                    placeholder="Studio name"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-semibold text-muted-foreground ml-1">Website URL</label>
-                                            <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-accent-500 transition-colors">
-                                                    <Globe2 size={18} />
-                                                </div>
-                                                <input
-                                                    type="url"
-                                                    defaultValue="https://luminarystudios.com"
-                                                    className="w-full pl-11 pr-4 py-3 bg-secondary-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all"
-                                                    placeholder="https://..."
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="md:col-span-2 space-y-2">
-                                            <label className="text-sm font-semibold text-muted-foreground ml-1">Business Address</label>
-                                            <div className="relative group">
-                                                <div className="absolute top-3 left-0 pl-4 flex items-start pointer-events-none text-muted-foreground group-focus-within:text-accent-500 transition-colors">
-                                                    <MapPin size={18} className="mt-1" />
-                                                </div>
-                                                <textarea
-                                                    rows={3}
-                                                    className="w-full pl-11 pr-4 py-3 bg-secondary-bg border border-border rounded-xl focus:outline-hidden focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all resize-none"
-                                                    placeholder="Enter full business address"
-                                                    defaultValue="123 Photography Lane, Creative District, New York, NY 10001"
-                                                ></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Save Button */}
-                                <div className="flex justify-end pt-4">
-                                    <button className="flex items-center gap-2 bg-linear-to-r from-primary-600 to-accent-600 hover:opacity-90 text-white px-8 py-3 rounded-2xl font-bold transition-all shadow-xl shadow-primary-600/20 active:scale-95">
-                                        <Save size={20} />
-                                        Save Changes
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {activeTab !== 'profile' && (
-                            <motion.div
-                                key="under-construction"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="flex flex-col items-center justify-center py-20 bg-card rounded-3xl border border-dashed border-border"
-                            >
-                                <div className="p-4 rounded-full bg-secondary-bg mb-4">
-                                    <Globe size={40} className="text-muted-foreground animate-pulse" />
-                                </div>
-                                <h3 className="text-xl font-bold">Work in Progress</h3>
-                                <p className="text-muted-foreground text-center max-w-xs mt-2">
-                                    The {subMenus.find(m => m.id === activeTab)?.name} section is currently being developed.
-                                </p>
-                            </motion.div>
-                        )}
+                        <motion.div
+                            key={activeTab}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                        >
+                            {tabContent[activeTab]}
+                        </motion.div>
                     </AnimatePresence>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

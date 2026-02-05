@@ -9,6 +9,10 @@ class PhotoBase(BaseModel):
 class PhotoCreate(PhotoBase):
     pass
 
+class PhotoUpdate(PhotoBase):
+    title: Optional[str] = None
+    url: Optional[str] = None
+
 class Photo(PhotoBase):
     id: int
 
