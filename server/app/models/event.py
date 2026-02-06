@@ -21,6 +21,5 @@ class Event(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-    # In the future we might link this to a studio/user
-    # studio_id = Column(Integer, ForeignKey("studio_settings.id"))
-    # studio = relationship("StudioSettings", back_populates="events")
+    # Relationships
+    photos = relationship("Photo", back_populates="event", cascade="all, delete-orphan")

@@ -4,7 +4,7 @@ from typing import Optional
 class PhotoBase(BaseModel):
     title: str
     url: str
-    # description: Optional[str] = None
+    event_id: int
 
 class PhotoCreate(PhotoBase):
     pass
@@ -12,6 +12,7 @@ class PhotoCreate(PhotoBase):
 class PhotoUpdate(PhotoBase):
     title: Optional[str] = None
     url: Optional[str] = None
+    event_id: Optional[int] = None
 
 class Photo(PhotoBase):
     id: int

@@ -17,6 +17,19 @@ export interface Event extends EventBase {
     updated_at: string;
 }
 
+export interface Photo {
+    id: number;
+    title: string;
+    url: string;
+    event_id: number;
+}
+
+export interface PhotoCreate {
+    title: string;
+    url: string;
+    event_id: number;
+}
+
 export const eventService = {
     getAll: async () => {
         const response = await api.get<Event[]>('/events/');
@@ -40,6 +53,16 @@ export const eventService = {
 
     delete: async (id: number) => {
         const response = await api.delete(`/events/${id}`);
+        return response.data;
+    },
+
+    getPhotos: async (eventId: number) => {
+        const response = await api.get<Photo[]>(`/events/${eventId}/photos`);
+        return response.data;
+    },
+
+    uploadPhoto: async (eventId: number, data: PhotoCreate) => {
+        const response = await api.post<Photo>(`/events/${eventId}/photos`, data);
         return response.data;
     }
 };

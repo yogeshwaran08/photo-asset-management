@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
     ChevronLeft,
     Menu,
@@ -40,6 +40,18 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, title }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const location = useLocation();
+
+    // Auto-collapse sidebar on Event Details page
+    const isEventDetails = location.pathname.startsWith('/studio/events/');
+
+    React.useEffect(() => {
+        if (isEventDetails) {
+            setIsSidebarOpen(false);
+        } else {
+            setIsSidebarOpen(true);
+        }
+    }, [isEventDetails]);
 
     return (
         <div className="flex h-screen bg-white text-foreground overflow-hidden font-sans">
@@ -243,7 +255,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                         </DropdownMenu>
                     </div>
                 </header>
-                <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-white/50">
+                <div className={cn(
+                    "flex-1 overflow-y-auto bg-white/50",
+                    isEventDetails ? "p-0 overflow-hidden" : "p-6 md:p-10"
+                )}>
                     {children}
                 </div>
             </main>

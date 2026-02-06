@@ -121,7 +121,7 @@ const CreateEvent = () => {
             className="w-full space-y-6 pb-20"
         >
             {/* Header / Breadcrumb Style */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-10">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-6">
                 <Button
                     variant="ghost"
                     onClick={handleBack}
@@ -155,13 +155,13 @@ const CreateEvent = () => {
             </div>
 
             <Card className="rounded-[2.5rem] border-border/50 shadow-2xl glass overflow-hidden flex flex-col">
-                <CardHeader className="p-8 border-b border-border/50 bg-primary-500/5 items-start">
+                <CardHeader className="p-6 border-b border-border/50 bg-primary-500/5 items-start">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500">
                             {currentStep === 1 ? <Info size={20} /> : <LayoutTemplate size={20} />}
                         </div>
                         <CardTitle className="text-2xl font-black uppercase tracking-tight">
-                            {currentStep === 1 ? "Event DNA" : "Interface Select"}
+                            {currentStep === 1 ? "Event Details" : "Interface Select"}
                         </CardTitle>
                     </div>
                     <CardDescription className="font-bold text-xs uppercase opacity-70 ml-1">
@@ -171,7 +171,7 @@ const CreateEvent = () => {
                     </CardDescription>
                 </CardHeader>
 
-                <CardContent className="p-10">
+                <CardContent className="p-6">
                     <AnimatePresence mode="wait">
                         {currentStep === 1 ? (
                             <motion.form
@@ -179,10 +179,10 @@ const CreateEvent = () => {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
-                                className="space-y-8"
+                                className="space-y-4"
                                 onSubmit={(e) => { e.preventDefault(); setCurrentStep(2); }}
                             >
-                                <div className="space-y-3">
+                                <div className="space-y-1.5">
                                     <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Event Name  (Required)</Label>
                                     <Input
                                         name="name"
@@ -190,48 +190,48 @@ const CreateEvent = () => {
                                         onChange={handleInputChange}
                                         placeholder="E.G. WEDDING OF SARAH & JAMES"
                                         required
-                                        className="bg-muted/30 border-border/50 rounded-2xl h-14 font-black uppercase text-xs tracking-widest px-6 focus-visible:ring-primary-500/20 focus-visible:border-primary-500"
+                                        className="bg-muted/30 border-border/50 rounded-xl h-11 font-black uppercase text-[10px] tracking-widest px-4 focus-visible:ring-primary-500/20 focus-visible:border-primary-500"
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="space-y-3 relative">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-1.5 relative">
                                         <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Start Date</Label>
                                         <div className="relative">
-                                            <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={18} />
+                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={16} />
                                             <Input
                                                 type="date"
                                                 name="start_date"
                                                 value={formData.start_date}
                                                 onChange={handleInputChange}
-                                                className="bg-muted/30 border-border/50 rounded-2xl h-14 font-bold pl-14 pr-6"
+                                                className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold pl-12 pr-4 text-xs"
                                             />
                                         </div>
                                     </div>
-                                    <div className="space-y-3">
+                                    <div className="space-y-1.5">
                                         <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">End Date</Label>
                                         <div className="relative">
-                                            <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={18} />
+                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={16} />
                                             <Input
                                                 type="date"
                                                 name="end_date"
                                                 value={formData.end_date}
                                                 onChange={handleInputChange}
-                                                className="bg-muted/30 border-border/50 rounded-2xl h-14 font-bold pl-14 pr-6"
+                                                className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold pl-12 pr-4 text-xs"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="space-y-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
                                         <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Event Type</Label>
                                         <div className="relative">
                                             <select
                                                 name="event_type"
                                                 value={formData.event_type}
                                                 onChange={handleInputChange}
-                                                className="w-full bg-muted/30 border border-border/50 rounded-2xl h-14 font-black uppercase text-[10px] tracking-widest px-6 appearance-none focus:border-primary-500 focus:bg-white/40 transition-all outline-none"
+                                                className="w-full bg-muted/30 border border-border/50 rounded-xl h-11 font-black uppercase text-[10px] tracking-widest px-4 appearance-none focus:border-primary-500 focus:bg-white/40 transition-all outline-none"
                                             >
                                                 <option value="">SELECT TYPE...</option>
                                                 <option value="Wedding">WEDDING</option>
@@ -239,33 +239,33 @@ const CreateEvent = () => {
                                                 <option value="Birthday">BIRTHDAY</option>
                                                 <option value="Portrait">PORTRAIT</option>
                                             </select>
-                                            <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={18} />
+                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={16} />
                                         </div>
                                     </div>
-                                    <div className="space-y-3">
+                                    <div className="space-y-1.5">
                                         <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Location</Label>
                                         <div className="relative">
-                                            <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={18} />
+                                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={16} />
                                             <Input
                                                 name="location"
                                                 value={formData.location}
                                                 onChange={handleInputChange}
                                                 placeholder="VENUE OR CITY"
-                                                className="bg-muted/30 border-border/50 rounded-2xl h-14 font-black uppercase text-[10px] tracking-widest pl-14 pr-6"
+                                                className="bg-muted/30 border-border/50 rounded-xl h-11 font-black uppercase text-[10px] tracking-widest pl-12 pr-4"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
+                                <div className="space-y-1.5">
                                     <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Description</Label>
                                     <textarea
-                                        rows={4}
+                                        rows={3}
                                         name="description"
                                         value={formData.description}
                                         onChange={handleInputChange}
                                         placeholder="ADDITIONAL DETAILS FOR THE PRIVATE LOG..."
-                                        className="w-full bg-muted/30 border border-border/50 rounded-2xl p-6 font-bold text-sm resize-none focus:border-primary-500 focus:bg-white/40 transition-all outline-none"
+                                        className="w-full bg-muted/30 border-border/50 rounded-xl p-4 font-bold text-xs resize-none focus-visible:ring-primary-500/20 focus-visible:border-primary-500 outline-none"
                                     />
                                 </div>
                             </motion.form>
@@ -275,9 +275,9 @@ const CreateEvent = () => {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
-                                className="space-y-8"
+                                className="space-y-6"
                             >
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                     {TEMPLATES.map((tpl) => (
                                         <motion.div
                                             key={tpl.id}
@@ -322,23 +322,23 @@ const CreateEvent = () => {
                     </AnimatePresence>
                 </CardContent>
 
-                <div className="p-8 border-t border-border/50 bg-muted/5 flex gap-6">
+                <div className="p-5 border-t border-border/50 bg-muted/5 flex gap-4">
                     {currentStep === 1 ? (
                         <>
                             <Button
                                 variant="ghost"
                                 onClick={() => navigate('/studio/events')}
-                                className="flex-1 h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest"
+                                className="flex-1 h-11 rounded-xl font-black uppercase text-[10px] tracking-widest"
                             >
                                 DISCARD
                             </Button>
                             <Button
                                 onClick={() => setCurrentStep(2)}
                                 disabled={!formData.name}
-                                className="flex-[2] h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest bg-primary-500 hover:bg-primary-600 text-foreground shadow-lg shadow-primary-500/20 gap-3"
+                                className="flex-[2] h-11 rounded-xl font-black uppercase text-[10px] tracking-widest bg-primary-500 hover:bg-primary-600 text-foreground shadow-lg shadow-primary-500/20 gap-2"
                             >
                                 PROCEED TO INTERFACE
-                                <ArrowRight size={16} strokeWidth={3} />
+                                <ArrowRight size={14} strokeWidth={3} />
                             </Button>
                         </>
                     ) : (
@@ -346,16 +346,16 @@ const CreateEvent = () => {
                             <Button
                                 variant="outline"
                                 onClick={() => setCurrentStep(1)}
-                                className="h-14 rounded-2xl px-10 font-black uppercase text-[10px] tracking-widest border-border/50 glass shadow-none"
+                                className="h-11 rounded-xl px-10 font-black uppercase text-[10px] tracking-widest border-border/50 glass shadow-none"
                             >
-                                <ArrowLeft size={16} className="mr-2" strokeWidth={3} />
+                                <ArrowLeft size={14} className="mr-2" strokeWidth={3} />
                                 INFO
                             </Button>
                             <Button
                                 onClick={handleFinalize}
                                 disabled={!formData.template_id || loading}
                                 className={cn(
-                                    "flex-1 h-14 rounded-2xl font-black uppercase text-[10px] tracking-widest gap-3 shadow-xl transition-all",
+                                    "flex-1 h-11 rounded-xl font-black uppercase text-[10px] tracking-widest gap-2 shadow-xl transition-all",
                                     formData.template_id
                                         ? "bg-foreground text-background hover:bg-foreground/90"
                                         : "bg-muted text-muted-foreground cursor-not-allowed shadow-none"
@@ -364,12 +364,12 @@ const CreateEvent = () => {
                                 {loading ? (
                                     <>
                                         CREATING...
-                                        <Loader2 size={18} className="animate-spin" />
+                                        <Loader2 size={16} className="animate-spin" />
                                     </>
                                 ) : (
                                     <>
                                         FINALIZE COLLECTION
-                                        <CheckCircle2 size={18} strokeWidth={3} />
+                                        <CheckCircle2 size={16} strokeWidth={3} />
                                     </>
                                 )}
                             </Button>

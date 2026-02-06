@@ -27,6 +27,7 @@ import Events from './pages/studio/Events';
 import CreateEvent from './pages/studio/CreateEvent';
 import Analytics from './pages/studio/Analytics';
 import SettingsPage from './pages/studio/Settings';
+import EventDetails from './pages/studio/EventDetails';
 
 // Guest Pages
 import GuestEventGallery from './pages/guest/EventGallery';
@@ -118,6 +119,11 @@ const App = () => {
         <Route path="/studio/events" element={
           <StudioLayoutWrapper title="Events List">
             <Events />
+          </StudioLayoutWrapper>
+        } />
+        <Route path="/studio/events/:eventId" element={
+          <StudioLayoutWrapper title="Event Management">
+            <EventDetails />
           </StudioLayoutWrapper>
         } />
         <Route path="/studio/create-event" element={
