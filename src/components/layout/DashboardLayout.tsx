@@ -6,7 +6,9 @@ import {
     X,
     User,
     LogOut,
-    Bell
+    Bell,
+    CreditCard,
+    BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -229,27 +231,36 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                         </Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="flex items-center gap-4 group outline-none">
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-[10px] font-black uppercase tracking-tight leading-none group-hover:text-primary-600 transition-colors">Luminary Studios</span>
-                                        <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest mt-1 opacity-60">Verified Admin</span>
-                                    </div>
-                                    <Avatar className="w-11 h-11 rounded-2xl border border-border/50 transition-all group-hover:ring-4 group-hover:ring-primary-500/10 group-hover:border-primary-500 shadow-sm">
+                                <button className="outline-none rounded-2xl ring-offset-2 focus:ring-2 focus:ring-primary-500 transition-all">
+                                    <Avatar className="w-10 h-10 rounded-2xl border border-border/50 transition-all hover:ring-4 hover:ring-primary-500/10 hover:border-primary-500 shadow-sm">
                                         <AvatarImage src="https://ui-avatars.com/api/?name=Luminary+Studios&background=93ea7d&color=111411&size=128" />
                                         <AvatarFallback className="rounded-2xl font-black text-xs">LS</AvatarFallback>
                                     </Avatar>
                                 </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 rounded-[1.5rem] p-2 glass border-border/50 shadow-2xl">
-                                <DropdownMenuLabel className="font-black uppercase text-[10px] tracking-widest p-4 pb-2 opacity-50">Identity Matrix</DropdownMenuLabel>
-                                <DropdownMenuItem className="rounded-xl font-bold p-3 gap-3 focus:bg-primary-500/10">
-                                    <User size={16} className="text-primary-500" />
-                                    <span className="text-xs uppercase tracking-tight">Studio Profile</span>
+                            <DropdownMenuContent align="end" className="w-64 rounded-[1.5rem] p-2 glass border-border/50 shadow-2xl">
+                                <div className="p-4 bg-muted/30 rounded-xl mb-2 flex flex-col gap-1">
+                                    <p className="font-black text-sm text-foreground uppercase tracking-tight">Luminary Studios</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground break-all uppercase tracking-wider">admin@luminary.com</p>
+                                </div>
+
+                                <DropdownMenuItem asChild>
+                                    <NavLink to="/studio/profile-setup" className="rounded-xl font-bold p-3 gap-3 focus:bg-primary-500/10 cursor-pointer flex items-center w-full outline-none">
+                                        <CreditCard size={16} className="text-primary-500" />
+                                        <span className="text-xs uppercase tracking-tight">My Plan</span>
+                                    </NavLink>
                                 </DropdownMenuItem>
+
+                                <DropdownMenuItem className="rounded-xl font-bold p-3 gap-3 focus:bg-primary-500/10 cursor-pointer">
+                                    <BookOpen size={16} className="text-primary-500" />
+                                    <span className="text-xs uppercase tracking-tight">Tutorial</span>
+                                </DropdownMenuItem>
+
                                 <DropdownMenuSeparator className="bg-border/50 my-2" />
-                                <DropdownMenuItem className="rounded-xl font-bold p-3 gap-3 text-error focus:bg-error/10 focus:text-error">
+
+                                <DropdownMenuItem className="rounded-xl font-bold p-3 gap-3 text-error focus:bg-error/10 focus:text-error cursor-pointer">
                                     <LogOut size={16} />
-                                    <span className="text-xs uppercase tracking-tight">Disconnect Node</span>
+                                    <span className="text-xs uppercase tracking-tight">Logout</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -262,7 +273,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                     {children}
                 </div>
             </main>
-        </div>
+        </div >
     );
 };
 
