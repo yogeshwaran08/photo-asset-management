@@ -25,7 +25,6 @@ export default function Login() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
         try {
             const res = await login({ email, password });
             if (res.type === 'success') {
@@ -44,7 +43,6 @@ export default function Login() {
             variants={pageVariants}
             className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-white"
         >
-            {/* Background Decorative Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[10%] left-[5%] w-[40rem] h-[40rem] bg-primary-500/5 rounded-full blur-[120px]" />
                 <div className="absolute bottom-[10%] right-[5%] w-[30rem] h-[30rem] bg-primary-500/10 rounded-full blur-[100px]" />
@@ -52,7 +50,6 @@ export default function Login() {
             </div>
 
             <div className="relative z-10 w-full max-w-6xl mx-auto px-6 py-12 flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-24">
-                {/* Left Side - Branding Content */}
                 <motion.div
                     variants={staggerContainer}
                     className="hidden lg:flex flex-col items-start justify-center flex-1 space-y-10"
@@ -109,8 +106,8 @@ export default function Login() {
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="h-14 pl-14 bg-muted/30 border-border/50 rounded-2xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs placeholder:text-muted-foreground/30 uppercase tracking-widest"
-                                        placeholder="SYNC@LUMINARY.COM"
+                                        className="h-14 pl-14 bg-muted/30 border-border/50 rounded-2xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs placeholder:text-muted-foreground/30 tracking-widest"
+                                        placeholder="user@domain.com"
                                     />
                                 </div>
                             </div>
@@ -134,6 +131,7 @@ export default function Login() {
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                        tabIndex={-1}
                                     >
                                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>

@@ -5,6 +5,8 @@ export interface IUser {
   email: string;
   firstName: string;
   lastName: string;
+  full_name?: string;
+  role: "admin" | "studio" | "user";
   plan: "free" | "pro" | "enterprise";
   availableCredits: number;
   createdAt: Date;

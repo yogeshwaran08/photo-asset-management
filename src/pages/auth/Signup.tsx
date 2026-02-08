@@ -120,10 +120,10 @@ export default function Signup() {
                             </div>
                             <h1 className="text-2xl font-black uppercase tracking-tighter">SnapVault</h1>
                         </div>
-
+``
                         <div className="mb-10 text-center lg:text-left">
-                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tight mb-2">Create Node</h3>
-                            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-60">Initialize your studio on the network</p>
+                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tight mb-2">Create Account</h3>
+                            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-60">Welcome, Create an account to get started</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -136,8 +136,8 @@ export default function Signup() {
                                             required
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
-                                            className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" 
-                                            placeholder="John doe" 
+                                            className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs" 
+                                            placeholder="John Doe" 
                                         />
                                     </div>
                                 </div>
@@ -148,8 +148,8 @@ export default function Signup() {
                                         <Input 
                                             value={studioName}
                                             onChange={(e) => setStudioName(e.target.value)}
-                                            className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" 
-                                            placeholder="STUDIO NAME" 
+                                            className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs" 
+                                            placeholder="Studio Name" 
                                         />
                                     </div>
                                 </div>
@@ -164,8 +164,8 @@ export default function Signup() {
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs uppercase" 
-                                        placeholder="EMAIL@DOMAIN.COM" 
+                                        className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs" 
+                                        placeholder="email@domain.com" 
                                     />
                                 </div>
                             </div>
@@ -182,7 +182,7 @@ export default function Signup() {
                                         className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs"
                                         placeholder="••••••••"
                                     />
-                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" tabIndex={-1}>
                                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
                                 </div>
@@ -193,7 +193,7 @@ export default function Signup() {
                                                 <div key={i} className={cn("flex-1 rounded-full transition-all duration-500", i <= strength ? strengthColors[strength - 1] : "bg-muted")} />
                                             ))}
                                         </div>
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-2">ENTROPY RATING: <span className="text-foreground">{strengthLabels[strength - 1]}</span></p>
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mt-2">PASSWORD STRENGTH: <span className="text-foreground">{strengthLabels[strength - 1]}</span></p>
                                     </div>
                                 )}
                             </div>
@@ -210,7 +210,7 @@ export default function Signup() {
                                         className="h-12 pl-12 bg-muted/30 border-border/50 rounded-xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs"
                                         placeholder="••••••••"
                                     />
-                                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" tabIndex={-1}>
                                         {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
                                 </div>
@@ -222,7 +222,7 @@ export default function Signup() {
                                     disabled={loading}
                                     className="w-full h-14 rounded-2xl bg-foreground text-background hover:bg-foreground/90 font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-foreground/10 mt-4"
                                 >
-                                    {loading ? "INITIALIZING..." : "GENERATE ACCOUNT"}
+                                    {loading ? "INITIALIZING..." : "Sign up"}
                                 </Button>
                             </motion.div>
                         </form>
