@@ -282,7 +282,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
 
                                 <DropdownMenuSeparator className="bg-border/50 my-2" />
 
-                                <DropdownMenuItem className="rounded-xl font-bold p-3 gap-3 text-error focus:bg-error/10 focus:text-error cursor-pointer">
+                                <DropdownMenuItem className="rounded-xl font-bold p-3 gap-3 text-error focus:bg-error/10 focus:text-error cursor-pointer" onClick={handleLogoutClick}>
                                     <LogOut size={16} />
                                     <span className="text-xs uppercase tracking-tight">Logout</span>
                                 </DropdownMenuItem>
@@ -297,7 +297,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                     {children}
                 </div>
             </main>
-        </div >
+        </div>
+
+        <AlertDialog open={isLogoutDialogOpen} onOpenChange={setIsLogoutDialogOpen}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Are you sure you want to log out? You will be redirected to the login page.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleConfirmLogout} className="bg-destructive hover:bg-destructive/90">
+                        Logout
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    </>
     );
 };
 
