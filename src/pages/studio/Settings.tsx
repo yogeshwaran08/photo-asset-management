@@ -5,12 +5,13 @@ import {
     Bell,
     Shield,
     Globe,
-    Save,
     Camera,
-    Eye,
-    Cloud,
-    Database,
-    HelpCircle
+    HelpCircle,
+    HardDrive,
+    Box as BoxIcon,
+    BarChart3,
+    Lock,
+    Link as LinkIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -18,145 +19,201 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import {
-    pageVariants,
-    staggerContainer,
-    buttonVariants
-} from '@/lib/motion-config';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-type SettingsTab = 'profile' | 'studio' | 'billing' | 'notifications' | 'security' | 'sharing';
+type SettingsTab = 'profile' | 'branding' | 'domains' | 'integrations' | 'plans' | 'invoices';
 
 const Settings = () => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 
     const tabs: { id: SettingsTab; label: string; icon: any }[] = [
-        { id: 'profile', label: 'Personal Profile', icon: User },
-        { id: 'studio', label: 'Studio Identity', icon: Camera },
-        { id: 'billing', label: 'Billing & Plans', icon: CreditCard },
-        { id: 'notifications', label: 'Alert Preferences', icon: Bell },
-        { id: 'security', label: 'Access & Security', icon: Shield },
-        { id: 'sharing', label: 'Global Defaults', icon: Globe },
+        { id: 'profile', label: 'Profile', icon: User },
+        { id: 'branding', label: 'Branding', icon: Camera },
+        { id: 'domains', label: 'Domains', icon: Globe },
+        { id: 'integrations', label: 'Integrations', icon: Bell },
+        { id: 'plans', label: 'My Plans', icon: Shield },
+        { id: 'invoices', label: 'Invoices', icon: CreditCard },
     ];
 
     const tabContent = {
         profile: (
-            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
-                <Card className="border-border/50 glass shadow-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg font-black uppercase tracking-tight">Public Information</CardTitle>
-                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Manage your identity as an account owner</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="flex flex-col sm:flex-row items-center gap-8 pb-4">
-                            <div className="relative group">
-                                <div className="w-24 h-24 rounded-full bg-muted border-4 border-white shadow-xl overflow-hidden glass">
-                                    <img src="https://ui-avatars.com/api/?name=Alex+Studio&background=93ea7d&color=111411&size=128" alt="Avatar" className="w-full h-full object-cover" />
-                                </div>
-                                <button className="absolute bottom-0 right-0 p-2 bg-foreground text-background rounded-full shadow-xl hover:scale-110 transition-transform">
-                                    <Camera size={14} strokeWidth={3} />
-                                </button>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Personal Details */}
+                    <Card className="border-border/50 glass shadow-sm h-full">
+                        <CardHeader className="pb-4">
+                            <CardTitle className="text-sm font-black uppercase tracking-widest text-primary-500">Personal Details</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Full Name</Label>
+                                <Input defaultValue="Dhanish Raza" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
                             </div>
-                            <div className="space-y-1 text-center sm:text-left">
-                                <h4 className="font-black uppercase text-sm tracking-tight text-foreground">AVATAR SELECTION</h4>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-70 mb-3">Recommend size: 256x256 PX (Max 2MB)</p>
-                                <div className="flex gap-2 justify-center sm:justify-start">
-                                    <Button variant="outline" size="sm" className="h-8 rounded-lg font-black uppercase text-[10px] tracking-widest px-4">Upload</Button>
-                                    <Button variant="ghost" size="sm" className="h-8 rounded-lg font-black uppercase text-[10px] tracking-widest text-error px-4 hover:bg-error/5">Remove</Button>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Mobile Number</Label>
+                                <div className="flex gap-2">
+                                    <Input defaultValue="+91" className="w-20 bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs text-center" />
+                                    <Input defaultValue="89219 70311" className="flex-1 bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
                                 </div>
                             </div>
-                        </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Email Id</Label>
+                                <Input defaultValue="adhanishraza7@gmail.com" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Country</Label>
+                                    <Input defaultValue="India" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">State</Label>
+                                    <Input defaultValue="Tamil Nadu" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">City</Label>
+                                <Input defaultValue="Chennai" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                            </div>
+                        </CardContent>
+                    </Card>
 
+                    {/* Company Details */}
+                    <Card className="border-border/50 glass shadow-sm h-full">
+                        <CardHeader className="pb-4">
+                            <CardTitle className="text-sm font-black uppercase tracking-widest text-primary-500">Company Details</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-8">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Company Name</Label>
+                                <Input defaultValue="dhanish" className="bg-muted/30 border-border/50 rounded-xl h-14 font-bold text-xs" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Industry</Label>
+                                <Select defaultValue="photographer">
+                                    <SelectTrigger className="h-14 rounded-xl bg-muted/30 border-border/50 font-bold text-xs">
+                                        <SelectValue placeholder="Select Industry" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="photographer">Photographer</SelectItem>
+                                        <SelectItem value="event_organiser">Event Organiser</SelectItem>
+                                        <SelectItem value="enterprise">Enterprise</SelectItem>
+                                        <SelectItem value="event_tech_provider">Event Tech Provider</SelectItem>
+                                        <SelectItem value="sports_organisation">Sports Organisation</SelectItem>
+                                        <SelectItem value="educational_institutions">Educational Institutions</SelectItem>
+                                        <SelectItem value="individual">Individual</SelectItem>
+                                        <SelectItem value="others">Others</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Area</Label>
+                                <Select defaultValue="wedding">
+                                    <SelectTrigger className="h-14 rounded-xl bg-muted/30 border-border/50 font-bold text-xs">
+                                        <SelectValue placeholder="Select Industry Areas" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="wedding">Wedding</SelectItem>
+                                        <SelectItem value="corporate">Corporate</SelectItem>
+                                        <SelectItem value="baby_shoot">Baby Shoot</SelectItem>
+                                        <SelectItem value="maternity">Maternity</SelectItem>
+                                        <SelectItem value="fashion">Fashion</SelectItem>
+                                        <SelectItem value="freelancer">Freelancer</SelectItem>
+                                        <SelectItem value="others">Others</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Average Number of Events per Year</Label>
+                                <Input placeholder="e.g. 50" className="bg-muted/30 border-border/50 rounded-xl h-14 font-bold text-xs" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Billing Details */}
+                <Card className="border-border/50 glass shadow-sm">
+                    <CardHeader className="pb-4">
+                        <CardTitle className="text-sm font-black uppercase tracking-widest text-primary-500">Billing Details</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">First Name</Label>
-                                <Input defaultValue="Alex" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Company Name (As Per Official GST/VAT Document)</Label>
+                                <Input className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Last Name</Label>
-                                <Input defaultValue="Johnson" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
-                            </div>
-                            <div className="space-y-2 md:col-span-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Email Address</Label>
-                                <Input defaultValue="alex@luminarystudios.com" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">GST/VAT Number</Label>
+                                <Input className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
                             </div>
                         </div>
                     </CardContent>
                 </Card>
+
+                <div className="flex justify-end pt-4">
+                    <Button className="h-12 px-10 rounded-xl bg-primary-500 hover:bg-primary-600 text-foreground font-black uppercase text-xs tracking-widest shadow-lg shadow-primary-500/20">
+                        Save Changes
+                    </Button>
+                </div>
             </motion.div>
         ),
-        studio: (
-            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+        branding: (
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center min-h-[400px] border border-dashed border-border/50 rounded-3xl bg-muted/5 space-y-4">
+                <div className="w-20 h-20 rounded-2xl bg-muted/50 flex items-center justify-center mb-2 shadow-inner">
+                    <Camera size={32} className="text-muted-foreground opacity-50" />
+                </div>
+                <h3 className="text-lg font-black uppercase tracking-tight text-foreground">You don't have any brandings</h3>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-70 max-w-xs text-center">Create a new brand identity for your studio to share with clients.</p>
+                <Button className="mt-4 bg-primary-500 hover:bg-primary-600 text-foreground px-8 rounded-xl font-black uppercase text-[10px] tracking-widest h-10 shadow-lg shadow-primary-500/20">
+                    Add Brand
+                </Button>
+            </motion.div>
+        ),
+        domains: (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card className="border-border/50 glass shadow-sm flex flex-col justify-between">
+                        <CardHeader>
+                            <CardTitle className="text-sm font-black uppercase tracking-widest text-primary-500">Connect Domain</CardTitle>
+                            <CardDescription className="font-bold text-[10px] uppercase opacity-60 mt-1">
+                                Connect your own domain and display galleries under your branding. eg your.company.com
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Button variant="outline" className="w-full font-black uppercase text-[10px] tracking-widest">Connect</Button>
+                        </CardContent>
+                    </Card>
+                    <Card className="border-border/50 glass shadow-sm flex flex-col justify-between">
+                        <CardHeader>
+                            <CardTitle className="text-sm font-black uppercase tracking-widest text-primary-500">Connect Sub-Domain</CardTitle>
+                            <CardDescription className="font-bold text-[10px] uppercase opacity-60 mt-1">
+                                Connect subdomain to show your brand name first. eg company.fotoowl.ai
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Button variant="outline" className="w-full font-black uppercase text-[10px] tracking-widest">Connect</Button>
+                        </CardContent>
+                    </Card>
+                </div>
+
                 <Card className="border-border/50 glass shadow-sm">
                     <CardHeader>
-                        <CardTitle className="text-lg font-black uppercase tracking-tight">Studio Identity</CardTitle>
-                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Customize how your studio appears to guests</CardDescription>
+                        <CardTitle className="text-sm font-black uppercase tracking-widest text-primary-500">Foto Owl Domains</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Studio Name</Label>
-                            <Input defaultValue="Luminary Studios" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Brand Bio</Label>
-                            <Input defaultValue="Luxury wedding and fashion photography." className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
-                        </div>
-                        <Separator className="my-2 border-border/50" />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Support Phone</Label>
-                                <Input defaultValue="+1 (555) 000-0000" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
+                    <CardContent>
+                        <div className="rounded-xl border border-border/50 bg-muted/20 overflow-hidden">
+                            <div className="grid grid-cols-12 gap-4 p-4 border-b border-border/50 bg-muted/30">
+                                <div className="col-span-8 text-[10px] font-black uppercase tracking-widest opacity-70">Domain Name</div>
+                                <div className="col-span-4 text-[10px] font-black uppercase tracking-widest opacity-70">Status</div>
                             </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Office Address</Label>
-                                <Input defaultValue="123 Creative Way, NY" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </motion.div>
-        ),
-        billing: (
-            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
-                <Card className="border-border/50 glass shadow-sm overflow-hidden">
-                    <div className="bg-primary-500/5 p-8 flex flex-col sm:flex-row items-center justify-between border-b border-border/50">
-                        <div className="flex items-center gap-4 mb-4 sm:mb-0">
-                            <div className="w-12 h-12 rounded-2xl bg-primary-500/10 flex items-center justify-center text-primary-500 shadow-sm border border-primary-500/10">
-                                <Cloud size={24} />
-                            </div>
-                            <div>
-                                <h4 className="text-xl font-black uppercase tracking-tight">Pro Plan</h4>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-primary-600">Active Subscription</p>
-                            </div>
-                        </div>
-                        <Badge className="bg-primary-500 text-foreground font-black uppercase tracking-widest text-[9px] px-3 py-1.5 rounded-full border-none">Next Bill: March 12, 2024</Badge>
-                    </div>
-                    <CardContent className="p-8">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <div className="p-6 bg-muted/20 border border-border/50 rounded-3xl flex flex-col items-center text-center">
-                                <Database size={24} className="text-muted-foreground mb-4" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Storage Used</span>
-                                <span className="text-2xl font-black tracking-tight">156 GB / 1 TB</span>
-                                <div className="w-full h-1.5 bg-muted rounded-full mt-4 overflow-hidden border border-border/20">
-                                    <div className="h-full bg-primary-500 w-[15.6%] rounded-full" />
-                                </div>
-                            </div>
-                            <div className="p-6 bg-muted/20 border border-border/50 rounded-3xl flex flex-col items-center text-center">
-                                <Camera size={24} className="text-muted-foreground mb-4" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Monthly Events</span>
-                                <span className="text-2xl font-black tracking-tight">24 / 50</span>
-                                <div className="w-full h-1.5 bg-muted rounded-full mt-4 overflow-hidden border border-border/20">
-                                    <div className="h-full bg-info w-[48%] rounded-full" />
-                                </div>
-                            </div>
-                            <div className="p-6 bg-muted/20 border border-border/50 rounded-3xl flex flex-col items-center text-center">
-                                <User size={24} className="text-muted-foreground mb-4" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">Team Slots</span>
-                                <span className="text-2xl font-black tracking-tight">3 / 5</span>
-                                <div className="w-full h-1.5 bg-muted rounded-full mt-4 overflow-hidden border border-border/20">
-                                    <div className="h-full bg-success w-[60%] rounded-full" />
+                            <div className="grid grid-cols-12 gap-4 p-4 items-center">
+                                <div className="col-span-8 font-bold text-xs truncate">site.fotoowl.ai/dhanishprimary</div>
+                                <div className="col-span-4">
+                                    <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20 uppercase text-[9px] font-black tracking-widest">
+                                        Active
+                                    </Badge>
                                 </div>
                             </div>
                         </div>
@@ -164,183 +221,243 @@ const Settings = () => {
                 </Card>
             </motion.div>
         ),
-        notifications: (
-            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
-                <Card className="border-border/50 glass shadow-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg font-black uppercase tracking-tight">Alert Preferences</CardTitle>
-                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Control how and when you want to be notified</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {[
-                            { title: 'EVENT PUBLICATIONS', desc: 'Secure an alert when your gallery goes live', icon: Globe },
-                            { title: 'BILLING NOTICES', desc: 'Alerts for payments and subscription updates', icon: CreditCard },
-                            { title: 'SYSTEM ALERTS', desc: 'Critical infrastructure and maintenance updates', icon: Database },
-                            { title: 'GUEST ACTIVITY', desc: 'Summary of new guest visits and shares', icon: Eye },
-                        ].map((item, i) => (
-                            <div key={i} className="flex items-center justify-between p-4 rounded-2xl hover:bg-muted/20 transition-colors border border-transparent hover:border-border/30">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground">
-                                        <item.icon size={18} />
+        integrations: (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                <Tabs defaultValue="storage" className="w-full">
+                    <TabsList className="w-full justify-start border-b border-border/50 bg-transparent p-0 mb-8 rounded-none h-auto">
+                        <TabsTrigger value="storage" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3 font-black uppercase text-[10px] tracking-widest text-muted-foreground data-[state=active]:text-foreground transition-all">
+                            Storage Integrations
+                        </TabsTrigger>
+                        <TabsTrigger value="analytics" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3 font-black uppercase text-[10px] tracking-widest text-muted-foreground data-[state=active]:text-foreground transition-all">
+                            Analytics Integrations
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="storage" className="mt-0">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Google Drive */}
+                            <Card className="border-border/50 glass shadow-sm flex flex-col">
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-border/50">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                            <HardDrive size={16} />
+                                        </div>
+                                        <CardTitle className="text-xs font-black uppercase tracking-wide">Google Drive</CardTitle>
                                     </div>
-                                    <div>
-                                        <h5 className="text-[10px] font-black uppercase tracking-widest">{item.title}</h5>
-                                        <p className="text-[10px] font-bold text-muted-foreground tracking-tight opacity-70 uppercase">{item.desc}</p>
+                                    <HelpCircle size={14} className="text-muted-foreground/50" />
+                                </CardHeader>
+                                <CardContent className="pt-6 flex flex-col flex-1 gap-4">
+                                    <p className="text-[11px] font-medium text-muted-foreground leading-relaxed">
+                                        Connect your Google Drive to automatically copy your photos to Foto Owl Event.
+                                    </p>
+                                    <div className="bg-amber-500/10 text-amber-600 p-3 rounded-lg text-[10px] font-bold leading-relaxed mt-auto">
+                                        Use Public Link to import photos to Foto Owl Event, under upload section in the event
                                     </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Dropbox */}
+                            <Card className="border-border/50 glass shadow-sm flex flex-col">
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-border/50">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                                            <BoxIcon size={16} />
+                                        </div>
+                                        <CardTitle className="text-xs font-black uppercase tracking-wide">Dropbox</CardTitle>
+                                    </div>
+                                    <HelpCircle size={14} className="text-muted-foreground/50" />
+                                </CardHeader>
+                                <CardContent className="pt-6 flex flex-col flex-1 gap-6">
+                                    <p className="text-[11px] font-medium text-muted-foreground leading-relaxed">
+                                        Connect your Dropbox to automatically copy your photos to Foto Owl Event.
+                                    </p>
+                                    <div className="mt-auto space-y-3">
+                                        <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase text-[10px] tracking-widest h-10 rounded-xl shadow-lg shadow-emerald-500/20 gap-2">
+                                            <LinkIcon size={14} />
+                                            Connect
+                                        </Button>
+                                        <div className="flex items-center justify-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">
+                                            <Lock size={10} />
+                                            <span>Upgrade to connect</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Box */}
+                            <Card className="border-border/50 glass shadow-sm flex flex-col">
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-border/50">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-500">
+                                            <BoxIcon size={16} />
+                                        </div>
+                                        <CardTitle className="text-xs font-black uppercase tracking-wide">Box</CardTitle>
+                                    </div>
+                                    <HelpCircle size={14} className="text-muted-foreground/50" />
+                                </CardHeader>
+                                <CardContent className="pt-6 flex flex-col flex-1 gap-6">
+                                    <p className="text-[11px] font-medium text-muted-foreground leading-relaxed">
+                                        Connect your Box account to automatically copy your photos to Foto Owl Event.
+                                    </p>
+                                    <div className="mt-auto space-y-3">
+                                        <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase text-[10px] tracking-widest h-10 rounded-xl shadow-lg shadow-emerald-500/20 gap-2">
+                                            <LinkIcon size={14} />
+                                            Connect
+                                        </Button>
+                                        <div className="flex items-center justify-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground/70">
+                                            <Lock size={10} />
+                                            <span>Upgrade to connect</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="analytics" className="mt-0">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                            {[
+                                { name: 'Google Analytics 4', icon: BarChart3, color: 'text-orange-500', bg: 'bg-orange-500/10', label: 'GA4 Measurement ID' },
+                                { name: 'Meta Pixel', icon: Globe, color: 'text-blue-600', bg: 'bg-blue-600/10', label: 'Pixel ID' },
+                                { name: 'Google Tag Manager', icon: LinkIcon, color: 'text-blue-500', bg: 'bg-blue-500/10', label: 'GTM ID' },
+                                { name: 'Microsoft Clarity', icon: BarChart3, color: 'text-indigo-500', bg: 'bg-indigo-500/10', label: 'Clarity Project ID' },
+                            ].map((item, i) => (
+                                <Card key={i} className="border-border/50 glass shadow-sm">
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-border/50">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-8 h-8 rounded-lg ${item.bg} flex items-center justify-center ${item.color}`}>
+                                                <item.icon size={16} />
+                                            </div>
+                                            <CardTitle className="text-xs font-black uppercase tracking-wide">{item.name}</CardTitle>
+                                        </div>
+                                        <HelpCircle size={14} className="text-muted-foreground/50" />
+                                    </CardHeader>
+                                    <CardContent className="pt-6 space-y-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">{item.label}</Label>
+                                            <div className="flex gap-2">
+                                                <Input className="bg-muted/30 border-border/50 rounded-xl h-10 font-bold text-xs" />
+                                                <Button className="bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase text-[10px] tracking-widest h-10 px-4 rounded-xl shadow-lg shadow-emerald-500/20 gap-2 shrink-0">
+                                                    <LinkIcon size={12} />
+                                                    Connect
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    </TabsContent>
+                </Tabs>
+            </motion.div>
+        ),
+        plans: <></>,
+        invoices: (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                <Card className="border-border/50 glass shadow-sm">
+                    <CardHeader>
+                        <CardTitle className="text-sm font-black uppercase tracking-widest text-primary-500">Invoices</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Tabs defaultValue="all" className="w-full">
+                            <TabsList className="mb-8">
+                                <TabsTrigger value="all" className="font-black uppercase text-[10px] tracking-widest">All</TabsTrigger>
+                                <TabsTrigger value="subscription" className="font-black uppercase text-[10px] tracking-widest">Subscription</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="all" className="flex flex-col items-center justify-center py-20 border border-dashed border-border/50 rounded-2xl bg-muted/5">
+                                <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-4 shadow-inner">
+                                    <CreditCard size={24} className="text-muted-foreground opacity-50" />
                                 </div>
-                                <Switch defaultChecked className="data-[state=checked]:bg-primary-500" />
-                            </div>
-                        ))}
+                                <h3 className="text-lg font-black uppercase tracking-tight text-foreground">No invoices found</h3>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-70 mt-1">You don't have any invoices yet.</p>
+                            </TabsContent>
+                            <TabsContent value="subscription" className="flex flex-col items-center justify-center py-20 border border-dashed border-border/50 rounded-2xl bg-muted/5">
+                                <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-4 shadow-inner">
+                                    <CreditCard size={24} className="text-muted-foreground opacity-50" />
+                                </div>
+                                <h3 className="text-lg font-black uppercase tracking-tight text-foreground">No invoices found</h3>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-70 mt-1">You don't have any invoices yet.</p>
+                            </TabsContent>
+                        </Tabs>
                     </CardContent>
                 </Card>
             </motion.div>
         ),
-        security: (
-            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
-                <Card className="border-border/50 glass shadow-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg font-black uppercase tracking-tight">Access & Security</CardTitle>
-                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Secure your account with advanced authentication</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="flex items-center justify-between p-5 rounded-2xl bg-muted/20 border border-border/50">
-                            <div className="flex gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-success/10 text-success flex items-center justify-center border border-success/10">
-                                    <Shield size={24} />
-                                </div>
-                                <div>
-                                    <h5 className="font-black uppercase text-sm tracking-tight mb-0.5">Two-Factor Authentication</h5>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-70">Account status: ENHANCED PROTECTION ACTIVE</p>
-                                </div>
-                            </div>
-                            <Button variant="outline" className="h-10 rounded-xl px-6 font-black uppercase text-[10px] tracking-widest border-border/50">REFIGURE</Button>
-                        </div>
-                        <Separator className="border-border/50" />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">New Password</Label>
-                                <Input type="password" placeholder="••••••••" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Confirm Sequence</Label>
-                                <Input type="password" placeholder="••••••••" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </motion.div>
-        ),
-        sharing: (
-            <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
-                <Card className="border-border/50 glass shadow-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg font-black uppercase tracking-tight">Global Defaults</CardTitle>
-                        <CardDescription className="font-bold text-[10px] uppercase opacity-60">Set universal rules for new photography events</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-1">
-                            <div className="flex items-center justify-between py-4">
-                                <div>
-                                    <h6 className="text-[10px] font-black uppercase tracking-widest mb-1">Auto-Publication</h6>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight opacity-70">Publish events as soon as upload completes</p>
-                                </div>
-                                <Switch className="data-[state=checked]:bg-primary-500" />
-                            </div>
-                            <Separator className="border-border/50" />
-                            <div className="flex items-center justify-between py-4">
-                                <div>
-                                    <h6 className="text-[10px] font-black uppercase tracking-widest mb-1">Guest Registration</h6>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight opacity-70">Require name and phone for gallery access</p>
-                                </div>
-                                <Switch defaultChecked className="data-[state=checked]:bg-primary-500" />
-                            </div>
-                            <Separator className="border-border/50" />
-                            <div className="flex items-center justify-between py-4">
-                                <div>
-                                    <h6 className="text-[10px] font-black uppercase tracking-widest mb-1">Smart Sorting</h6>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight opacity-70">Sort photos by AI relevance and detected faces</p>
-                                </div>
-                                <Switch defaultChecked className="data-[state=checked]:bg-primary-500" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </motion.div>
-        )
     };
 
     return (
-        <motion.div
-            initial="initial"
-            animate="animate"
-            variants={pageVariants}
-            className="max-w-7xl mx-auto pb-12"
-        >
-            <div className="flex items-center justify-between mb-10">
-                <div></div>
-                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                    <Button className="bg-primary-500 hover:bg-primary-600 text-foreground h-11 px-8 rounded-xl font-black uppercase text-[10px] tracking-widest gap-2 shadow-lg shadow-primary-500/20">
-                        <Save size={16} strokeWidth={3} />
-                        Save Sync
-                    </Button>
-                </motion.div>
-            </div>
+        <div className="flex h-full bg-[#fcfcfc] dark:bg-zinc-950">
+            {/* Sub-Sidebar Navigation */}
+            <aside className="w-72 border-r border-border/50 bg-white/50 backdrop-blur-xl flex flex-col h-full sticky top-0 overflow-hidden">
+                <div className="h-6" />
 
-            <div className="flex flex-col lg:flex-row gap-10">
-                {/* Sidebar Navigation */}
-                <Card className="w-full lg:w-80 h-fit border-border/50 glass shadow-sm p-4 rounded-[2rem]">
-                    <div className="space-y-1.5">
-                        {tabs.map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={cn(
-                                    "w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group",
-                                    activeTab === tab.id
-                                        ? "bg-primary-50 text-foreground ring-1 ring-border/30"
-                                        : "hover:bg-muted/40 text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <div className={cn(
-                                    "w-9 h-9 rounded-xl flex items-center justify-center transition-colors",
-                                    activeTab === tab.id ? "bg-white text-primary-500 shadow-sm" : "bg-muted/50 text-muted-foreground group-hover:text-foreground"
-                                )}>
-                                    <tab.icon size={18} />
-                                </div>
-                                <span className="font-black uppercase text-[10px] tracking-widest text-left flex-1">{tab.label}</span>
-                                {activeTab === tab.id && (
-                                    <motion.div layoutId="active-indicator" className="w-1.5 h-1.5 rounded-full bg-primary-500" />
-                                )}
-                            </button>
-                        ))}
-                    </div>
-                    <Separator className="my-6 border-border/50" />
-                    <div className="px-4 py-2 space-y-4">
-                        <div className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group">
-                            <div className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center group-hover:bg-muted/80">
-                                <HelpCircle size={18} />
+                <nav className="flex-1 px-4 space-y-2 mt-4">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={cn(
+                                "w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 group",
+                                activeTab === tab.id
+                                    ? "bg-white text-foreground shadow-md ring-1 ring-black/5"
+                                    : "hover:bg-muted/40 text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            <div className={cn(
+                                "w-9 h-9 rounded-xl flex items-center justify-center transition-colors shrink-0",
+                                activeTab === tab.id ? "bg-primary-500 text-white shadow-lg shadow-primary-500/20" : "bg-muted/50 text-muted-foreground group-hover:text-foreground"
+                            )}>
+                                <tab.icon size={16} strokeWidth={2.5} />
                             </div>
-                            <span className="font-black uppercase text-[10px] tracking-widest">Support Core</span>
-                        </div>
-                    </div>
-                </Card>
+                            <span className="font-black uppercase text-[10px] tracking-widest text-left flex-1">{tab.label}</span>
+                            {activeTab === tab.id && (
+                                <motion.div layoutId="active-indicator-settings" className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+                            )}
+                        </button>
+                    ))}
+                </nav>
 
-                {/* Content Area */}
-                <div className="flex-1 min-w-0">
+                <div className="p-6 mt-auto">
+                    <div className="p-4 rounded-2xl bg-muted/20 border border-border/50 space-y-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-primary-500">
+                                <HelpCircle size={16} />
+                            </div>
+                            <div>
+                                <h5 className="font-black uppercase text-[10px] tracking-widest">Need Help?</h5>
+                                <p className="text-[9px] text-muted-foreground">Contact support</p>
+                            </div>
+                        </div>
+                        <Button variant="outline" size="sm" className="w-full text-[10px] font-black uppercase tracking-widest h-8 bg-white">Get Support</Button>
+                    </div>
+                </div>
+            </aside>
+
+            {/* Main Content Area */}
+            <main className="flex-1 h-full overflow-y-auto bg-muted/20 relative">
+                {/* Top Actions Bar (Sticky) */}
+                <div className="sticky top-0 z-30 flex items-center justify-between px-10 py-6 bg-white/40 backdrop-blur-md border-b border-border/10">
+                    <div>
+                        <h3 className="text-lg font-black uppercase tracking-tight">{tabs.find(t => t.id === activeTab)?.label}</h3>
+                    </div>
+                    <div className="flex-1"></div>
+                </div>
+
+                <div className="max-w-5xl mx-auto p-10 pb-24">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
                             transition={{ duration: 0.3, ease: "easeOut" }}
                         >
                             {tabContent[activeTab]}
                         </motion.div>
                     </AnimatePresence>
                 </div>
-            </div>
-        </motion.div>
+            </main>
+        </div>
     );
 };
 

@@ -268,7 +268,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                 </header>
                 <div className={cn(
                     "flex-1 overflow-y-auto bg-white/50",
-                    isEventDetails ? "p-0 overflow-hidden" : "p-6 md:p-10"
+                    isEventDetails || location.pathname.includes('/settings') ? "p-0 overflow-hidden" : "p-6 md:p-10"
                 )}>
                     {children}
                 </div>
