@@ -5,30 +5,25 @@ import {
     Image as ImageIcon,
     CheckCircle2,
     Clock,
-    DollarSign,
-    AlertCircle,
     Filter,
-    ArrowUpRight,
     Calendar,
     LayoutGrid,
-    MoreVertical,
     Trash2,
-    Edit,
-    Loader2
+    Loader2,
+    UserPlus,
+    Upload,
+    Share2,
+    Settings,
+    Film,
+    Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
     pageVariants,
     listItemVariants,
@@ -39,7 +34,7 @@ import { eventService, type Event } from '@/services/eventService';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
-type EventStatus = 'all' | 'published' | 'unpublished' | 'expired' | 'photo-selling';
+type EventStatus = 'all' | 'published' | 'unpublished';
 
 const Events = () => {
     const navigate = useNavigate();
@@ -81,8 +76,6 @@ const Events = () => {
         { label: 'All Events', value: 'all', icon: LayoutGrid },
         { label: 'Published', value: 'published', icon: CheckCircle2 },
         { label: 'Waitlist', value: 'unpublished', icon: Clock },
-        { label: 'Monetized', value: 'photo-selling', icon: DollarSign },
-        { label: 'Archived', value: 'expired', icon: AlertCircle },
     ];
 
     const filteredEvents = events.filter(event => {
@@ -98,8 +91,6 @@ const Events = () => {
                 return <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 uppercase text-[9px] font-black">Published</Badge>;
             case 'unpublished':
                 return <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20 uppercase text-[9px] font-black">Draft</Badge>;
-            case 'expired':
-                return <Badge className="bg-rose-500/10 text-rose-500 border-rose-500/20 uppercase text-[9px] font-black">Archived</Badge>;
             default:
                 return <Badge className="bg-slate-500/10 text-slate-500 border-slate-500/20 uppercase text-[9px] font-black">{status}</Badge>;
         }
@@ -112,21 +103,7 @@ const Events = () => {
             variants={pageVariants}
             className="space-y-8 max-w-7xl mx-auto pb-12"
         >
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div></div>
-                <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                    <Button
-                        onClick={() => navigate('/studio/create-event')}
-                        className="bg-primary-500 hover:bg-primary-600 text-foreground h-12 px-6 rounded-2xl font-black uppercase tracking-widest gap-2 shadow-lg shadow-primary-500/20"
-                    >
-                        <Plus size={18} strokeWidth={3} />
-                        New Event
-                    </Button>
-                </motion.div>
-            </div>
-
-            {/* Tab & Search Bar */}
+            {/* Header & Controls Section */}
             <div className="flex flex-col xl:flex-row gap-6 xl:items-center justify-between">
                 <div className="flex p-1.5 bg-muted/40 rounded-2xl border border-border/50 w-fit glass overflow-x-auto no-scrollbar">
                     {tabs.map((tab) => (
@@ -154,13 +131,22 @@ const Events = () => {
                             placeholder="FIND AN EVENT..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="bg-white/50 border-border/50 rounded-2xl py-6 pl-12 focus-visible:ring-primary-500/20 focus-visible:border-primary-500 font-black uppercase text-[10px] tracking-widest shadow-sm glass"
+                            className="bg-white/50 border-border/50 rounded-2xl h-[52px] pl-12 focus-visible:ring-primary-500/20 focus-visible:border-primary-500 font-black uppercase text-[10px] tracking-widest shadow-sm glass"
                         />
                     </div>
                     <Button variant="outline" className="h-[52px] rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest border-border/50 glass hover:bg-white/60">
                         <Filter size={16} className="mr-2" />
                         Refine
                     </Button>
+                    <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                        <Button
+                            onClick={() => navigate('/studio/create-event')}
+                            className="bg-primary-500 hover:bg-primary-600 text-foreground h-[52px] px-6 rounded-2xl font-black uppercase tracking-widest gap-2 shadow-lg shadow-primary-500/20"
+                        >
+                            <Plus size={18} strokeWidth={3} />
+                            New Event
+                        </Button>
+                    </motion.div>
                 </div>
             </div>
 
@@ -174,67 +160,105 @@ const Events = () => {
                     variants={staggerContainer}
                     initial="initial"
                     animate="animate"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    className="flex flex-col gap-8"
                 >
                     {filteredEvents.map((event) => (
-                        <motion.div key={event.id} variants={listItemVariants}>
-                            <Card className="rounded-[2.5rem] border-border/50 shadow-xl overflow-hidden glass group hover:border-primary-500/50 transition-all duration-500">
-                                <div className="aspect-video relative overflow-hidden bg-muted">
-                                    <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent z-10" />
-                                    <ImageIcon className="absolute inset-0 m-auto text-muted-foreground/20 w-12 h-12" />
-                                    <div className="absolute top-4 left-4 z-20">
-                                        {getStatusBadge(event.status || 'unpublished')}
+                        <motion.div key={event.id} variants={listItemVariants} className="group relative flex flex-col md:flex-row items-center">
+                            {/* Image Section (Left) */}
+                            <div
+                                onClick={() => navigate(`/studio/events/${event.id}`)}
+                                className="cursor-pointer w-full md:w-[320px] lg:w-[360px] h-[240px] shrink-0 rounded-[2.5rem] overflow-hidden relative z-0 md:z-10 shadow-2xl border-4 border-white/50 bg-muted/20 transition-transform active:scale-95"
+                            >
+                                <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent z-10" />
+                                {event.status && (
+                                    <div className="absolute top-6 left-6 z-20">
+                                        {getStatusBadge(event.status)}
                                     </div>
-                                    <div className="absolute top-4 right-4 z-20">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 border-none">
-                                                    <MoreVertical size={14} />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="rounded-2xl border-border/50 glass">
-                                                <DropdownMenuItem className="gap-2 font-bold text-xs uppercase cursor-pointer">
-                                                    <Edit size={14} /> Edit Details
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={() => handleDelete(event.id)}
-                                                    className="gap-2 font-bold text-xs uppercase cursor-pointer text-rose-500 focus:text-rose-500"
-                                                >
-                                                    <Trash2 size={14} /> Delete Event
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-                                    <div className="absolute bottom-4 left-6 right-6 z-20">
-                                        <h3 className="text-white font-black uppercase text-lg leading-tight line-clamp-1">{event.name}</h3>
-                                        <div className="flex items-center gap-2 text-white/70 text-[10px] font-bold uppercase tracking-widest mt-1">
-                                            <Calendar size={12} />
-                                            {event.start_date ? format(new Date(event.start_date), 'MMM dd, yyyy') : 'No date'}
-                                        </div>
-                                    </div>
+                                )}
+                                <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground/30">
+                                    <ImageIcon size={48} />
                                 </div>
-                                <CardContent className="p-6">
-                                    <div className="flex flex-col gap-4">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-1">
-                                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Type</p>
-                                                <p className="text-xs font-bold uppercase">{event.event_type || 'Custom'}</p>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Location</p>
-                                                <p className="text-xs font-bold uppercase line-clamp-1">{event.location || 'N/A'}</p>
+                                <div className="absolute bottom-6 left-6 z-20 text-white md:hidden">
+                                    <h3 className="font-black uppercase text-xl leading-tight line-clamp-1">{event.name}</h3>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-80">{event.event_type || 'Event'}</p>
+                                </div>
+                            </div>
+
+                            {/* Content Section (Right - Overlapping) */}
+                            <div className="flex-1 w-full md:w-auto mt-[-40px] md:mt-0 md:-ml-12 relative z-10 md:z-20">
+                                <Card
+                                    onClick={() => navigate(`/studio/events/${event.id}`)}
+                                    className="cursor-pointer rounded-[2rem] border-border/50 shadow-xl backdrop-blur-3xl bg-white/80 dark:bg-zinc-900/80 overflow-hidden h-auto md:h-[200px] flex flex-col justify-between p-6 md:pl-16 transition-colors hover:bg-white/90"
+                                >
+                                    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                                        <div className="hidden md:block">
+                                            <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">{event.name}</h3>
+                                            <div className="flex items-center gap-2 text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1">
+                                                <Calendar size={12} />
+                                                <span>{event.start_date ? format(new Date(event.start_date), 'EEEE, MMMM d, yyyy') : 'Date TBD'}</span>
                                             </div>
                                         </div>
-                                        <Button
-                                            onClick={() => navigate(`/studio/photos?event=${event.id}`)}
-                                            className="w-full bg-foreground text-background hover:bg-foreground/90 h-10 rounded-xl font-black uppercase text-[10px] tracking-widest group"
-                                        >
-                                            Manage Assets
-                                            <ArrowUpRight size={14} className="ml-2 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                                        </Button>
+
+                                        <div className="flex items-center gap-2 self-end md:self-auto">
+                                            <Badge variant="secondary" className="h-7 px-3 rounded-lg bg-foreground/5 gap-1.5 hover:bg-foreground/10 transition-colors">
+                                                <ImageIcon size={12} />
+                                                <span className="font-bold text-[10px]">0</span>
+                                            </Badge>
+                                            <Badge variant="secondary" className="h-7 px-3 rounded-lg bg-foreground/5 gap-1.5 hover:bg-foreground/10 transition-colors">
+                                                <Film size={12} />
+                                                <span className="font-bold text-[10px]">0</span>
+                                            </Badge>
+                                            <Badge variant="secondary" className="h-7 px-3 rounded-lg bg-foreground/5 gap-1.5 hover:bg-foreground/10 transition-colors">
+                                                <Users size={12} />
+                                                <span className="font-bold text-[10px]">0</span>
+                                            </Badge>
+                                        </div>
                                     </div>
-                                </CardContent>
-                            </Card>
+
+                                    <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 mt-6 md:mt-0">
+                                        <div className="hidden md:flex -space-x-3">
+                                            {[1, 2, 3].map(i => (
+                                                <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground shadow-sm">
+                                                    U{i}
+                                                </div>
+                                            ))}
+                                            <div className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-foreground text-background flex items-center justify-center text-[10px] font-bold shadow-sm">
+                                                +2
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                                            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-primary-500/10 hover:text-primary-500 text-muted-foreground transition-colors" title="Add Collaborators">
+                                                <UserPlus size={16} strokeWidth={2.5} />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="w-9 h-9 rounded-xl hover:bg-blue-500/10 hover:text-blue-500 text-muted-foreground transition-colors"
+                                                title="Upload Media"
+                                                onClick={() => navigate(`/studio/events/${event.id}`)}
+                                            >
+                                                <Upload size={16} strokeWidth={2.5} />
+                                            </Button>
+                                            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-indigo-500/10 hover:text-indigo-500 text-muted-foreground transition-colors" title="Share Event">
+                                                <Share2 size={16} strokeWidth={2.5} />
+                                            </Button>
+                                            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-orange-500/10 hover:text-orange-500 text-muted-foreground transition-colors" title="Settings">
+                                                <Settings size={16} strokeWidth={2.5} />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="w-9 h-9 rounded-xl hover:bg-rose-500/10 hover:text-rose-500 text-muted-foreground transition-colors"
+                                                title="Delete Event"
+                                                onClick={() => handleDelete(event.id)}
+                                            >
+                                                <Trash2 size={16} strokeWidth={2.5} />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </div>
                         </motion.div>
                     ))}
                 </motion.div>

@@ -28,6 +28,8 @@ import Events from './pages/studio/Events';
 import CreateEvent from './pages/studio/CreateEvent';
 import Analytics from './pages/studio/Analytics';
 import SettingsPage from './pages/studio/Settings';
+import EventDetails from './pages/studio/EventDetails';
+import ProfileSetup from './pages/studio/ProfileSetup';
 
 // Guest Pages
 import GuestEventGallery from './pages/guest/EventGallery';
@@ -191,6 +193,11 @@ const App = () => {
             </StudioLayoutWrapper>
           </ProtectedRoute>
         } />
+        <Route path="/studio/events/:eventId" element={
+          <StudioLayoutWrapper title="Event Management">
+            <EventDetails />
+          </StudioLayoutWrapper>
+        } />
         <Route path="/studio/create-event" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Create New Event">
@@ -212,6 +219,8 @@ const App = () => {
             </StudioLayoutWrapper>
           </ProtectedRoute>
         } />
+
+        <Route path="/studio/profile-setup" element={<ProfileSetup />} />
 
         {/* Guest Routes - Dynamic Event View */}
         <Route path="/event/:eventId" element={<GuestEventGallery />} />

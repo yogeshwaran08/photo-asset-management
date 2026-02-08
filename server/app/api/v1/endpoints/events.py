@@ -94,3 +94,45 @@ def delete_event(
     db.delete(event)
     db.commit()
     return event
+
+@router.post("/{id}/photos", response_model=schemas.Photo)
+def create_event_photo(
+    *,
+    db: Session = Depends(get_db),
+    id: int,
+    photo_in: schemas.PhotoCreate,
+) -> Any:
+    """
+    Upload a photo for a specific event.
+    """
+    event = db.query(models.Event).filter(models.Event.id == id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    db_photo = models.Photo(
+        title=photo_in.title,
+        url=photo_in.url,
+        event_id=id
+    )
+    db.add(db_photo)
+    db.commit()
+    db.refresh(db_photo)
+    return db_photo
+
+@router.get("/{id}/photos", response_model=List[schemas.Photo])
+def read_event_photos(
+    *,
+    db: Session = Depends(get_db),
+    id: int,
+    skip: int = 0,
+    limit: int = 100,
+) -> Any:
+    """
+    Get all photos for a specific event.
+    """
+    event = db.query(models.Event).filter(models.Event.id == id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    photos = db.query(models.Photo).filter(models.Photo.event_id == id).offset(skip).limit(limit).all()
+    return photos
