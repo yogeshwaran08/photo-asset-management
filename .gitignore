@@ -57,3 +57,6 @@ htmlcov/
 # OS generated files
 .DS_Store
 Thumbs.db
+server/app/api/__pycache__/deps.cpython-313.pyc
+server/alembic/__pycache__/env.cpython-313.pyc
+server/alembic/__pycache__/env.cpython-313.pyc
