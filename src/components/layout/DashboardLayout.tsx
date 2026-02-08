@@ -54,7 +54,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
-    const { logout } = useUserStore();
+    const { logout, user} = useUserStore();
 
     const handleLogoutClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -264,8 +264,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-64 rounded-[1.5rem] p-2 glass border-border/50 shadow-2xl">
                                 <div className="p-4 bg-muted/30 rounded-xl mb-2 flex flex-col gap-1">
-                                    <p className="font-black text-sm text-foreground uppercase tracking-tight">Luminary Studios</p>
-                                    <p className="text-[10px] font-bold text-muted-foreground break-all uppercase tracking-wider">admin@luminary.com</p>
+                                    <p className="font-black text-sm text-foreground uppercase tracking-tight">{user?.full_name}</p>
+                                    <p className="text-[10px] font-bold text-muted-foreground break-all uppercase tracking-wider">{user?.email}</p>
                                 </div>
 
                                 <DropdownMenuItem asChild>
