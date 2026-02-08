@@ -6,16 +6,24 @@ class StudioSettings(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     
-    # Profile Picture
-    profile_picture_url = Column(String, nullable=True)
-    
     # Personal Details
-    full_name = Column(String, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    phone = Column(String, nullable=True)
-    job_title = Column(String, nullable=True)
+    full_name = Column(String, nullable=True)
+    mobile_number = Column(String, nullable=True)
+    email_id = Column(String, nullable=True)
+    country = Column(String, nullable=True)
+    state = Column(String, nullable=True)
+    city = Column(String, nullable=True)
     
     # Company Details
-    company_name = Column(String, nullable=False)
-    website_url = Column(String, nullable=True)
-    business_address = Column(Text, nullable=True)
+    company_name = Column(String, nullable=True)
+    industry = Column(String, nullable=True)
+    area = Column(String, nullable=True)
+    avg_events_per_year = Column(String, nullable=True)
+    
+    # Billing Details
+    billing_company_name = Column(String, nullable=True)
+    gst_vat_number = Column(String, nullable=True)
+    
+    # Legacy fields (kept for now or removed if clean slate? assuming simple update)
+    # profile_picture_url is ok to keep or ignore
+    profile_picture_url = Column(String, nullable=True)

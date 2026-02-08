@@ -15,6 +15,8 @@ export interface Event extends EventBase {
     id: number;
     created_at: string;
     updated_at: string;
+    photo_count?: number;
+    video_count?: number;
 }
 
 export interface Photo {
@@ -22,12 +24,14 @@ export interface Photo {
     title: string;
     url: string;
     event_id: number;
+    file_size?: number;
 }
 
 export interface PhotoCreate {
     title: string;
     url: string;
     event_id: number;
+    file_size?: number;
 }
 
 export const eventService = {

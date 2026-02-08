@@ -4,6 +4,7 @@ from typing import Optional
 class PhotoBase(BaseModel):
     title: str
     url: str
+    file_size: int = 0
     event_id: int
 
 class PhotoCreate(PhotoBase):

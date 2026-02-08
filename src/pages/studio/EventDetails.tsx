@@ -36,7 +36,7 @@ import {
     MousePointerClick,
     Share2
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatBytes } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -155,7 +155,8 @@ const EventDetails = () => {
                         await eventService.uploadPhoto(Number(eventId), {
                             title: file.name,
                             url: base64String,
-                            event_id: Number(eventId)
+                            event_id: Number(eventId),
+                            file_size: file.size
                         });
                         resolve();
                     } catch (err) {
@@ -453,7 +454,7 @@ const EventDetails = () => {
                                                                 <div className="bg-white/80 backdrop-blur-xl p-3 border border-white/50 rounded-[1.75rem] flex items-center justify-between shadow-2xl">
                                                                     <div className="truncate pr-4 flex flex-col">
                                                                         <span className="text-[9px] font-black uppercase truncate leading-tight">{image.title}</span>
-                                                                        <span className="text-[7px] font-black text-muted-foreground opacity-50 uppercase mt-0.5 tracking-tighter">Media Asset • 2.4MB</span>
+                                                                        <span className="text-[7px] font-black text-muted-foreground opacity-50 uppercase mt-0.5 tracking-tighter">Media Asset • {formatBytes(image.file_size || 0)}</span>
                                                                     </div>
                                                                     <Button size="icon" variant="ghost" className="h-8 w-8 rounded-xl bg-black text-white hover:bg-black/80"><Download size={14} /></Button>
                                                                 </div>
@@ -478,7 +479,7 @@ const EventDetails = () => {
                                                             </div>
                                                             <div className="flex items-center gap-4">
                                                                 <div className="text-[9px] font-bold uppercase py-1 px-3 bg-zinc-100 rounded-lg text-muted-foreground">JPG</div>
-                                                                <div className="text-[9px] font-bold uppercase py-1 px-3 bg-zinc-100 rounded-lg text-muted-foreground">2.4 MB</div>
+                                                                <div className="text-[9px] font-bold uppercase py-1 px-3 bg-zinc-100 rounded-lg text-muted-foreground">{formatBytes(image.file_size || 0)}</div>
                                                                 <Button size="icon" variant="ghost" className="h-9 w-9 rounded-xl hover:bg-zinc-100 ml-2"><Download size={16} /></Button>
                                                             </div>
                                                         </motion.div>

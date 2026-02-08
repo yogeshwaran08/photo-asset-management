@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     User,
     CreditCard,
@@ -20,9 +20,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
+
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { studioSettingsService } from '@/services/studioSettingsService';
+import { toast } from 'sonner';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 
 type SettingsTab = 'profile' | 'branding' | 'domains' | 'integrations' | 'plans' | 'invoices';
 
@@ -38,6 +48,75 @@ const Settings = () => {
         { id: 'invoices', label: 'Invoices', icon: CreditCard },
     ];
 
+    const [profileData, setProfileData] = useState<any>({
+        full_name: '',
+        mobile_number: '',
+        country_code: '+91',
+        email_id: '',
+        country: '',
+        state: '',
+        city: '',
+        company_name: '',
+        industry: 'photographer',
+        area: 'wedding',
+        avg_events_per_year: '',
+        billing_company_name: '',
+        gst_vat_number: ''
+    });
+    const [settingsId, setSettingsId] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                // Try to get current user settings, might fail if not created yet? 
+                // The backend endpoint is /current/me which likely returns the single settings object for the logged in user
+                const data = await studioSettingsService.getCurrent();
+                if (data) {
+                    setSettingsId(data.id);
+                    setProfileData({
+                        full_name: data.full_name || '',
+                        mobile_number: data.mobile_number || '',
+                        // primitive handling extract country code if stored together or separate? assuming separate for now based on UI
+                        country_code: '+91', // Mock for now if not in DB
+                        email_id: data.email_id || '',
+                        country: data.country || '',
+                        state: data.state || '',
+                        city: data.city || '',
+                        company_name: data.company_name || '',
+                        industry: data.industry || 'photographer',
+                        area: data.area || 'wedding',
+                        avg_events_per_year: data.avg_events_per_year || '',
+                        billing_company_name: data.billing_company_name || '',
+                        gst_vat_number: data.gst_vat_number || ''
+                    });
+                }
+            } catch (error) {
+                console.log("No existing settings found or failed to fetch", error);
+            }
+        };
+        fetchSettings();
+    }, []);
+
+    const handleProfileChange = (field: string, value: string) => {
+        setProfileData((prev: any) => ({ ...prev, [field]: value }));
+    };
+
+    const saveProfile = async () => {
+        try {
+            if (settingsId) {
+                await studioSettingsService.update(settingsId, profileData);
+                toast.success("Profile updated successfully");
+            } else {
+                const newSettings = await studioSettingsService.create(profileData);
+                setSettingsId(newSettings.id);
+                toast.success("Profile created successfully");
+            }
+        } catch (error) {
+            console.error("Failed to save profile", error);
+            toast.error("Failed to save changes");
+        }
+    };
+
     const tabContent = {
         profile: (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
@@ -50,32 +129,60 @@ const Settings = () => {
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Full Name</Label>
-                                <Input defaultValue="Dhanish Raza" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                <Input
+                                    value={profileData.full_name}
+                                    onChange={(e) => handleProfileChange('full_name', e.target.value)}
+                                    className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Mobile Number</Label>
                                 <div className="flex gap-2">
-                                    <Input defaultValue="+91" className="w-20 bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs text-center" />
-                                    <Input defaultValue="89219 70311" className="flex-1 bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                    <Input
+                                        value={profileData.country_code}
+                                        onChange={(e) => handleProfileChange('country_code', e.target.value)}
+                                        className="w-20 bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs text-center"
+                                    />
+                                    <Input
+                                        value={profileData.mobile_number}
+                                        onChange={(e) => handleProfileChange('mobile_number', e.target.value)}
+                                        className="flex-1 bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs"
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Email Id</Label>
-                                <Input defaultValue="adhanishraza7@gmail.com" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                <Input
+                                    value={profileData.email_id}
+                                    onChange={(e) => handleProfileChange('email_id', e.target.value)}
+                                    className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs"
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Country</Label>
-                                    <Input defaultValue="India" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                    <Input
+                                        value={profileData.country}
+                                        onChange={(e) => handleProfileChange('country', e.target.value)}
+                                        className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">State</Label>
-                                    <Input defaultValue="Tamil Nadu" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                    <Input
+                                        value={profileData.state}
+                                        onChange={(e) => handleProfileChange('state', e.target.value)}
+                                        className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs"
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">City</Label>
-                                <Input defaultValue="Chennai" className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                <Input
+                                    value={profileData.city}
+                                    onChange={(e) => handleProfileChange('city', e.target.value)}
+                                    className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs"
+                                />
                             </div>
                         </CardContent>
                     </Card>
@@ -88,11 +195,18 @@ const Settings = () => {
                         <CardContent className="space-y-8">
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Company Name</Label>
-                                <Input defaultValue="dhanish" className="bg-muted/30 border-border/50 rounded-xl h-14 font-bold text-xs" />
+                                <Input
+                                    value={profileData.company_name}
+                                    onChange={(e) => handleProfileChange('company_name', e.target.value)}
+                                    className="bg-muted/30 border-border/50 rounded-xl h-14 font-bold text-xs"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Industry</Label>
-                                <Select defaultValue="photographer">
+                                <Select
+                                    value={profileData.industry}
+                                    onValueChange={(val) => handleProfileChange('industry', val)}
+                                >
                                     <SelectTrigger className="h-14 rounded-xl bg-muted/30 border-border/50 font-bold text-xs">
                                         <SelectValue placeholder="Select Industry" />
                                     </SelectTrigger>
@@ -110,7 +224,10 @@ const Settings = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Area</Label>
-                                <Select defaultValue="wedding">
+                                <Select
+                                    value={profileData.area}
+                                    onValueChange={(val) => handleProfileChange('area', val)}
+                                >
                                     <SelectTrigger className="h-14 rounded-xl bg-muted/30 border-border/50 font-bold text-xs">
                                         <SelectValue placeholder="Select Industry Areas" />
                                     </SelectTrigger>
@@ -127,7 +244,12 @@ const Settings = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Average Number of Events per Year</Label>
-                                <Input placeholder="e.g. 50" className="bg-muted/30 border-border/50 rounded-xl h-14 font-bold text-xs" />
+                                <Input
+                                    value={profileData.avg_events_per_year}
+                                    onChange={(e) => handleProfileChange('avg_events_per_year', e.target.value)}
+                                    placeholder="e.g. 50"
+                                    className="bg-muted/30 border-border/50 rounded-xl h-14 font-bold text-xs"
+                                />
                             </div>
                         </CardContent>
                     </Card>
@@ -142,18 +264,29 @@ const Settings = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Company Name (As Per Official GST/VAT Document)</Label>
-                                <Input className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                <Input
+                                    value={profileData.billing_company_name}
+                                    onChange={(e) => handleProfileChange('billing_company_name', e.target.value)}
+                                    className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">GST/VAT Number</Label>
-                                <Input className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs" />
+                                <Input
+                                    value={profileData.gst_vat_number}
+                                    onChange={(e) => handleProfileChange('gst_vat_number', e.target.value)}
+                                    className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold text-xs"
+                                />
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
                 <div className="flex justify-end pt-4">
-                    <Button className="h-12 px-10 rounded-xl bg-primary-500 hover:bg-primary-600 text-foreground font-black uppercase text-xs tracking-widest shadow-lg shadow-primary-500/20">
+                    <Button
+                        onClick={saveProfile}
+                        className="h-12 px-10 rounded-xl bg-primary-500 hover:bg-primary-600 text-foreground font-black uppercase text-xs tracking-widest shadow-lg shadow-primary-500/20"
+                    >
                         Save Changes
                     </Button>
                 </div>
@@ -428,7 +561,29 @@ const Settings = () => {
                                 <p className="text-[9px] text-muted-foreground">Contact support</p>
                             </div>
                         </div>
-                        <Button variant="outline" size="sm" className="w-full text-[10px] font-black uppercase tracking-widest h-8 bg-white">Get Support</Button>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" className="w-full text-[10px] font-black uppercase tracking-widest h-8 bg-white hover:bg-white/80 transition-colors">Get Support</Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px] rounded-2xl glass border-border/50 bg-white/80 backdrop-blur-xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black uppercase tracking-tight">Help</DialogTitle>
+                                    <DialogDescription className="font-bold uppercase text-xs tracking-widest text-primary-500">
+                                        Talk To Experts
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Book a session and Get a demo on how to use the application with full potential.
+                                    </p>
+                                </div>
+                                <div className="flex justify-end">
+                                    <Button className="w-full h-12 rounded-xl font-black uppercase tracking-widest bg-primary-500 hover:bg-primary-600 text-white shadow-lg shadow-primary-500/20">
+                                        Book a demo
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 </div>
             </aside>

@@ -13,6 +13,7 @@ def create_photo(photo: schemas.PhotoCreate, db: Session = Depends(get_db)):
     db_photo = models.Photo(
         title=photo.title, 
         url=photo.url,
+        file_size=photo.file_size,
         event_id=photo.event_id
     )
     db.add(db_photo)

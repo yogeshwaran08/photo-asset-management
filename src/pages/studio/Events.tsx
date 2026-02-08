@@ -33,6 +33,15 @@ import {
 import { eventService, type Event } from '@/services/eventService';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+    DropdownMenuGroup,
+} from "@/components/ui/dropdown-menu";
 
 type EventStatus = 'all' | 'published' | 'unpublished';
 
@@ -78,11 +87,44 @@ const Events = () => {
         { label: 'Waitlist', value: 'unpublished', icon: Clock },
     ];
 
+    const [sortBy, setSortBy] = useState<'created_at' | 'event_date' | 'name'>('created_at');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
     const filteredEvents = events.filter(event => {
-        const matchesTab = activeTab === 'all' || event.status === activeTab;
+        // Normalize status to handle potential inconsistencies
+        const status = (event.status || 'unpublished').toLowerCase();
+
+        let matchesTab = false;
+        if (activeTab === 'all') {
+            matchesTab = true;
+        } else if (activeTab === 'published') {
+            matchesTab = status === 'published';
+        } else if (activeTab === 'unpublished') {
+            // Match both 'unpublished' and 'draft' for the Waitlist tab
+            matchesTab = status === 'unpublished' || status === 'draft' || status === 'waitlist';
+        }
+
         const matchesSearch = event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            event.location?.toLowerCase().includes(searchQuery.toLowerCase());
+            (event.location?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+
         return matchesTab && matchesSearch;
+    }).sort((a, b) => {
+        if (sortBy === 'created_at') {
+            const dateA = new Date(a.created_at).getTime();
+            const dateB = new Date(b.created_at).getTime();
+            return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+        }
+        if (sortBy === 'event_date') {
+            const dateA = a.start_date ? new Date(a.start_date).getTime() : 0;
+            const dateB = b.start_date ? new Date(b.start_date).getTime() : 0;
+            return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+        }
+        if (sortBy === 'name') {
+            return sortOrder === 'asc'
+                ? a.name.localeCompare(b.name)
+                : b.name.localeCompare(a.name);
+        }
+        return 0;
     });
 
     const getStatusBadge = (status: string) => {
@@ -134,10 +176,45 @@ const Events = () => {
                             className="bg-white/50 border-border/50 rounded-2xl h-[52px] pl-12 focus-visible:ring-primary-500/20 focus-visible:border-primary-500 font-black uppercase text-[10px] tracking-widest shadow-sm glass"
                         />
                     </div>
-                    <Button variant="outline" className="h-[52px] rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest border-border/50 glass hover:bg-white/60">
-                        <Filter size={16} className="mr-2" />
-                        Refine
-                    </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="h-[52px] rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest border-border/50 glass hover:bg-white/60">
+                                <Filter size={16} className="mr-2" />
+                                Sort By
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56 rounded-xl border-border/50 bg-white/80 backdrop-blur-xl">
+                            <DropdownMenuLabel className="font-black uppercase text-[10px] tracking-widest opacity-50">Creation Time</DropdownMenuLabel>
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem onClick={() => { setSortBy('created_at'); setSortOrder('asc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
+                                    Old-New
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => { setSortBy('created_at'); setSortOrder('desc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
+                                    New-Old
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator className="bg-border/50" />
+                            <DropdownMenuLabel className="font-black uppercase text-[10px] tracking-widest opacity-50">Event Time</DropdownMenuLabel>
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem onClick={() => { setSortBy('event_date'); setSortOrder('asc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
+                                    Old-New
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => { setSortBy('event_date'); setSortOrder('desc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
+                                    New-Old
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator className="bg-border/50" />
+                            <DropdownMenuLabel className="font-black uppercase text-[10px] tracking-widest opacity-50">Event Name</DropdownMenuLabel>
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem onClick={() => { setSortBy('name'); setSortOrder('asc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
+                                    A-Z
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => { setSortBy('name'); setSortOrder('desc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
+                                    Z-A
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
                         <Button
                             onClick={() => navigate('/studio/create-event')}
@@ -202,11 +279,11 @@ const Events = () => {
                                         <div className="flex items-center gap-2 self-end md:self-auto">
                                             <Badge variant="secondary" className="h-7 px-3 rounded-lg bg-foreground/5 gap-1.5 hover:bg-foreground/10 transition-colors">
                                                 <ImageIcon size={12} />
-                                                <span className="font-bold text-[10px]">0</span>
+                                                <span className="font-bold text-[10px]">{event.photo_count || 0}</span>
                                             </Badge>
                                             <Badge variant="secondary" className="h-7 px-3 rounded-lg bg-foreground/5 gap-1.5 hover:bg-foreground/10 transition-colors">
                                                 <Film size={12} />
-                                                <span className="font-bold text-[10px]">0</span>
+                                                <span className="font-bold text-[10px]">{event.video_count || 0}</span>
                                             </Badge>
                                             <Badge variant="secondary" className="h-7 px-3 rounded-lg bg-foreground/5 gap-1.5 hover:bg-foreground/10 transition-colors">
                                                 <Users size={12} />

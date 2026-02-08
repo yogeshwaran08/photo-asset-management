@@ -6,17 +6,39 @@ from app.db.session import get_db
 
 router = APIRouter()
 
-@router.get("/", response_model=List[schemas.Event])
+
+@router.get("/", response_model=List[Any])
 def read_events(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
 ) -> Any:
     """
-    Retrieve events.
+    Retrieve events with photo and video counts.
     """
     events = db.query(models.Event).offset(skip).limit(limit).all()
-    return events
+    
+    # Add photo_count and video_count to each event
+    result = []
+    for event in events:
+        event_dict = {
+            "id": event.id,
+            "name": event.name,
+            "start_date": event.start_date,
+            "end_date": event.end_date,
+            "event_type": event.event_type,
+            "location": event.location,
+            "description": event.description,
+            "template_id": event.template_id,
+            "status": event.status,
+            "created_at": event.created_at,
+            "updated_at": event.updated_at,
+            "photo_count": len(event.photos) if event.photos else 0,
+            "video_count": 0  # Placeholder for now, update when video support is added
+        }
+        result.append(event_dict)
+    
+    return result
 
 @router.post("/", response_model=schemas.Event)
 def create_event(
@@ -112,6 +134,7 @@ def create_event_photo(
     db_photo = models.Photo(
         title=photo_in.title,
         url=photo_in.url,
+        file_size=photo_in.file_size,
         event_id=id
     )
     db.add(db_photo)

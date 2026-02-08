@@ -8,6 +8,7 @@ class Photo(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     url = Column(String)
+    file_size = Column(Integer, default=0)
     event_id = Column(Integer, ForeignKey("events.id"))
     
     # Relationship

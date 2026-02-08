@@ -13,13 +13,14 @@ def create_studio_settings(
     db: Session = Depends(get_db)
 ):
     """Create new studio settings"""
-    # Check if email already exists
-    existing = db.query(models.StudioSettings).filter(
-        models.StudioSettings.email == settings.email
-    ).first()
-    
-    if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
+    # Check if email_id already exists if provided
+    if settings.email_id:
+        existing = db.query(models.StudioSettings).filter(
+            models.StudioSettings.email_id == settings.email_id
+        ).first()
+        
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered")
     
     db_settings = models.StudioSettings(**settings.model_dump())
     db.add(db_settings)
@@ -79,9 +80,9 @@ def update_studio_settings(
         raise HTTPException(status_code=404, detail="Studio settings not found")
     
     # Check if email is being updated and if it already exists
-    if settings_update.email and settings_update.email != db_settings.email:
+    if settings_update.email_id and settings_update.email_id != db_settings.email_id:
         existing = db.query(models.StudioSettings).filter(
-            models.StudioSettings.email == settings_update.email
+            models.StudioSettings.email_id == settings_update.email_id
         ).first()
         if existing:
             raise HTTPException(status_code=400, detail="Email already in use")
