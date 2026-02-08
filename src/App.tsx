@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Toaster } from "@/components/ui/sonner";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -27,6 +28,8 @@ import Events from './pages/studio/Events';
 import CreateEvent from './pages/studio/CreateEvent';
 import Analytics from './pages/studio/Analytics';
 import SettingsPage from './pages/studio/Settings';
+import EventDetails from './pages/studio/EventDetails';
+import ProfileSetup from './pages/studio/ProfileSetup';
 
 // Guest Pages
 import GuestEventGallery from './pages/guest/EventGallery';
@@ -34,9 +37,7 @@ import GuestEventGallery from './pages/guest/EventGallery';
 // Auth Pages
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
-
-import { backend_url } from './config/backend';
-import axios from 'axios';
+import useUserStore from './store/userStore';
 
 const SuperAdminLayoutWrapper = ({ children, title }: { children: React.ReactNode, title: string }) => {
   const items = [
@@ -61,108 +62,165 @@ const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, t
   return <DashboardLayout items={items} title={title}>{children}</DashboardLayout>;
 };
 
-const App = () => {
-  const backendHealthCheck = async () => {
-    const url = `${backend_url}/health`;
-    const res = await axios.get(url);
-    if (res && res.status === 200 && res.data?.status === "ok") {
-      console.log("Backend is healthy");
+const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) => {
+  const { user } = useUserStore();
+  if (!user) {
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    if (user.role === 'admin') {
+      return <Navigate to="/super-admin/dashboard" replace />;
     } else {
-      console.log("Backend is not healthy");
+      return <Navigate to="/studio/dashboard" replace />;
     }
   }
-  const test = async () => {
-    const url = `${backend_url}/test`;
-    const res = await axios.post(url, { a: 10, b: 20 });
-    console.log(res.data);
+
+  return <>{children}</>;
+};
+
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useUserStore();
+  if (user) {
+    if (user.role === 'admin') {
+      return <Navigate to="/super-admin/dashboard" replace />;
+    } else {
+      return <Navigate to="/studio/dashboard" replace />;
+    }
   }
-  const sample = async () => {
-    const url = `${backend_url}/sample`
-    const res = await axios.get(url);
-    console.log(res.data);
-  }
+  return <>{children}</>;
+};
+
+const App = () => {
+  const { user, loading, refreshJwt } = useUserStore();
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    backendHealthCheck();
-    test();
-    sample();
-  }, []);
+    const initAuth = async () => {
+      await refreshJwt();
+      setIsInitializing(false);
+    }
+    initAuth()
+  }, [])
+
+  if (isInitializing) return null;
+
   return (
     <Router>
+      <Toaster />
       <Routes>
-        {/* Auth Routes */}
-        <Route path="/auth/login" element={<Login />} />
-        <Route path="/auth/signup" element={<Signup />} />
+        <Route path="/auth/login" element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        } />
+        <Route path="/auth/signup" element={
+          <PublicRoute>
+            <Signup />
+          </PublicRoute>
+        } />
 
-        {/* Redirect Root to Login for demo purposes */}
-        <Route path="/" element={<Navigate to="/auth/login" replace />} />
+        <Route path="/" element={
+          !user ? 
+          <Navigate to="/auth/login" replace /> : 
+          (user.role === 'admin' ? <Navigate to="/super-admin/dashboard" replace /> : <Navigate to="/studio/dashboard" replace />)
+        } />
 
-        {/* Super Admin Routes */}
         <Route path="/super-admin/dashboard" element={
-          <SuperAdminLayoutWrapper title="Platform Overview">
-            <SuperAdminDashboard />
-          </SuperAdminLayoutWrapper>
+          <ProtectedRoute allowedRoles={['admin']}>
+            <SuperAdminLayoutWrapper title="Platform Overview">
+              <SuperAdminDashboard />
+            </SuperAdminLayoutWrapper>
+          </ProtectedRoute>
         } />
         <Route path="/super-admin/studios" element={
-          <SuperAdminLayoutWrapper title="Studio Management">
-            <StudiosManagement />
-          </SuperAdminLayoutWrapper>
+          <ProtectedRoute allowedRoles={['admin']}>
+            <SuperAdminLayoutWrapper title="Studio Management">
+              <StudiosManagement />
+            </SuperAdminLayoutWrapper>
+          </ProtectedRoute>
         } />
         <Route path="/super-admin/analytics" element={
-          <SuperAdminLayoutWrapper title="Platform Analytics">
-            <SuperAdminAnalytics />
-          </SuperAdminLayoutWrapper>
+          <ProtectedRoute allowedRoles={['admin']}>
+            <SuperAdminLayoutWrapper title="Platform Analytics">
+              <SuperAdminAnalytics />
+            </SuperAdminLayoutWrapper>
+          </ProtectedRoute>
         } />
         <Route path="/super-admin/settings" element={
-          <SuperAdminLayoutWrapper title="System Settings">
-            <SuperAdminSettings />
-          </SuperAdminLayoutWrapper>
+          <ProtectedRoute allowedRoles={['admin']}>
+            <SuperAdminLayoutWrapper title="System Settings">
+              <SuperAdminSettings />
+            </SuperAdminLayoutWrapper>
+          </ProtectedRoute>
         } />
         <Route path="/super-admin/plans" element={
-          <SuperAdminLayoutWrapper title="Subscription Plans">
-            <SuperAdminPricing />
-          </SuperAdminLayoutWrapper>
+          <ProtectedRoute allowedRoles={['admin']}>
+            <SuperAdminLayoutWrapper title="Subscription Plans">
+              <SuperAdminPricing />
+            </SuperAdminLayoutWrapper>
+          </ProtectedRoute>
         } />
         <Route path="/super-admin/studio/:studioId" element={
-          <SuperAdminLayoutWrapper title="Studio Profile">
-            <StudioDetails />
-          </SuperAdminLayoutWrapper>
+          <ProtectedRoute allowedRoles={['admin']}>
+            <SuperAdminLayoutWrapper title="Studio Profile">
+              <StudioDetails />
+            </SuperAdminLayoutWrapper>
+          </ProtectedRoute>
         } />
 
-        {/* Studio Routes */}
         <Route path="/studio/dashboard" element={
-          <StudioLayoutWrapper title="Studio Home">
-            <StudioDashboard />
-          </StudioLayoutWrapper>
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Studio Home">
+              <StudioDashboard />
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
         } />
         <Route path="/studio/photos" element={
-          <StudioLayoutWrapper title="Event Photography">
-            <div className="p-8 text-center bg-card rounded-3xl border border-border">
-              <h2 className="text-2xl font-bold">Event Photos</h2>
-              <p className="text-muted-foreground">This page is under construction.</p>
-            </div>
-          </StudioLayoutWrapper>
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Event Photography">
+              <div className="p-8 text-center bg-card rounded-3xl border border-border">
+                <h2 className="text-2xl font-bold">Event Photos</h2>
+                <p className="text-muted-foreground">This page is under construction.</p>
+              </div>
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
         } />
         <Route path="/studio/events" element={
-          <StudioLayoutWrapper title="Events List">
-            <Events />
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Events List">
+              <Events />
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
+        } />
+        <Route path="/studio/events/:eventId" element={
+          <StudioLayoutWrapper title="Event Management">
+            <EventDetails />
           </StudioLayoutWrapper>
         } />
         <Route path="/studio/create-event" element={
-          <StudioLayoutWrapper title="Create New Event">
-            <CreateEvent />
-          </StudioLayoutWrapper>
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Create New Event">
+              <CreateEvent />
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
         } />
         <Route path="/studio/analytics" element={
-          <StudioLayoutWrapper title="Analytics">
-            <Analytics />
-          </StudioLayoutWrapper>
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Analytics">
+              <Analytics />
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
         } />
         <Route path="/studio/settings" element={
-          <StudioLayoutWrapper title="Settings">
-            <SettingsPage />
-          </StudioLayoutWrapper>
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Settings">
+              <SettingsPage />
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
         } />
+
+        <Route path="/studio/profile-setup" element={<ProfileSetup />} />
 
         {/* Guest Routes - Dynamic Event View */}
         <Route path="/event/:eventId" element={<GuestEventGallery />} />

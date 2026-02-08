@@ -1,275 +1,191 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Camera, Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Card } from '@/components/ui/card';
+import { toast } from 'sonner';
+import useUserStore from '@/store/userStore';
+import {
+    pageVariants,
+    listItemVariants,
+    staggerContainer,
+    buttonVariants
+} from '@/lib/motion-config';
 
 export default function Login() {
     const navigate = useNavigate();
+    const { login, loading } = useUserStore();
     const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        rememberMe: false,
-    });
-    const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
-
-        // Simulate API call
-        setTimeout(() => {
-            setIsLoading(false);
-            navigate('/dashboard');
-        }, 1500);
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
+        try {
+            const res = await login({ email, password });
+            if (res.type === 'success') {
+                toast.success('Welcome back!');
+                navigate('/studio/dashboard');
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-slate-950">
-            {/* Animated Background Gradients */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-float" style={{ animationDelay: '4s' }}></div>
+        <motion.div
+            initial="initial"
+            animate="animate"
+            variants={pageVariants}
+            className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-white"
+        >
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[10%] left-[5%] w-[40rem] h-[40rem] bg-primary-500/5 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[10%] right-[5%] w-[30rem] h-[30rem] bg-primary-500/10 rounded-full blur-[100px]" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] bg-[radial-gradient(#93ea7d_1.5px,transparent_1px)] [background-size:40px_40px]" />
             </div>
 
-            {/* Grid Pattern Overlay */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[50px_50px]"></div>
-
-            {/* Main Content */}
-            <div className="relative z-10 w-full max-w-6xl mx-auto px-4 py-8 flex items-center justify-center gap-12">
-                {/* Left Side - Branding */}
-                <div className="hidden lg:flex flex-col items-start justify-center flex-1 space-y-8">
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-3 rounded-2xl premium-gradient shadow-lg shadow-primary-500/30">
-                                <Camera className="w-8 h-8 text-white" />
+            <div className="relative z-10 w-full max-w-6xl mx-auto px-6 py-12 flex flex-col lg:flex-row items-center justify-center gap-16 lg:gap-24">
+                <motion.div
+                    variants={staggerContainer}
+                    className="hidden lg:flex flex-col items-start justify-center flex-1 space-y-10"
+                >
+                    <motion.div variants={listItemVariants} className="space-y-6">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-16 h-16 rounded-[1.5rem] bg-white flex items-center justify-center text-foreground shadow-xl shadow-primary-500/20 overflow-hidden p-2.5">
+                                <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-bold bg-linear-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
-                                    PhotoAsset
+                                <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground leading-none">
+                                    SnapVault
                                 </h1>
-                                <p className="text-sm text-slate-400">Management Platform</p>
+                                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mt-1.5 opacity-70">Asset Management</p>
                             </div>
                         </div>
 
-                        <h2 className="text-5xl font-bold text-white leading-tight">
-                            Manage Your
+                        <h2 className="text-6xl font-black text-foreground leading-[1.1] uppercase tracking-tight">
+                            Elevate Your
                             <br />
-                            <span className="bg-linear-to-r from-primary-400 via-accent-400 to-primary-500 bg-clip-text text-transparent">
-                                Photos Effortlessly
-                            </span>
+                            <span className="text-primary-500">Visual DNA.</span>
                         </h2>
 
-                        <p className="text-lg text-slate-300 max-w-md">
-                            Organize, share, and collaborate on your photo collections with powerful AI-driven tools and seamless workflows.
+                        <p className="text-lg font-bold text-muted-foreground max-w-md uppercase tracking-tight opacity-80 leading-relaxed">
+                            A high-fidelity platform for studios to organize, distribute, and monetize photography at scale.
                         </p>
-                    </div>
+                    </motion.div>
+                </motion.div>
 
-                    {/* Feature Pills */}
-                    <div className="flex flex-wrap gap-3">
-                        {['AI Face Recognition', 'Smart Albums', 'Cloud Storage', 'Team Collaboration'].map((feature, idx) => (
-                            <div
-                                key={idx}
-                                className="px-4 py-2 rounded-full glass border border-primary-500/30 text-sm text-slate-200 flex items-center gap-2 hover:border-primary-500/60 transition-all duration-300"
-                            >
-                                <Sparkles className="w-3 h-3 text-primary-400" />
-                                {feature}
+                <motion.div
+                    variants={listItemVariants}
+                    className="w-full max-w-[480px]"
+                >
+                    <Card className="rounded-[3rem] p-10 shadow-2xl border-border/50 glass relative overflow-hidden">
+                        <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
+                            <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-foreground font-black overflow-hidden p-2">
+                                <img src="/logo.png" alt="SnapVault Logo" className="w-full h-full object-contain" />
                             </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Right Side - Login Form */}
-                <div className="w-full max-w-md">
-                    <div className="glass rounded-3xl p-8 shadow-2xl border border-white/10 backdrop-blur-xl">
-                        {/* Mobile Logo */}
-                        <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-                            <div className="p-2 rounded-xl premium-gradient">
-                                <Camera className="w-6 h-6 text-white" />
-                            </div>
-                            <h1 className="text-2xl font-bold bg-linear-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
-                                PhotoAsset
-                            </h1>
+                            <h1 className="text-2xl font-black uppercase tracking-tighter">SnapVault</h1>
                         </div>
 
-                        <div className="mb-8">
-                            <h3 className="text-2xl font-bold text-white mb-2">Welcome Back</h3>
-                            <p className="text-slate-400">Sign in to continue to your account</p>
+                        <div className="mb-10 text-center lg:text-left">
+                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tight mb-2">Sign in</h3>
+                            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest opacity-60">Welcome back, enter your credentials.</p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Email Input */}
-                            <div className="space-y-2">
-                                <label htmlFor="email" className="block text-sm font-medium text-slate-300">
-                                    Email Address
-                                </label>
+                        <form onSubmit={handleSubmit} className="space-y-8">
+                            <div className="space-y-3">
+                                <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Email</Label>
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Mail className="w-5 h-5 text-slate-500 group-focus-within:text-primary-400 transition-colors" />
-                                    </div>
-                                    <input
+                                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary-500 transition-colors" />
+                                    <Input
                                         type="email"
-                                        id="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
                                         required
-                                        className="w-full pl-12 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300"
-                                        placeholder="you@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="h-14 pl-14 bg-muted/30 border-border/50 rounded-2xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs placeholder:text-muted-foreground/30 tracking-widest"
+                                        placeholder="user@domain.com"
                                     />
                                 </div>
                             </div>
 
-                            {/* Password Input */}
-                            <div className="space-y-2">
-                                <label htmlFor="password" className="block text-sm font-medium text-slate-300">
-                                    Password
-                                </label>
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between px-1">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Password</Label>
+                                    <Link to="#" className="text-[10px] font-black uppercase text-primary-600 tracking-widest hover:text-primary-500 transition-colors">Forgot password?</Link>
+                                </div>
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Lock className="w-5 h-5 text-slate-500 group-focus-within:text-primary-400 transition-colors" />
-                                    </div>
-                                    <input
+                                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary-500 transition-colors" />
+                                    <Input
                                         type={showPassword ? 'text' : 'password'}
-                                        id="password"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
                                         required
-                                        className="w-full pl-12 pr-12 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="h-14 pl-14 pr-14 bg-muted/30 border-border/50 rounded-2xl font-bold transition-all focus-visible:ring-primary-500/20 focus-visible:border-primary-500 text-xs"
                                         placeholder="••••••••"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                                        className="absolute right-5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                        tabIndex={-1}
                                     >
-                                        {showPassword ? (
-                                            <EyeOff className="w-5 h-5" />
-                                        ) : (
-                                            <Eye className="w-5 h-5" />
-                                        )}
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Remember Me & Forgot Password */}
-                            <div className="flex items-center justify-between">
-                                <label className="flex items-center gap-2 cursor-pointer group">
-                                    <input
-                                        type="checkbox"
-                                        name="rememberMe"
-                                        checked={formData.rememberMe}
-                                        onChange={handleChange}
-                                        className="w-4 h-4 rounded border-slate-700 bg-slate-900/50 text-primary-600 focus:ring-2 focus:ring-primary-500 focus:ring-offset-0 cursor-pointer"
-                                    />
-                                    <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
-                                        Remember me
-                                    </span>
+                            <div className="flex items-center gap-2 px-1">
+                                <Checkbox id="remember" className="rounded-lg border-neutral-400 data-[state=checked]:bg-primary-500 data-[state=checked]:border-none" />
+                                <label htmlFor="remember" className="text-[10px] font-black uppercase text-muted-foreground tracking-widest cursor-pointer select-none">
+                                    Remeber me
                                 </label>
-                                <Link
-                                    to="/auth/forgot-password"
-                                    className="text-sm text-primary-400 hover:text-primary-300 transition-colors font-medium"
-                                >
-                                    Forgot password?
-                                </Link>
                             </div>
 
-                            {/* Submit Button */}
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full py-3 px-4 premium-gradient rounded-xl text-white font-semibold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                        Signing in...
-                                    </>
-                                ) : (
-                                    <>
-                                        Sign In
-                                        <ArrowRight className="w-5 h-5" />
-                                    </>
-                                )}
-                            </button>
-
-                            {/* Divider */}
-                            <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-slate-700"></div>
-                                </div>
-                                <div className="relative flex justify-center text-sm">
-                                    <span className="px-4 bg-slate-900/50 text-slate-400">Or continue with</span>
-                                </div>
-                            </div>
-
-                            {/* Social Login Buttons */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <button
-                                    type="button"
-                                    className="py-3 px-4 bg-slate-900/50 border border-slate-700 rounded-xl text-slate-300 font-medium hover:bg-slate-800/50 hover:border-slate-600 transition-all duration-300 flex items-center justify-center gap-2"
+                            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                                <Button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full h-14 rounded-2xl bg-foreground text-background hover:bg-foreground/90 font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-foreground/10 flex items-center justify-center gap-3"
                                 >
-                                    <svg className="w-5 h-5" viewBox="0 0 24 24">
-                                        <path
-                                            fill="currentColor"
-                                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                                        />
-                                        <path
-                                            fill="currentColor"
-                                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                                        />
-                                        <path
-                                            fill="currentColor"
-                                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                                        />
-                                        <path
-                                            fill="currentColor"
-                                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                                        />
-                                    </svg>
-                                    Google
-                                </button>
-                                <button
-                                    type="button"
-                                    className="py-3 px-4 bg-slate-900/50 border border-slate-700 rounded-xl text-slate-300 font-medium hover:bg-slate-800/50 hover:border-slate-600 transition-all duration-300 flex items-center justify-center gap-2"
-                                >
-                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                                    </svg>
-                                    GitHub
-                                </button>
-                            </div>
+                                    {loading ? (
+                                        <div className="w-5 h-5 border-2 border-background/30 border-t-background rounded-full animate-spin" />
+                                    ) : (
+                                        <>
+                                            Sign in
+                                            <ArrowRight size={18} strokeWidth={3} />
+                                        </>
+                                    )}
+                                </Button>
+                            </motion.div>
                         </form>
 
-                        {/* Sign Up Link */}
-                        <div className="mt-8 text-center">
-                            <p className="text-slate-400">
-                                Don't have an account?{' '}
+                        <div className="mt-10 pt-10 border-t border-border/50 text-center">
+                            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                                NO ACCOUNT?{' '}
                                 <Link
                                     to="/auth/signup"
-                                    className="text-primary-400 hover:text-primary-300 font-semibold transition-colors"
+                                    className="text-primary-600 hover:text-primary-500 transition-colors"
                                 >
-                                    Sign up for free
+                                    Sign up
                                 </Link>
                             </p>
                         </div>
-                    </div>
+                    </Card>
 
-                    {/* Trust Indicators */}
-                    <div className="mt-6 text-center text-sm text-slate-500">
-                        <p>🔒 Secured with 256-bit SSL encryption</p>
+                    <div className="mt-8 text-center opacity-40">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                            By signing you are accepting our{' '}
+                            <Link to="#" className="underline hover:text-foreground transition-colors">Terms and Conditions</Link>
+                            ,{' '}
+                            <Link to="#" className="underline hover:text-foreground transition-colors">Privacy Policy</Link>
+                        </p>
                     </div>
-                </div>
+                </motion.div>
             </div>
-        </div>
+        </motion.div>
     );
 }

@@ -22,3 +22,41 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environemnt variables
+.env
+.env.*
+
+# Virtual Environment
+.venv
+env/
+venv/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Unit Test / Coverage reports
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Databases
+*.sqlite
+*.sqlite3
+
+# OS generated files
+.DS_Store
+Thumbs.db
+server/app/api/__pycache__/deps.cpython-313.pyc
+server/alembic/__pycache__/env.cpython-313.pyc
+server/alembic/__pycache__/env.cpython-313.pyc
