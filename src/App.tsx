@@ -25,7 +25,11 @@ import StudioDashboard from './pages/studio/Dashboard';
 import Events from './pages/studio/Events';
 import CreateEvent from './pages/studio/CreateEvent';
 import Analytics from './pages/studio/Analytics';
-import EventDetails from './pages/studio/EventDetails';
+import EventDetailsLayout from './pages/studio/event-details/EventDetailsLayout';
+import EventPhotos from './pages/studio/event-details/EventPhotos';
+import EventAnalytics from './pages/studio/event-details/EventAnalytics';
+import EventSettings from './pages/studio/event-details/EventSettings';
+import EventDesign from './pages/studio/event-details/EventDesign';
 import ProfileSetup from './pages/studio/ProfileSetup';
 
 import SettingsLayout from './components/layout/SettingsLayout';
@@ -101,7 +105,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => {
-  const { user, loading, refreshJwt } = useUserStore();
+  const { user, refreshJwt } = useUserStore();
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
@@ -194,10 +198,18 @@ const App = () => {
           </ProtectedRoute>
         } />
         <Route path="/studio/events/:eventId" element={
-          <StudioLayoutWrapper title="Event Management">
-            <EventDetails />
-          </StudioLayoutWrapper>
-        } />
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Event Management">
+              <EventDetailsLayout />
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
+        }>
+          <Route index element={<Navigate to="photos" replace />} />
+          <Route path="photos" element={<EventPhotos />} />
+          <Route path="analytics" element={<EventAnalytics />} />
+          <Route path="settings" element={<EventSettings />} />
+          <Route path="design" element={<EventDesign />} />
+        </Route>
         <Route path="/studio/create-event" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Create New Event">

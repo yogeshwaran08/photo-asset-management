@@ -322,12 +322,10 @@ const EventDetails = () => {
                 </header>
 
                 <div className="flex flex-1 h-full overflow-hidden">
-                    {/* PHOTOS CONTEXT SIDEBAR */}
                     {activeTab === 'photos' && (
                         <div className="w-[260px] bg-white border-r border-border/10 flex flex-col z-30 shrink-0 h-full">
 
                             <div className="flex-1 overflow-y-auto p-5 space-y-6 scrollbar-hide pt-8 relative">
-                                {/* Device Toggles (Absolute Top Center) */}
                                 <div className="absolute top-2 left-0 right-0 flex items-center justify-center gap-2 z-10">
                                     <button className="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-md transition-transform active:scale-95">
                                         <Monitor size={14} />
