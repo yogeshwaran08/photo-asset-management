@@ -60,7 +60,7 @@ const SettingsLayout = ({ children, title }: SettingsLayoutProps) => {
                                 className={cn(
                                     "w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 group",
                                     isActive
-                                        ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30"
+                                        ? "bg-black text-white shadow-lg shadow-black/30"
                                         : "hover:bg-muted/40 text-muted-foreground hover:text-foreground"
                                 )}
                             >

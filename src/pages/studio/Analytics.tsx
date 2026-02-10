@@ -7,17 +7,12 @@ import {
     ArrowUpRight,
     ArrowDownRight,
     Calendar,
-    Filter,
     Instagram,
     Facebook,
     Youtube,
     Linkedin,
     Twitter,
     Share2,
-    MessageCircle,
-    Link,
-    Mail,
-    Zap,
     DownloadCloud,
     ChevronDown
 } from 'lucide-react';
@@ -113,7 +108,7 @@ const Analytics = () => {
             initial="initial"
             animate="animate"
             variants={pageVariants}
-            className="space-y-8 max-w-7xl mx-auto pb-12"
+            className="space-y-8 pb-12"
         >
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

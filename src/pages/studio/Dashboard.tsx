@@ -4,17 +4,11 @@ import {
     Camera,
     Eye,
     HardDrive,
-    Plus,
     Calendar,
-    MapPin,
     ArrowUpRight,
     TrendingUp,
-    Clock,
-    ChevronDown,
-    Download
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { MOCK_EVENTS } from '../../utils/mockData';
 import { eventService, type Event } from '@/services/eventService';
 
 import { photoService } from '@/services/photoService';
@@ -23,17 +17,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
     pageVariants,
     listItemVariants,
     staggerContainer,
-    buttonVariants,
-    springTransition
 } from '@/lib/motion-config';
 
 const StatCard = ({ title, value, icon: Icon, trend, trendValue, colorClass }: any) => (
@@ -141,13 +127,13 @@ const StudioDashboard = () => {
             initial="initial"
             animate="animate"
             variants={pageVariants}
-            className="space-y-10 max-w-7xl mx-auto pb-12"
+            className="space-y-0 pb-0"
         >
             <div></div>
 
             <motion.div
                 variants={staggerContainer}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
             >
                 <StatCard
                     title="Total Events"
@@ -183,7 +169,7 @@ const StudioDashboard = () => {
                 />
             </motion.div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
                 <MotionCard
                     variants={listItemVariants}
                     className="lg:col-span-2 border-border/50"
