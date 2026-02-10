@@ -11,7 +11,8 @@ import {
     Box as BoxIcon,
     BarChart3,
     Lock,
-    Link as LinkIcon
+    Link as LinkIcon,
+    Settings as SettingsIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -41,7 +42,7 @@ const Settings = () => {
 
     const tabs: { id: SettingsTab; label: string; icon: any }[] = [
         { id: 'profile', label: 'Profile', icon: User },
-        { id: 'branding', label: 'Branding', icon: Camera },
+        { id: 'branding', label: 'Branding', icon: SettingsIcon },
         { id: 'domains', label: 'Domains', icon: Globe },
         { id: 'integrations', label: 'Integrations', icon: Bell },
         { id: 'plans', label: 'My Plans', icon: Shield },
@@ -76,8 +77,7 @@ const Settings = () => {
                     setProfileData({
                         full_name: data.full_name || '',
                         mobile_number: data.mobile_number || '',
-                        // primitive handling extract country code if stored together or separate? assuming separate for now based on UI
-                        country_code: '+91', // Mock for now if not in DB
+                        country_code: '+91', 
                         email_id: data.email_id || '',
                         country: data.country || '',
                         state: data.state || '',
@@ -309,8 +309,8 @@ const Settings = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card className="border-border/50 glass shadow-sm flex flex-col justify-between">
                         <CardHeader>
-                            <CardTitle className="text-sm font-black uppercase tracking-widest text-primary-500">Connect Domain</CardTitle>
-                            <CardDescription className="font-bold text-[10px] uppercase opacity-60 mt-1">
+                            <CardTitle className="text-sm  uppercase tracking-widest text-primary-500">Connect Domain</CardTitle>
+                            <CardDescription className=" text-[10px] uppercase opacity-60 mt-1">
                                 Connect your own domain and display galleries under your branding. eg your.company.com
                             </CardDescription>
                         </CardHeader>
@@ -519,8 +519,7 @@ const Settings = () => {
     };
 
     return (
-        <div className="flex h-full bg-[#fcfcfc] dark:bg-zinc-950">
-            {/* Sub-Sidebar Navigation */}
+        <div className="flex h-full bg-[#fcfcfc] dark:bg-zinc-950 font-sans" style={{ fontFamily: 'Poppins, sans-serif' }}>
             <aside className="w-72 border-r border-border/50 bg-white/50 backdrop-blur-xl flex flex-col h-full sticky top-0 overflow-hidden">
                 <div className="h-6" />
 
@@ -542,7 +541,7 @@ const Settings = () => {
                             )}>
                                 <tab.icon size={16} strokeWidth={2.5} />
                             </div>
-                            <span className="font-black uppercase text-[10px] tracking-widest text-left flex-1">{tab.label}</span>
+                            <span className="font-black text-[10px] tracking-widest text-left flex-1">{tab.label}</span>
                             {activeTab === tab.id && (
                                 <motion.div layoutId="active-indicator-settings" className="w-1.5 h-1.5 rounded-full bg-primary-500" />
                             )}
@@ -557,18 +556,18 @@ const Settings = () => {
                                 <HelpCircle size={16} />
                             </div>
                             <div>
-                                <h5 className="font-black uppercase text-[10px] tracking-widest">Need Help?</h5>
+                                <h5 className="font-black text-[10px] tracking-widest">Need Help?</h5>
                                 <p className="text-[9px] text-muted-foreground">Contact support</p>
                             </div>
                         </div>
                         <Dialog>
                             <DialogTrigger asChild>
-                                <Button variant="outline" size="sm" className="w-full text-[10px] font-black uppercase tracking-widest h-8 bg-white hover:bg-white/80 transition-colors">Get Support</Button>
+                                <Button variant="outline" size="sm" className="w-full text-[10px] font-black tracking-widest h-8 bg-white hover:bg-white/80 transition-colors">Get Support</Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px] rounded-2xl glass border-border/50 bg-white/80 backdrop-blur-xl">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black uppercase tracking-tight">Help</DialogTitle>
-                                    <DialogDescription className="font-bold uppercase text-xs tracking-widest text-primary-500">
+                                    <DialogTitle className="text-2xl font-black tracking-tight">Help</DialogTitle>
+                                    <DialogDescription className="font-bold text-xs tracking-widest text-primary-500">
                                         Talk To Experts
                                     </DialogDescription>
                                 </DialogHeader>

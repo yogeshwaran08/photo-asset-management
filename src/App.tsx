@@ -25,9 +25,16 @@ import StudioDashboard from './pages/studio/Dashboard';
 import Events from './pages/studio/Events';
 import CreateEvent from './pages/studio/CreateEvent';
 import Analytics from './pages/studio/Analytics';
-import SettingsPage from './pages/studio/Settings';
 import EventDetails from './pages/studio/EventDetails';
 import ProfileSetup from './pages/studio/ProfileSetup';
+
+import SettingsLayout from './components/layout/SettingsLayout';
+import Profile from './pages/studio/settings/Profile';
+import Branding from './pages/studio/settings/Branding';
+import Domains from './pages/studio/settings/Domains';
+import Integrations from './pages/studio/settings/Integrations';
+import MyPlans from './pages/studio/settings/MyPlans';
+import Invoices from './pages/studio/settings/Invoices';
 
 import GuestEventGallery from './pages/guest/EventGallery';
 
@@ -54,11 +61,10 @@ const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, t
       href: '/studio/events', 
       icon: Camera,
       subItems: [
-        { name: 'All Events', href: '/studio/events', icon: ImageIcon }, // Icon is just a placeholder here if not used
+        { name: 'All Events', href: '/studio/events', icon: ImageIcon },
         { name: 'Create Event', href: '/studio/create-event', icon: Plus }
       ]
     },
-    { name: 'All Photos', href: '/studio/photos', icon: ImageIcon },
     { name: 'Analytics', href: '/studio/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/studio/settings', icon: Settings },
   ];
@@ -179,16 +185,7 @@ const App = () => {
             </StudioLayoutWrapper>
           </ProtectedRoute>
         } />
-        <Route path="/studio/photos" element={
-          <ProtectedRoute allowedRoles={['studio']}>
-            <StudioLayoutWrapper title="Event Photography">
-              <div className="p-8 text-center bg-card rounded-3xl border border-border">
-                <h2 className="text-2xl font-bold">Event Photos</h2>
-                <p className="text-muted-foreground">This page is under construction.</p>
-              </div>
-            </StudioLayoutWrapper>
-          </ProtectedRoute>
-        } />
+
         <Route path="/studio/events" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Events List">
@@ -215,10 +212,58 @@ const App = () => {
             </StudioLayoutWrapper>
           </ProtectedRoute>
         } />
-        <Route path="/studio/settings" element={
+        <Route path="/studio/settings" element={<Navigate to="/studio/settings/profile" replace />} />
+        <Route path="/studio/settings/profile" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Settings">
-              <SettingsPage />
+              <SettingsLayout title="Profile">
+                <Profile />
+              </SettingsLayout>
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
+        } />
+        <Route path="/studio/settings/branding" element={
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Settings">
+              <SettingsLayout title="Branding">
+                <Branding />
+              </SettingsLayout>
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
+        } />
+        <Route path="/studio/settings/domains" element={
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Settings">
+              <SettingsLayout title="Domains">
+                <Domains />
+              </SettingsLayout>
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
+        } />
+        <Route path="/studio/settings/integrations" element={
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Settings">
+              <SettingsLayout title="Integrations">
+                <Integrations />
+              </SettingsLayout>
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
+        } />
+        <Route path="/studio/settings/plans" element={
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Settings">
+              <SettingsLayout title="My Plans">
+                <MyPlans />
+              </SettingsLayout>
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
+        } />
+        <Route path="/studio/settings/invoices" element={
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Settings">
+              <SettingsLayout title="Invoices">
+                <Invoices />
+              </SettingsLayout>
             </StudioLayoutWrapper>
           </ProtectedRoute>
         } />

@@ -127,7 +127,7 @@ const CreateEvent = () => {
                         <span className="font-semibold text-sm tracking-wide">Details</span>
                     </button>
                     
-                    <div className="w-px h-6 bg-border/40" />
+                    <div className="h-px w-8 bg-gradient-to-r from-border/60 via-border/40 to-border/60" />
                     
                     <button
                         className={cn(

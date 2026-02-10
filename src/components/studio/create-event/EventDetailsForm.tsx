@@ -53,7 +53,7 @@ export const EventDetailsForm = ({ formik }: EventDetailsFormProps) => {
                         <div className="space-y-3">
                             <Label className="text-sm font-bold text-gray-900 uppercase tracking-wider ml-1">Event Name</Label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
+                                <div className="absolute top-0 left-0 pl-4 h-14 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
                                     <LayoutTemplate size={18} />
                                 </div>
                                 <Input
@@ -77,7 +77,7 @@ export const EventDetailsForm = ({ formik }: EventDetailsFormProps) => {
                             <div className="space-y-3">
                                 <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Category</Label>
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
+                                    <div className="absolute top-0 left-0 pl-4 h-12 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
                                         <Tag size={18} />
                                     </div>
                                     <select
@@ -107,7 +107,7 @@ export const EventDetailsForm = ({ formik }: EventDetailsFormProps) => {
                             <div className="space-y-3">
                                 <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Location</Label>
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
+                                    <div className="absolute top-0 left-0 pl-4 h-12 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors">
                                         <MapPin size={18} />
                                     </div>
                                     <Input
@@ -132,7 +132,7 @@ export const EventDetailsForm = ({ formik }: EventDetailsFormProps) => {
                             <div className="space-y-3">
                                 <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Start Date</Label>
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors z-10">
+                                    <div className="absolute top-0 left-0 pl-4 h-12 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors z-10">
                                         <CalendarIcon size={18} />
                                     </div>
                                     <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
@@ -184,7 +184,7 @@ export const EventDetailsForm = ({ formik }: EventDetailsFormProps) => {
                             <div className="space-y-3">
                                 <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">End Date</Label>
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors z-10">
+                                    <div className="absolute top-0 left-0 pl-4 h-12 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary-500 transition-colors z-10">
                                         <CalendarIcon size={18} />
                                     </div>
                                     <Popover open={isEndDateOpen} onOpenChange={setIsEndDateOpen}>
