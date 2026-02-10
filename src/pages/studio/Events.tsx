@@ -37,7 +37,14 @@ const Events = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<EventStatus>('all');
     const [searchQuery, setSearchQuery] = useState('');
-    const [viewMode, setViewMode] = useState<ViewMode>('grid');
+    const [viewMode, setViewMode] = useState<ViewMode>(() => {
+        const saved = localStorage.getItem('viewMode');
+        return (saved === 'grid' || saved === 'list') ? saved : 'grid';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('viewMode', viewMode);
+    }, [viewMode]);
 
     useEffect(() => {
         fetchEvents();
@@ -127,10 +134,9 @@ const Events = () => {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        {/* New Event Button */}
                         <Button 
                             onClick={() => navigate('/studio/create-event')}
-                            className="h-10 bg-primary-500 hover:bg-primary-600 text-white shadow-lg shadow-primary-500/20 px-6 rounded-lg font-semibold text-xs uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                            className="h-10 bg-primary-500 hover:bg-primary-600 text-white shadow-lg shadow-primary-500/20 px-6 rounded-lg font-semibold text-xs uppercase tracking-widest transition-all hover:scale-[1.01] active:scale-[0.99]"
                         >
                             <Plus size={16} className="mr-2" strokeWidth={3} />
                             New Event
@@ -138,10 +144,8 @@ const Events = () => {
                     </div>
                 </div>
 
-                {/* Divider Line */}
                 <div className="h-px w-full bg-gray-200" />
 
-                {/* Status Tabs */}
                 <div className="flex items-center gap-8 overflow-x-auto no-scrollbar pb-1">
                     {['All Events', 'Published', 'Unpublished', 'Expired'].map((tab) => (
                         <button
@@ -160,7 +164,6 @@ const Events = () => {
                 </div>
             </div>
 
-            {/* Content Display */}
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-32">
                     <Loader2 size={40} className="animate-spin text-primary-500 mb-4" />
@@ -176,36 +179,40 @@ const Events = () => {
                             key={event.id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
+                            whileHover={{ y: -1, transition: { type: "tween", ease: "easeOut", duration: 0.3 } }}
                             className={cn(
-                                "group bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 cursor-pointer",
-                                viewMode === 'list' && "flex flex-col md:flex-row h-auto md:h-48"
+                                "group bg-white rounded-[24px] p-3 border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)] hover:border-primary-500 transition-colors duration-200 cursor-pointer relative",
+                                viewMode === 'list' && "flex flex-col md:flex-row p-0 overflow-hidden rounded-2xl md:h-48"
                             )}
                             onClick={() => navigate(`/studio/events/${event.id}`)}
                         >
-                            {/* Image Area */}
                             <div className={cn(
-                                "relative overflow-hidden bg-gray-100",
-                                viewMode === 'grid' ? "aspect-[4/3]" : "w-full md:w-64 shrink-0 h-48 md:h-full"
+                                "relative overflow-hidden rounded-[18px] bg-neutral-50",
+                                viewMode === 'grid' ? "aspect-[4/3]" : "w-full md:w-72 shrink-0 h-48 md:h-full rounded-none"
                             )}>
-                                <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-                                    <ImageIcon size={40} />
+                                <div className="absolute inset-0 flex items-center justify-center text-gray-200">
+                                    <ImageIcon size={48} strokeWidth={1.5} />
                                 </div>
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <div className="absolute top-3 left-3">
-                                    <span className={cn(
-                                        "px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm",
-                                        getStatusColor(event.status || 'unpublished')
+                                
+                                <div className="absolute top-3 left-3 flex gap-2">
+                                    <Badge className={cn(
+                                        "bg-white/90 backdrop-blur-md shadow-sm border-0 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1",
+                                        getStatusColor(event.status || 'unpublished').replace('bg-', 'text-') // Keep text color, override bg
                                     )}>
+                                        <span className={cn("w-1.5 h-1.5 rounded-full mr-1.5 inline-block", getStatusColor(event.status || 'unpublished').replace('text-', 'bg-').split(' ')[0])}></span>
                                         {event.status || 'Draft'}
-                                    </span>
+                                    </Badge>
                                 </div>
                             </div>
 
                             {/* Details Area */}
-                            <div className="p-5 flex flex-col justify-between flex-1">
+                            <div className={cn(
+                                "flex flex-col justify-between flex-1",
+                                viewMode === 'grid' ? "pt-4 px-2 pb-2" : "p-6"
+                            )}>
                                 <div>
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h3 className="font-bold text-lg text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h3 className="font-bold text-lg text-gray-900 line-clamp-1 tracking-tight">
                                             {event.name}
                                         </h3>
                                         {viewMode === 'list' && (
@@ -214,30 +221,33 @@ const Events = () => {
                                             </Button>
                                         )}
                                     </div>
-                                    <div className="flex flex-col gap-1.5 text-xs font-medium text-gray-500">
-                                        <div className="flex items-center gap-2">
-                                            <Calendar size={14} className="text-gray-400" />
+                                    
+                                    <div className="flex flex-col gap-1.5 mt-2">
+                                        <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
+                                            <Calendar size={14} className="text-gray-400 stroke-[2.5]" />
                                             <span>
-                                                {event.start_date ? format(new Date(event.start_date), 'MMM d, yyyy') : 'Date not set'}
+                                                {event.start_date ? format(new Date(event.start_date), 'MMMM d, yyyy') : 'Date TBD'}
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <MapPin size={14} className="text-gray-400" />
-                                            <span className="truncate">{event.location || 'Location not specified'}</span>
+                                        <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
+                                            <MapPin size={14} className="text-gray-400 stroke-[2.5]" />
+                                            <span className="truncate max-w-[200px]">{event.location || 'No location added'}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
+                                <div className="mt-5 flex items-center justify-between pt-4 border-t border-gray-50">
                                     <div className="flex items-center -space-x-2">
                                         {[1, 2, 3].map(i => (
-                                            <div key={i} className="w-6 h-6 rounded-full border border-white bg-gray-200 flex items-center justify-center text-[8px] font-bold text-gray-500">
+                                            <div key={i} className="w-6 h-6 rounded-full border-[1.5px] border-white bg-gray-100 flex items-center justify-center text-[9px] font-bold text-gray-400">
                                                 U{i}
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                                        {event.event_type || 'Event'}
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="text-[10px] font-bold text-primary-600 uppercase tracking-widest bg-primary-50 px-2 py-1 rounded-md">
+                                            {event.event_type || 'Event'}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

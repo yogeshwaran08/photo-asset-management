@@ -8,7 +8,6 @@ import {
   Settings,
   Image as ImageIcon,
   BarChart3,
-  Plus,
   CreditCard
 } from 'lucide-react';
 
@@ -50,7 +49,6 @@ const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, t
   const items = [
     { name: 'Dashboard', href: '/studio/dashboard', icon: LayoutDashboard },
     { name: 'My Events', href: '/studio/events', icon: Camera },
-    { name: 'Create Event', href: '/studio/create-event', icon: Plus },
     { name: 'All Photos', href: '/studio/photos', icon: ImageIcon },
     { name: 'Analytics', href: '/studio/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/studio/settings', icon: Settings },
