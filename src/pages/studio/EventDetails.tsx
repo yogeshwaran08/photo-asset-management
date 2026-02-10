@@ -12,9 +12,6 @@ import {
     Settings,
     Image as ImageIcon,
     Loader2,
-    Grid3x3,
-    List as ListIcon,
-    LayoutTemplate,
     Monitor,
     Smartphone,
     Pen,
@@ -33,18 +30,12 @@ import {
     UserCheck,
     ServerCrash,
     TrendingUp,
-    MousePointerClick,
     Share2
 } from 'lucide-react';
 import { cn, formatBytes } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+
 import { eventService, type Photo, type Event as EventType } from '@/services/eventService';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -58,7 +49,7 @@ import {
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart,  CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { toast } from 'sonner';
 
 const MOCK_ACTIVITY_DATA = [
@@ -170,7 +161,7 @@ const EventDetails = () => {
 
         try {
             await Promise.all(uploadPromises);
-            toast.success("Batch uploaded successfully");
+            toast.success("Images uploaded successfully");
             fetchPhotos();
         } catch (error) {
             console.error('Upload failed:', error);
@@ -364,10 +355,10 @@ const EventDetails = () => {
                                         <div className="text-2xl font-black text-slate-800 tracking-tight">{images.length.toString().padStart(2, '0')}</div>
                                         <div className="text-[8px] font-black uppercase text-muted-foreground tracking-widest mt-0.5">Photos</div>
                                     </div>
-                                    <div className="flex-1 text-center px-2">
+                                    {/* <div className="flex-1 text-center px-2">
                                         <div className="text-2xl font-black text-slate-800 tracking-tight">00</div>
                                         <div className="text-[8px] font-black uppercase text-muted-foreground tracking-widest mt-0.5">Videos</div>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                                 <div className="w-full h-px bg-border/40" />
@@ -494,9 +485,9 @@ const EventDetails = () => {
                                             <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                             <ImageIcon size={64} className="text-zinc-100 relative z-10 scale-110 group-hover:text-primary-500/10 transition-all duration-500" />
                                         </div>
-                                        <h3 className="text-4xl font-black uppercase tracking-tight mb-4 text-foreground">Workspace Vacuum</h3>
-                                        <p className="text-muted-foreground font-black mb-12 max-w-sm text-[11px] uppercase tracking-[0.4em] opacity-30 leading-relaxed italic">The gallery is awaiting ingestion.</p>
-                                        <Button onClick={triggerUpload} className="h-16 px-14 rounded-[1.75rem] gap-4 text-[11px] font-black uppercase tracking-[0.3em] bg-foreground text-background hover:bg-foreground/90 shadow-2xl shadow-foreground/20 hover:scale-105 active:scale-95 transition-all uppercase">Ingest Media</Button>
+                                        <h3 className="text-4xl font-black uppercase tracking-tight mb-4 text-foreground">No items found</h3>
+                                        <p className="text-muted-foreground font-black mb-12 max-w-sm text-[11px] uppercase tracking-[0.4em] opacity-30 leading-relaxed italic">Start Uploading Images.</p>
+                                        <Button onClick={triggerUpload} className="h-16 px-14 rounded-[1.75rem] gap-4 text-[11px] font-black uppercase tracking-[0.3em] bg-foreground text-background hover:bg-foreground/90 shadow-2xl shadow-foreground/20 hover:scale-105 active:scale-95 transition-all uppercase">Upload photo</Button>
                                     </div>
                                 )}
                             </>

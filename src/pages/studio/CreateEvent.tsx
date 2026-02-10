@@ -6,8 +6,6 @@ import {
     ArrowRight,
     ArrowLeft,
     Check,
-    LayoutTemplate,
-    Info,
     CheckCircle2,
     Loader2
 } from 'lucide-react';
@@ -15,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -80,14 +78,6 @@ const CreateEvent = () => {
         template_id: ''
     });
 
-    const handleBack = () => {
-        if (currentStep === 1) {
-            navigate('/studio/events');
-        } else {
-            setCurrentStep(1);
-        }
-    };
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -118,264 +108,249 @@ const CreateEvent = () => {
             initial="initial"
             animate="animate"
             variants={pageVariants}
-            className="w-full space-y-6 pb-20"
+            className="w-full max-w-5xl mx-auto pb-20 space-y-8"
         >
-            {/* Header / Breadcrumb Style */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-6">
-                <Button
-                    variant="ghost"
-                    onClick={handleBack}
-                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-black uppercase text-[10px] tracking-widest group px-0"
-                >
-                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    {currentStep === 1 ? "Back to Events" : "Back to Information"}
-                </Button>
-
-                <div className="flex items-center gap-4 bg-muted/30 p-2 rounded-2xl glass border border-border/50">
-                    <div className={cn(
-                        "flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-500",
-                        currentStep === 1 ? "bg-white text-foreground shadow-sm ring-1 ring-border/50 scale-105" : "text-muted-foreground opacity-50"
-                    )}>
-                        <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs", currentStep === 1 ? "bg-primary-500 text-foreground" : "bg-muted")}>
-                            {currentStep > 1 ? <CheckCircle2 size={16} /> : "1"}
-                        </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest">General</span>
-                    </div>
-                    <div className="w-6 h-px bg-border/50" />
-                    <div className={cn(
-                        "flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-500",
-                        currentStep === 2 ? "bg-white text-foreground shadow-sm ring-1 ring-border/50 scale-105" : "text-muted-foreground opacity-50"
-                    )}>
-                        <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs", currentStep === 2 ? "bg-primary-500 text-foreground" : "bg-muted")}>
-                            2
-                        </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest">Interface</span>
-                    </div>
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Create New Event</h1>
+                    <p className="text-muted-foreground mt-1">Set up your event details and choose a gallery style.</p>
+                </div>
+                <div className="flex items-center gap-2 bg-muted/50 p-1.5 rounded-lg border border-border/50">
+                    <button
+                        onClick={() => currentStep > 1 && setCurrentStep(1)}
+                        className={cn(
+                            "flex items-center gap-2 px-4 py-2 rounded-md transition-all text-sm font-medium",
+                            currentStep === 1 ? "bg-white shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary-100/50 text-xs font-bold ring-1 ring-inset ring-primary-500/20">1</span>
+                        Details
+                    </button>
+                    <button
+                        className={cn(
+                            "flex items-center gap-2 px-4 py-2 rounded-md transition-all text-sm font-medium cursor-default",
+                            currentStep === 2 ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"
+                        )}
+                    >
+                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-muted text-xs font-bold">2</span>
+                        Theme
+                    </button>
                 </div>
             </div>
 
-            <Card className="rounded-[2.5rem] border-border/50 shadow-2xl glass overflow-hidden flex flex-col">
-                <CardHeader className="p-6 border-b border-border/50 bg-primary-500/5 items-start">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-500">
-                            {currentStep === 1 ? <Info size={20} /> : <LayoutTemplate size={20} />}
-                        </div>
-                        <CardTitle className="text-2xl font-black uppercase tracking-tight">
-                            {currentStep === 1 ? "Event Details" : "Interface Select"}
-                        </CardTitle>
-                    </div>
-                    <CardDescription className="font-bold text-xs uppercase opacity-70 ml-1">
-                        {currentStep === 1
-                            ? "Configure the core parameters and identity of your new event."
-                            : "Choose a visual environment for your guests and participants."}
-                    </CardDescription>
-                </CardHeader>
-
-                <CardContent className="p-6">
+            <Card className="border-border/40 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm">
+                <CardContent className="p-8">
                     <AnimatePresence mode="wait">
                         {currentStep === 1 ? (
                             <motion.form
                                 key="step1"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="space-y-4"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                className="space-y-8"
                                 onSubmit={(e) => { e.preventDefault(); setCurrentStep(2); }}
                             >
-                                <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Event Name  (Required)</Label>
-                                    <Input
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        placeholder="E.G. WEDDING OF SARAH & JAMES"
-                                        required
-                                        className="bg-muted/30 border-border/50 rounded-xl h-11 font-black uppercase text-[10px] tracking-widest px-4 focus-visible:ring-primary-500/20 focus-visible:border-primary-500"
-                                    />
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-semibold text-foreground/80 ml-1">Event Name</Label>
+                                        <Input
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            placeholder="e.g. Summer Music Festival 2024"
+                                            required
+                                            className="h-12 text-lg bg-background/50 border-border/50 focus-visible:ring-primary-500/30"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-medium text-muted-foreground ml-1">Event Type</Label>
+                                            <div className="relative">
+                                                <select
+                                                    name="event_type"
+                                                    value={formData.event_type}
+                                                    onChange={handleInputChange}
+                                                    className="w-full h-11 bg-background/50 border border-border/50 rounded-md px-4 text-sm appearance-none focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+                                                >
+                                                    <option value="">Select a category...</option>
+                                                    <option value="Wedding">Wedding</option>
+                                                    <option value="Corporate">Corporate Event</option>
+                                                    <option value="Birthday">Birthday Party</option>
+                                                    <option value="Portrait">Portrait Session</option>
+                                                    <option value="Sports">Sports Event</option>
+                                                </select>
+                                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={16} />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-medium text-muted-foreground ml-1">Location</Label>
+                                            <div className="relative">
+                                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
+                                                <Input
+                                                    name="location"
+                                                    value={formData.location}
+                                                    onChange={handleInputChange}
+                                                    placeholder="City or Venue"
+                                                    className="pl-10 h-11 bg-background/50 border-border/50"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-medium text-muted-foreground ml-1">Start Date</Label>
+                                            <div className="relative">
+                                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
+                                                <Input
+                                                    type="date"
+                                                    name="start_date"
+                                                    value={formData.start_date}
+                                                    onChange={handleInputChange}
+                                                    className="pl-10 h-11 bg-background/50 border-border/50"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-medium text-muted-foreground ml-1">End Date</Label>
+                                            <div className="relative">
+                                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={18} />
+                                                <Input
+                                                    type="date"
+                                                    name="end_date"
+                                                    value={formData.end_date}
+                                                    onChange={handleInputChange}
+                                                    className="pl-10 h-11 bg-background/50 border-border/50"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-muted-foreground ml-1">Description (Optional)</Label>
+                                        <textarea
+                                            rows={4}
+                                            name="description"
+                                            value={formData.description}
+                                            onChange={handleInputChange}
+                                            placeholder="Add any internal notes about this event..."
+                                            className="w-full bg-background/50 border border-border/50 rounded-md p-3 text-sm resize-y focus:ring-2 focus:ring-primary-500/20 outline-none transition-all min-h-[100px]"
+                                        />
+                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-1.5 relative">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Start Date</Label>
-                                        <div className="relative">
-                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={16} />
-                                            <Input
-                                                type="date"
-                                                name="start_date"
-                                                value={formData.start_date}
-                                                onChange={handleInputChange}
-                                                className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold pl-12 pr-4 text-xs"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">End Date</Label>
-                                        <div className="relative">
-                                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={16} />
-                                            <Input
-                                                type="date"
-                                                name="end_date"
-                                                value={formData.end_date}
-                                                onChange={handleInputChange}
-                                                className="bg-muted/30 border-border/50 rounded-xl h-11 font-bold pl-12 pr-4 text-xs"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Event Type</Label>
-                                        <div className="relative">
-                                            <select
-                                                name="event_type"
-                                                value={formData.event_type}
-                                                onChange={handleInputChange}
-                                                className="w-full bg-muted/30 border border-border/50 rounded-xl h-11 font-black uppercase text-[10px] tracking-widest px-4 appearance-none focus:border-primary-500 focus:bg-white/40 transition-all outline-none"
-                                            >
-                                                <option value="">SELECT TYPE...</option>
-                                                <option value="Wedding">WEDDING</option>
-                                                <option value="Corporate">CORPORATE</option>
-                                                <option value="Birthday">BIRTHDAY</option>
-                                                <option value="Portrait">PORTRAIT</option>
-                                            </select>
-                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={16} />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Location</Label>
-                                        <div className="relative">
-                                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={16} />
-                                            <Input
-                                                name="location"
-                                                value={formData.location}
-                                                onChange={handleInputChange}
-                                                placeholder="VENUE OR CITY"
-                                                className="bg-muted/30 border-border/50 rounded-xl h-11 font-black uppercase text-[10px] tracking-widest pl-12 pr-4"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-1.5">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest ml-1 opacity-70">Description</Label>
-                                    <textarea
-                                        rows={3}
-                                        name="description"
-                                        value={formData.description}
-                                        onChange={handleInputChange}
-                                        placeholder="ADDITIONAL DETAILS FOR THE PRIVATE LOG..."
-                                        className="w-full bg-muted/30 border-border/50 rounded-xl p-4 font-bold text-xs resize-none focus-visible:ring-primary-500/20 focus-visible:border-primary-500 outline-none"
-                                    />
+                                <div className="flex items-center justify-end pt-4 border-t border-border/40">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() => navigate('/studio/events')}
+                                        className="mr-auto text-muted-foreground hover:text-foreground"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={!formData.name}
+                                        className="px-8 h-11 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-lg shadow-primary-500/20 transition-all hover:scale-[1.02]"
+                                    >
+                                        Next Step
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
                                 </div>
                             </motion.form>
                         ) : (
                             <motion.div
                                 key="step2"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="space-y-6"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                className="space-y-8"
                             >
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                <div className="space-y-1">
+                                    <h3 className="text-lg font-semibold">Choose Gallery Theme</h3>
+                                    <p className="text-sm text-muted-foreground">Select how your event photos will be presented to guests.</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {TEMPLATES.map((tpl) => (
-                                        <motion.div
+                                        <div
                                             key={tpl.id}
-                                            whileHover={{ y: -4 }}
                                             onClick={() => setFormData(prev => ({ ...prev, template_id: tpl.id }))}
                                             className={cn(
-                                                "group relative cursor-pointer rounded-[2rem] border-4 overflow-hidden transition-all duration-300",
+                                                "group relative cursor-pointer rounded-xl overflow-hidden border-2 transition-all duration-300 hover:shadow-xl",
                                                 formData.template_id === tpl.id
-                                                    ? "border-primary-500 shadow-2xl shadow-primary-500/10"
-                                                    : "border-transparent hover:border-primary-500/20"
+                                                    ? "border-primary-500 ring-4 ring-primary-500/10 scale-[1.02]"
+                                                    : "border-border/50 hover:border-primary-500/30 hover:scale-[1.01]"
                                             )}
                                         >
-                                            <div className="aspect-16/10 relative overflow-hidden bg-muted">
+                                            <div className="aspect-[4/3] relative overflow-hidden bg-muted">
                                                 <img
                                                     src={tpl.image}
                                                     alt={tpl.name}
-                                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                 />
                                                 <div className={cn(
-                                                    "absolute inset-0 bg-primary-500/80 backdrop-blur-[2px] flex items-center justify-center transition-opacity duration-300",
+                                                    "absolute inset-0 bg-black/60 flex items-center justify-center transition-opacity duration-200",
                                                     formData.template_id === tpl.id ? "opacity-100" : "opacity-0"
                                                 )}>
-                                                    <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-primary-500 shadow-2xl scale-110">
-                                                        <Check size={28} strokeWidth={4} />
+                                                    <div className="bg-white text-primary-600 rounded-full p-2.5 shadow-lg transform scale-100 transition-transform">
+                                                        <Check className="w-6 h-6 stroke-[3px]" />
                                                     </div>
                                                 </div>
-                                                <div className="absolute top-5 left-5">
-                                                    <Badge className="bg-black/40 backdrop-blur-xl text-white text-[9px] font-black uppercase tracking-[0.1em] px-4 py-1.5 rounded-full border border-white/10 border-none">
-                                                        {tpl.category}
-                                                    </Badge>
-                                                </div>
+                                                <Badge className="absolute top-3 left-3 bg-black/50 backdrop-blur-md text-white border-0 font-medium text-[10px] tracking-wider uppercase px-2 py-0.5">
+                                                    {tpl.category}
+                                                </Badge>
                                             </div>
-                                            <div className="p-6 bg-white border-t border-border/50">
-                                                <h4 className="text-sm font-black uppercase tracking-tight mb-1">{tpl.name}</h4>
-                                                <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-70 tracking-tight">{tpl.description}</p>
+                                            <div className="p-4 bg-card">
+                                                <h4 className="font-bold text-foreground mb-1">{tpl.name}</h4>
+                                                <p className="text-xs text-muted-foreground leading-relaxed">{tpl.description}</p>
                                             </div>
-                                        </motion.div>
+                                        </div>
                                     ))}
+                                </div>
+
+                                <div className="flex items-center justify-between pt-6 border-t border-border/40">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setCurrentStep(1)}
+                                        className="h-11 px-6 border-border/50 text-muted-foreground hover:text-foreground"
+                                    >
+                                        <ArrowLeft className="mr-2 h-4 w-4" />
+                                        Back to Details
+                                    </Button>
+
+                                    <Button
+                                        onClick={handleFinalize}
+                                        disabled={!formData.template_id || loading}
+                                        className={cn(
+                                            "h-11 px-8 font-medium rounded-lg shadow-lg transition-all",
+                                            formData.template_id
+                                                ? "bg-primary-600 hover:bg-primary-700 text-white hover:scale-[1.02] shadow-primary-500/25"
+                                                : "bg-muted text-muted-foreground cursor-not-allowed"
+                                        )}
+                                    >
+                                        {loading ? (
+                                            <>
+                                                Creating Event...
+                                                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                                            </>
+                                        ) : (
+                                            <>
+                                                Create Event
+                                                <CheckCircle2 className="ml-2 h-4 w-4" />
+                                            </>
+                                        )}
+                                    </Button>
                                 </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </CardContent>
-
-                <div className="p-5 border-t border-border/50 bg-muted/5 flex gap-4">
-                    {currentStep === 1 ? (
-                        <>
-                            <Button
-                                variant="ghost"
-                                onClick={() => navigate('/studio/events')}
-                                className="flex-1 h-11 rounded-xl font-black uppercase text-[10px] tracking-widest"
-                            >
-                                DISCARD
-                            </Button>
-                            <Button
-                                onClick={() => setCurrentStep(2)}
-                                disabled={!formData.name}
-                                className="flex-[2] h-11 rounded-xl font-black uppercase text-[10px] tracking-widest bg-primary-500 hover:bg-primary-600 text-foreground shadow-lg shadow-primary-500/20 gap-2"
-                            >
-                                PROCEED TO INTERFACE
-                                <ArrowRight size={14} strokeWidth={3} />
-                            </Button>
-                        </>
-                    ) : (
-                        <>
-                            <Button
-                                variant="outline"
-                                onClick={() => setCurrentStep(1)}
-                                className="h-11 rounded-xl px-10 font-black uppercase text-[10px] tracking-widest border-border/50 glass shadow-none"
-                            >
-                                <ArrowLeft size={14} className="mr-2" strokeWidth={3} />
-                                INFO
-                            </Button>
-                            <Button
-                                onClick={handleFinalize}
-                                disabled={!formData.template_id || loading}
-                                className={cn(
-                                    "flex-1 h-11 rounded-xl font-black uppercase text-[10px] tracking-widest gap-2 shadow-xl transition-all",
-                                    formData.template_id
-                                        ? "bg-foreground text-background hover:bg-foreground/90"
-                                        : "bg-muted text-muted-foreground cursor-not-allowed shadow-none"
-                                )}
-                            >
-                                {loading ? (
-                                    <>
-                                        CREATING...
-                                        <Loader2 size={16} className="animate-spin" />
-                                    </>
-                                ) : (
-                                    <>
-                                        FINALIZE COLLECTION
-                                        <CheckCircle2 size={16} strokeWidth={3} />
-                                    </>
-                                )}
-                            </Button>
-                        </>
-                    )}
-                </div>
             </Card>
         </motion.div>
     );

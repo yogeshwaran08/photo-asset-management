@@ -2,48 +2,34 @@ import React, { useState, useEffect } from 'react';
 import {
     Plus,
     Search,
-    Image as ImageIcon,
-    CheckCircle2,
-    Clock,
     Filter,
-    Calendar,
     LayoutGrid,
-    Trash2,
-    Loader2,
-    UserPlus,
-    Upload,
-    Share2,
-    Settings,
-    Film,
-    Users
+    List,
+    ChevronDown,
+    MoreVertical,
+    Calendar,
+    MapPin,
+    Image as ImageIcon,
+    Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import {
-    pageVariants,
-    listItemVariants,
-    staggerContainer,
-    buttonVariants
-} from '@/lib/motion-config';
-import { eventService, type Event } from '@/services/eventService';
-import { toast } from 'sonner';
-import { format } from 'date-fns';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
-    DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
+import { eventService, type Event } from '@/services/eventService';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
 
-type EventStatus = 'all' | 'published' | 'unpublished';
+type EventStatus = 'all' | 'published' | 'unpublished' | 'expired';
+type ViewMode = 'grid' | 'list';
 
 const Events = () => {
     const navigate = useNavigate();
@@ -51,6 +37,7 @@ const Events = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<EventStatus>('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
     useEffect(() => {
         fetchEvents();
@@ -69,304 +56,216 @@ const Events = () => {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!window.confirm("Are you sure you want to delete this event?")) return;
-
-        try {
-            await eventService.delete(id);
-            toast.success("Event deleted");
-            setEvents(prev => prev.filter(e => e.id !== id));
-        } catch (error) {
-            toast.error("Failed to delete event");
-        }
-    };
-
-    const tabs: { label: string; value: EventStatus; icon: React.ElementType }[] = [
-        { label: 'All Events', value: 'all', icon: LayoutGrid },
-        { label: 'Published', value: 'published', icon: CheckCircle2 },
-        { label: 'Waitlist', value: 'unpublished', icon: Clock },
-    ];
-
-    const [sortBy, setSortBy] = useState<'created_at' | 'event_date' | 'name'>('created_at');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-
-    const filteredEvents = events.filter(event => {
-        // Normalize status to handle potential inconsistencies
-        const status = (event.status || 'unpublished').toLowerCase();
-
+    const filteredEvents = React.useMemo(() => events.filter(event => {
+        const status = (event.status || 'unpublished').toLowerCase(); // Assuming API returns string status
+        
         let matchesTab = false;
-        if (activeTab === 'all') {
-            matchesTab = true;
-        } else if (activeTab === 'published') {
-            matchesTab = status === 'published';
-        } else if (activeTab === 'unpublished') {
-            // Match both 'unpublished' and 'draft' for the Waitlist tab
-            matchesTab = status === 'unpublished' || status === 'draft' || status === 'waitlist';
-        }
+        if (activeTab === 'all') matchesTab = true;
+        else if (activeTab === 'published') matchesTab = status === 'published';
+        else if (activeTab === 'unpublished') matchesTab = status === 'unpublished' || status === 'draft';
+        else if (activeTab === 'expired') matchesTab = status === 'expired'; // Assuming 'expired' status exists or logic needed
 
         const matchesSearch = event.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (event.location?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
 
         return matchesTab && matchesSearch;
-    }).sort((a, b) => {
-        if (sortBy === 'created_at') {
-            const dateA = new Date(a.created_at).getTime();
-            const dateB = new Date(b.created_at).getTime();
-            return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-        }
-        if (sortBy === 'event_date') {
-            const dateA = a.start_date ? new Date(a.start_date).getTime() : 0;
-            const dateB = b.start_date ? new Date(b.start_date).getTime() : 0;
-            return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-        }
-        if (sortBy === 'name') {
-            return sortOrder === 'asc'
-                ? a.name.localeCompare(b.name)
-                : b.name.localeCompare(a.name);
-        }
-        return 0;
-    });
+    }), [events, activeTab, searchQuery]);
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'published':
-                return <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 uppercase text-[9px] font-black">Published</Badge>;
-            case 'unpublished':
-                return <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20 uppercase text-[9px] font-black">Draft</Badge>;
-            default:
-                return <Badge className="bg-slate-500/10 text-slate-500 border-slate-500/20 uppercase text-[9px] font-black">{status}</Badge>;
+    const getStatusColor = (status: string) => {
+        switch (status?.toLowerCase()) {
+            case 'published': return 'bg-emerald-100 text-emerald-700';
+            case 'unpublished': return 'bg-amber-100 text-amber-700';
+            case 'draft': return 'bg-gray-100 text-gray-700';
+            default: return 'bg-blue-50 text-blue-700';
         }
     };
 
     return (
-        <motion.div
-            initial="initial"
-            animate="animate"
-            variants={pageVariants}
-            className="space-y-8 max-w-7xl mx-auto pb-12"
-        >
-            {/* Header & Controls Section */}
-            <div className="flex flex-col xl:flex-row gap-6 xl:items-center justify-between">
-                <div className="flex p-1.5 bg-muted/40 rounded-2xl border border-border/50 w-fit glass overflow-x-auto no-scrollbar">
-                    {tabs.map((tab) => (
+        <div className="max-w-[1600px] mx-auto space-y-8 min-h-[80vh]">
+            {/* Header Section */}
+            <div className="flex flex-col space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">My events</h1>
+
+                    <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                        {/* Search & Filter Combo */}
+                        <div className="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm h-10 w-full md:w-auto flex-1 md:flex-none">
+                            <div className="relative flex items-center flex-1 min-w-[200px]">
+                                <Search size={16} className="absolute left-3 text-gray-400" />
+                                <Input
+                                    placeholder="Search events..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="border-0 focus-visible:ring-0 shadow-none h-full pl-9 bg-transparent w-full text-sm placeholder:text-gray-400"
+                                />
+                            </div>
+                            <div className="h-6 w-px bg-gray-200 mx-1" />
+                            <Button variant="ghost" size="sm" className="h-full rounded-r-lg px-3 hover:bg-gray-50 text-gray-600 font-medium text-xs uppercase tracking-wide">
+                                <Filter size={14} className="mr-2" />
+                                Filter
+                            </Button>
+                        </div>
+
+                        {/* View Toggle */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="h-10 px-3 bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 gap-2 min-w-[100px] justify-between">
+                                    <div className="flex items-center gap-2">
+                                        {viewMode === 'grid' ? <LayoutGrid size={16} /> : <List size={16} />}
+                                        <span className="text-xs font-semibold uppercase tracking-wide">{viewMode === 'grid' ? 'Box' : 'Cards'}</span>
+                                    </div>
+                                    <ChevronDown size={14} className="opacity-50" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-[120px]">
+                                <DropdownMenuItem onClick={() => setViewMode('grid')} className="gap-2 text-xs font-medium">
+                                    <LayoutGrid size={14} /> Box View
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setViewMode('list')} className="gap-2 text-xs font-medium">
+                                    <List size={14} /> Card View
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* New Event Button */}
+                        <Button 
+                            onClick={() => navigate('/studio/create-event')}
+                            className="h-10 bg-primary-500 hover:bg-primary-600 text-white shadow-lg shadow-primary-500/20 px-6 rounded-lg font-semibold text-xs uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                        >
+                            <Plus size={16} className="mr-2" strokeWidth={3} />
+                            New Event
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Divider Line */}
+                <div className="h-px w-full bg-gray-200" />
+
+                {/* Status Tabs */}
+                <div className="flex items-center gap-8 overflow-x-auto no-scrollbar pb-1">
+                    {['All Events', 'Published', 'Unpublished', 'Expired'].map((tab) => (
                         <button
-                            key={tab.value}
-                            onClick={() => setActiveTab(tab.value)}
+                            key={tab}
+                            onClick={() => setActiveTab(tab.toLowerCase().split(' ')[0] as EventStatus)}
                             className={cn(
-                                "flex items-center gap-2 px-5 py-2.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all duration-300 whitespace-nowrap",
-                                activeTab === tab.value
-                                    ? "bg-white text-foreground shadow-sm ring-1 ring-border/50"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-white/40"
+                                "text-sm font-semibold tracking-wide capitalize whitespace-nowrap pb-2 border-b-2 transition-all duration-200 px-1",
+                                activeTab === tab.toLowerCase().split(' ')[0]
+                                    ? "border-primary-500 text-primary-600"
+                                    : "border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300"
                             )}
                         >
-                            <tab.icon size={14} />
-                            {tab.label}
+                            {tab}
                         </button>
                     ))}
                 </div>
-
-                <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <div className="relative group w-full sm:w-80">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary-500" size={16} />
-                        <Input
-                            type="text"
-                            placeholder="FIND AN EVENT..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="bg-white/50 border-border/50 rounded-2xl h-[52px] pl-12 focus-visible:ring-primary-500/20 focus-visible:border-primary-500 font-black uppercase text-[10px] tracking-widest shadow-sm glass"
-                        />
-                    </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="h-[52px] rounded-2xl px-6 font-black uppercase text-[10px] tracking-widest border-border/50 glass hover:bg-white/60">
-                                <Filter size={16} className="mr-2" />
-                                Sort By
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56 rounded-xl border-border/50 bg-white/80 backdrop-blur-xl">
-                            <DropdownMenuLabel className="font-black uppercase text-[10px] tracking-widest opacity-50">Creation Time</DropdownMenuLabel>
-                            <DropdownMenuGroup>
-                                <DropdownMenuItem onClick={() => { setSortBy('created_at'); setSortOrder('asc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
-                                    Old-New
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => { setSortBy('created_at'); setSortOrder('desc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
-                                    New-Old
-                                </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                            <DropdownMenuSeparator className="bg-border/50" />
-                            <DropdownMenuLabel className="font-black uppercase text-[10px] tracking-widest opacity-50">Event Time</DropdownMenuLabel>
-                            <DropdownMenuGroup>
-                                <DropdownMenuItem onClick={() => { setSortBy('event_date'); setSortOrder('asc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
-                                    Old-New
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => { setSortBy('event_date'); setSortOrder('desc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
-                                    New-Old
-                                </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                            <DropdownMenuSeparator className="bg-border/50" />
-                            <DropdownMenuLabel className="font-black uppercase text-[10px] tracking-widest opacity-50">Event Name</DropdownMenuLabel>
-                            <DropdownMenuGroup>
-                                <DropdownMenuItem onClick={() => { setSortBy('name'); setSortOrder('asc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
-                                    A-Z
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => { setSortBy('name'); setSortOrder('desc'); }} className="font-bold text-xs cursor-pointer focus:bg-muted/50 rounded-lg">
-                                    Z-A
-                                </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                        <Button
-                            onClick={() => navigate('/studio/create-event')}
-                            className="bg-primary-500 hover:bg-primary-600 text-foreground h-[52px] px-6 rounded-2xl font-black uppercase tracking-widest gap-2 shadow-lg shadow-primary-500/20"
-                        >
-                            <Plus size={18} strokeWidth={3} />
-                            New Event
-                        </Button>
-                    </motion.div>
-                </div>
             </div>
 
+            {/* Content Display */}
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-40 border-2 border-dashed border-border/40 rounded-[3rem] bg-muted/10">
+                <div className="flex flex-col items-center justify-center py-32">
                     <Loader2 size={40} className="animate-spin text-primary-500 mb-4" />
-                    <p className="font-black uppercase text-xs tracking-widest opacity-50">Syncing with server...</p>
+                    <p className="text-sm font-medium text-gray-400">Loading your events...</p>
                 </div>
             ) : filteredEvents.length > 0 ? (
-                <motion.div
-                    variants={staggerContainer}
-                    initial="initial"
-                    animate="animate"
-                    className="flex flex-col gap-8"
-                >
+                <div className={cn(
+                    "grid gap-6",
+                    viewMode === 'grid' ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+                )}>
                     {filteredEvents.map((event) => (
-                        <motion.div key={event.id} variants={listItemVariants} className="group relative flex flex-col md:flex-row items-center">
-                            {/* Image Section (Left) */}
-                            <div
-                                onClick={() => navigate(`/studio/events/${event.id}`)}
-                                className="cursor-pointer w-full md:w-[320px] lg:w-[360px] h-[240px] shrink-0 rounded-[2.5rem] overflow-hidden relative z-0 md:z-10 shadow-2xl border-4 border-white/50 bg-muted/20 transition-transform active:scale-95"
-                            >
-                                <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent z-10" />
-                                {event.status && (
-                                    <div className="absolute top-6 left-6 z-20">
-                                        {getStatusBadge(event.status)}
-                                    </div>
-                                )}
-                                <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground/30">
-                                    <ImageIcon size={48} />
+                        <motion.div
+                            key={event.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className={cn(
+                                "group bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 cursor-pointer",
+                                viewMode === 'list' && "flex flex-col md:flex-row h-auto md:h-48"
+                            )}
+                            onClick={() => navigate(`/studio/events/${event.id}`)}
+                        >
+                            {/* Image Area */}
+                            <div className={cn(
+                                "relative overflow-hidden bg-gray-100",
+                                viewMode === 'grid' ? "aspect-[4/3]" : "w-full md:w-64 shrink-0 h-48 md:h-full"
+                            )}>
+                                <div className="absolute inset-0 flex items-center justify-center text-gray-300">
+                                    <ImageIcon size={40} />
                                 </div>
-                                <div className="absolute bottom-6 left-6 z-20 text-white md:hidden">
-                                    <h3 className="font-black uppercase text-xl leading-tight line-clamp-1">{event.name}</h3>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-80">{event.event_type || 'Event'}</p>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="absolute top-3 left-3">
+                                    <span className={cn(
+                                        "px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-sm",
+                                        getStatusColor(event.status || 'unpublished')
+                                    )}>
+                                        {event.status || 'Draft'}
+                                    </span>
                                 </div>
                             </div>
 
-                            {/* Content Section (Right - Overlapping) */}
-                            <div className="flex-1 w-full md:w-auto mt-[-40px] md:mt-0 md:-ml-12 relative z-10 md:z-20">
-                                <Card
-                                    onClick={() => navigate(`/studio/events/${event.id}`)}
-                                    className="cursor-pointer rounded-[2rem] border-border/50 shadow-xl backdrop-blur-3xl bg-white/80 dark:bg-zinc-900/80 overflow-hidden h-auto md:h-[200px] flex flex-col justify-between p-6 md:pl-16 transition-colors hover:bg-white/90"
-                                >
-                                    <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                                        <div className="hidden md:block">
-                                            <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">{event.name}</h3>
-                                            <div className="flex items-center gap-2 text-muted-foreground text-[10px] font-bold uppercase tracking-widest mt-1">
-                                                <Calendar size={12} />
-                                                <span>{event.start_date ? format(new Date(event.start_date), 'EEEE, MMMM d, yyyy') : 'Date TBD'}</span>
-                                            </div>
+                            {/* Details Area */}
+                            <div className="p-5 flex flex-col justify-between flex-1">
+                                <div>
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h3 className="font-bold text-lg text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">
+                                            {event.name}
+                                        </h3>
+                                        {viewMode === 'list' && (
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-900">
+                                                <MoreVertical size={16} />
+                                            </Button>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col gap-1.5 text-xs font-medium text-gray-500">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar size={14} className="text-gray-400" />
+                                            <span>
+                                                {event.start_date ? format(new Date(event.start_date), 'MMM d, yyyy') : 'Date not set'}
+                                            </span>
                                         </div>
-
-                                        <div className="flex items-center gap-2 self-end md:self-auto">
-                                            <Badge variant="secondary" className="h-7 px-3 rounded-lg bg-foreground/5 gap-1.5 hover:bg-foreground/10 transition-colors">
-                                                <ImageIcon size={12} />
-                                                <span className="font-bold text-[10px]">{event.photo_count || 0}</span>
-                                            </Badge>
-                                            <Badge variant="secondary" className="h-7 px-3 rounded-lg bg-foreground/5 gap-1.5 hover:bg-foreground/10 transition-colors">
-                                                <Film size={12} />
-                                                <span className="font-bold text-[10px]">{event.video_count || 0}</span>
-                                            </Badge>
-                                            <Badge variant="secondary" className="h-7 px-3 rounded-lg bg-foreground/5 gap-1.5 hover:bg-foreground/10 transition-colors">
-                                                <Users size={12} />
-                                                <span className="font-bold text-[10px]">0</span>
-                                            </Badge>
+                                        <div className="flex items-center gap-2">
+                                            <MapPin size={14} className="text-gray-400" />
+                                            <span className="truncate">{event.location || 'Location not specified'}</span>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4 mt-6 md:mt-0">
-                                        <div className="hidden md:flex -space-x-3">
-                                            {[1, 2, 3].map(i => (
-                                                <div key={i} className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground shadow-sm">
-                                                    U{i}
-                                                </div>
-                                            ))}
-                                            <div className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-foreground text-background flex items-center justify-center text-[10px] font-bold shadow-sm">
-                                                +2
+                                <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <div className="flex items-center -space-x-2">
+                                        {[1, 2, 3].map(i => (
+                                            <div key={i} className="w-6 h-6 rounded-full border border-white bg-gray-200 flex items-center justify-center text-[8px] font-bold text-gray-500">
+                                                U{i}
                                             </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                                            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-primary-500/10 hover:text-primary-500 text-muted-foreground transition-colors" title="Add Collaborators">
-                                                <UserPlus size={16} strokeWidth={2.5} />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="w-9 h-9 rounded-xl hover:bg-blue-500/10 hover:text-blue-500 text-muted-foreground transition-colors"
-                                                title="Upload Media"
-                                                onClick={() => navigate(`/studio/events/${event.id}`)}
-                                            >
-                                                <Upload size={16} strokeWidth={2.5} />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-indigo-500/10 hover:text-indigo-500 text-muted-foreground transition-colors" title="Share Event">
-                                                <Share2 size={16} strokeWidth={2.5} />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="w-9 h-9 rounded-xl hover:bg-orange-500/10 hover:text-orange-500 text-muted-foreground transition-colors" title="Settings">
-                                                <Settings size={16} strokeWidth={2.5} />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="w-9 h-9 rounded-xl hover:bg-rose-500/10 hover:text-rose-500 text-muted-foreground transition-colors"
-                                                title="Delete Event"
-                                                onClick={() => handleDelete(event.id)}
-                                            >
-                                                <Trash2 size={16} strokeWidth={2.5} />
-                                            </Button>
-                                        </div>
+                                        ))}
                                     </div>
-                                </Card>
+                                    <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                                        {event.event_type || 'Event'}
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     ))}
-                </motion.div>
+                </div>
             ) : (
-                <motion.div
-                    variants={listItemVariants}
-                    className="flex flex-col items-center justify-center py-40 border-2 border-dashed border-border/40 rounded-[3rem] bg-muted/10 relative overflow-hidden group"
-                >
-                    <div className="relative flex flex-col items-center">
-                        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-8 border border-border/40 shadow-xl shadow-primary-500/5 group-hover:scale-110 transition-transform duration-500 glass">
-                            <ImageIcon size={32} className="text-primary-500/40" />
-                        </div>
-                        <h3 className="text-2xl font-black uppercase tracking-tight mb-2">No active events found</h3>
-                        <p className="text-muted-foreground font-medium mb-10 text-center max-w-sm text-xs uppercase tracking-wider opacity-70 leading-relaxed">
-                            {searchQuery ? "No events match your search criteria." : "Your event gallery is currently empty. Ready to showcase your latest photography work?"}
-                        </p>
-                        <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                            <Button
-                                onClick={() => navigate('/studio/create-event')}
-                                className="bg-foreground text-background hover:bg-foreground/90 h-12 px-8 rounded-2xl font-black uppercase tracking-widest gap-2 shadow-xl shadow-foreground/10"
-                            >
-                                <Plus size={18} strokeWidth={3} />
-                                Start Publishing
-                            </Button>
-                        </motion.div>
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                        <Calendar size={32} className="text-gray-300" />
                     </div>
-                </motion.div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">No events found</h3>
+                    <p className="text-gray-500 max-w-sm mx-auto mb-8">
+                        {searchQuery || activeTab !== 'all' 
+                            ? "Try adjusting your filters or search query to find what you're looking for." 
+                            : "Get started by creating your first event to showcase your photography."}
+                    </p>
+                    <Button 
+                        onClick={() => navigate('/studio/create-event')}
+                        className="bg-primary-500 hover:bg-primary-600 text-white font-semibold shadow-lg shadow-primary-500/20"
+                    >
+                        <Plus size={16} className="mr-2" />
+                        Create New Event
+                    </Button>
+                </div>
             )}
-        </motion.div>
+        </div>
     );
 };
 
 export default Events;
-

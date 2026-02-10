@@ -45,7 +45,7 @@ const StatCard = ({ title, value, icon: Icon, trend, trendValue, colorClass }: a
                         <Icon size={24} />
                     </div>
                     <div className={cn(
-                        "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
+                        "flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
                         trend === 'up' ? "bg-success/10 text-success" : "bg-error/10 text-error"
                     )}>
                         <TrendingUp size={12} className={trend === 'down' ? 'rotate-180' : ''} />
@@ -53,8 +53,8 @@ const StatCard = ({ title, value, icon: Icon, trend, trendValue, colorClass }: a
                     </div>
                 </div>
                 <div>
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1.5">{title}</p>
-                    <p className="text-3xl font-black tracking-tight">{value}</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1.5">{title}</p>
+                    <p className="text-3xl font-bold tracking-tight">{value}</p>
                 </div>
             </CardContent>
         </Card>
@@ -190,13 +190,13 @@ const StudioDashboard = () => {
                 >
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
                         <div>
-                            <CardTitle className="text-xl font-black uppercase tracking-tight">Recent Events</CardTitle>
-                            <CardDescription className="font-bold text-xs uppercase opacity-70">Manage your latest activity</CardDescription>
+                            <CardTitle className="text-xl font-bold uppercase tracking-tight">Recent Events</CardTitle>
+                            <CardDescription className="font-medium text-xs uppercase opacity-70">Manage your latest activity</CardDescription>
                         </div>
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="font-black uppercase text-[10px] tracking-widest text-primary-500 hover:text-primary-600"
+                            className="font-bold uppercase text-[10px] tracking-widest text-primary-500 hover:text-primary-600"
                             onClick={() => navigate('/studio/events')}
                         >
                             View All Events
@@ -218,12 +218,12 @@ const StudioDashboard = () => {
                                             </div>
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-sm font-black uppercase truncate tracking-tight">{event.name}</p>
+                                            <p className="text-sm font-bold uppercase truncate tracking-tight">{event.name}</p>
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <Badge variant="outline" className="text-[8px] font-black uppercase py-0 px-2 rounded-full border-primary-500/20 text-primary-500 h-4">
+                                                <Badge variant="outline" className="text-[8px] font-bold uppercase py-0 px-2 rounded-full border-primary-500/20 text-primary-500 h-4">
                                                     {event.event_type || 'Event'}
                                                 </Badge>
-                                                <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-70 flex items-center gap-1">
+                                                <span className="text-[10px] font-medium text-muted-foreground uppercase opacity-70 flex items-center gap-1">
                                                     <Calendar size={10} />
                                                     {event.start_date ? new Date(event.start_date).toLocaleDateString() : 'TBD'}
                                                 </span>
@@ -232,12 +232,12 @@ const StudioDashboard = () => {
                                     </div>
                                     <div className="flex items-center gap-6 shrink-0">
                                         <div className="text-right hidden sm:block">
-                                            <p className="text-xs font-black tracking-tight">-</p>
-                                            <p className="text-[9px] font-bold text-muted-foreground uppercase opacity-70">Photos</p>
+                                            <p className="text-xs font-bold tracking-tight">-</p>
+                                            <p className="text-[9px] font-medium text-muted-foreground uppercase opacity-70">Photos</p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Badge className={cn(
-                                                "rounded-full px-3 py-0 h-5 text-[9px] font-black uppercase tracking-widest",
+                                                "rounded-full px-3 py-0 h-5 text-[9px] font-bold uppercase tracking-widest",
                                                 event.status === 'published' ? "bg-success/10 text-success hover:bg-success/20" : "bg-muted text-muted-foreground shadow-none"
                                             )}>
                                                 {event.status || 'Draft'}
@@ -254,7 +254,7 @@ const StudioDashboard = () => {
                 </MotionCard>
 
                 <div className="space-y-6">
-                    <MotionCard
+                    {/* <MotionCard
                         variants={listItemVariants}
                         className="border-border/50 p-6 flex flex-col justify-between"
                     >
@@ -283,13 +283,13 @@ const StudioDashboard = () => {
                                 Manage Activity
                             </Button>
                         </div>
-                    </MotionCard>
+                    </MotionCard> */}
 
                     <MotionCard
                         variants={listItemVariants}
                         className="border-border/50 p-6"
                     >
-                        <h4 className="text-sm font-black uppercase tracking-widest mb-6">System Status</h4>
+                        <h4 className="text-sm font-bold uppercase tracking-widest mb-6">System Status</h4>
                         <div className="space-y-5">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -297,10 +297,10 @@ const StudioDashboard = () => {
                                         "w-2 h-2 rounded-full",
                                         systemHealth === 'normal' ? "bg-success animate-pulse" : "bg-error animate-pulse"
                                     )} />
-                                    <span className="text-[10px] font-black uppercase tracking-tight">API Core</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-tight">API Core</span>
                                 </div>
                                 <span className={cn(
-                                    "text-[9px] font-black uppercase tracking-widest",
+                                    "text-[9px] font-bold uppercase tracking-widest",
                                     systemHealth === 'normal' ? "text-success" : "text-error"
                                 )}>
                                     {systemHealth === 'normal' ? 'Normal' : 'Abnormal'}

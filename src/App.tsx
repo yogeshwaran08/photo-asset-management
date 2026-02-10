@@ -14,7 +14,6 @@ import {
 
 import DashboardLayout from './components/layout/DashboardLayout';
 
-// Super Admin Pages
 import SuperAdminDashboard from './pages/super-admin/Dashboard';
 import StudiosManagement from './pages/super-admin/Studios';
 import SuperAdminAnalytics from './pages/super-admin/Analytics';
@@ -22,7 +21,6 @@ import SuperAdminSettings from './pages/super-admin/Settings';
 import SuperAdminPricing from './pages/super-admin/PricingPlans';
 import StudioDetails from './pages/super-admin/StudioDetails';
 
-// Studio Pages
 import StudioDashboard from './pages/studio/Dashboard';
 import Events from './pages/studio/Events';
 import CreateEvent from './pages/studio/CreateEvent';
@@ -31,10 +29,8 @@ import SettingsPage from './pages/studio/Settings';
 import EventDetails from './pages/studio/EventDetails';
 import ProfileSetup from './pages/studio/ProfileSetup';
 
-// Guest Pages
 import GuestEventGallery from './pages/guest/EventGallery';
 
-// Auth Pages
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import useUserStore from './store/userStore';
