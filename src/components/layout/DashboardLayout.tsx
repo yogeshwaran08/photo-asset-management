@@ -88,7 +88,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                         const isMainActive = location.pathname.startsWith(item.href) || 
                             (item.subItems?.some(sub => location.pathname.startsWith(sub.href)) ?? false); 
                         
-                        const [isOpen, setIsOpen] = useState(isMainActive || item.name === 'My Events');
+                        const [isOpen, setIsOpen] = useState(isMainActive);
 
                         if (hasSubItems) {
                             return (

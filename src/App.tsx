@@ -212,11 +212,19 @@ const App = () => {
             </StudioLayoutWrapper>
           </ProtectedRoute>
         } />
-        <Route path="/studio/settings" element={<Navigate to="/studio/settings/profile" replace />} />
+        <Route path="/studio/settings" element={
+          <ProtectedRoute allowedRoles={['studio']}>
+            <StudioLayoutWrapper title="Settings">
+              <SettingsLayout>
+                <Profile />
+              </SettingsLayout>
+            </StudioLayoutWrapper>
+          </ProtectedRoute>
+        } />
         <Route path="/studio/settings/profile" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Settings">
-              <SettingsLayout title="Profile">
+              <SettingsLayout>
                 <Profile />
               </SettingsLayout>
             </StudioLayoutWrapper>
@@ -225,7 +233,7 @@ const App = () => {
         <Route path="/studio/settings/branding" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Settings">
-              <SettingsLayout title="Branding">
+              <SettingsLayout>
                 <Branding />
               </SettingsLayout>
             </StudioLayoutWrapper>
@@ -234,7 +242,7 @@ const App = () => {
         <Route path="/studio/settings/domains" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Settings">
-              <SettingsLayout title="Domains">
+              <SettingsLayout>
                 <Domains />
               </SettingsLayout>
             </StudioLayoutWrapper>
@@ -243,7 +251,7 @@ const App = () => {
         <Route path="/studio/settings/integrations" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Settings">
-              <SettingsLayout title="Integrations">
+              <SettingsLayout>
                 <Integrations />
               </SettingsLayout>
             </StudioLayoutWrapper>
@@ -252,7 +260,7 @@ const App = () => {
         <Route path="/studio/settings/plans" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Settings">
-              <SettingsLayout title="My Plans">
+              <SettingsLayout>
                 <MyPlans />
               </SettingsLayout>
             </StudioLayoutWrapper>
@@ -261,7 +269,7 @@ const App = () => {
         <Route path="/studio/settings/invoices" element={
           <ProtectedRoute allowedRoles={['studio']}>
             <StudioLayoutWrapper title="Settings">
-              <SettingsLayout title="Invoices">
+              <SettingsLayout>
                 <Invoices />
               </SettingsLayout>
             </StudioLayoutWrapper>

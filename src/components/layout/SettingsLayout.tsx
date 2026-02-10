@@ -39,10 +39,9 @@ const tabs: SettingsTab[] = [
 
 interface SettingsLayoutProps {
     children: ReactNode;
-    title: string;
 }
 
-const SettingsLayout = ({ children, title }: SettingsLayoutProps) => {
+const SettingsLayout = ({ children }: SettingsLayoutProps) => {
     const location = useLocation();
 
     return (
@@ -50,37 +49,40 @@ const SettingsLayout = ({ children, title }: SettingsLayoutProps) => {
             <aside className="w-52 border-r border-border/50 bg-white/50 backdrop-blur-xl flex flex-col h-full sticky top-0 overflow-hidden">
                 <div className="h-6" />
 
-                <nav className="flex-1 pr-4 space-y-2 mt-4 overflow-y-auto">
+                <nav className="flex-1 px-2 space-y-2 mt-4 overflow-y-auto">
                     {tabs.map((tab) => {
-                        const isActive = location.pathname === tab.href;
+                        const isActive = location.pathname === tab.href || (tab.id === 'profile' && location.pathname === '/studio/settings');
                         return (
                             <Link
                                 key={tab.id}
                                 to={tab.href}
                                 className={cn(
-                                    "w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 group",
+                                    "w-full flex items-center gap-3 px-3 py-3 rounded-2xl transition-all duration-300 group relative overflow-hidden",
                                     isActive
-                                        ? "bg-black text-white shadow-lg shadow-black/30"
+                                        ? "bg-gradient-to-r from-primary-500 to-orange-500 text-white shadow-xl shadow-primary-500/30"
                                         : "hover:bg-muted/40 text-muted-foreground hover:text-foreground"
                                 )}
                             >
+                                {isActive && (
+                                    <div className="absolute inset-0 bg-gradient-to-r from-primary-600 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                )}
                                 <div className={cn(
-                                    "w-9 h-9 rounded-xl flex items-center justify-center transition-colors shrink-0",
-                                    isActive ? "bg-white text-primary-500 shadow-md" : "bg-muted/50 text-muted-foreground group-hover:text-foreground"
+                                    "w-8 h-8 rounded-xl flex items-center justify-center transition-colors shrink-0 relative z-10",
+                                    isActive ? "bg-white text-primary-500 shadow-lg" : "bg-muted/50 text-muted-foreground group-hover:text-foreground"
                                 )}>
                                     <tab.icon size={16} strokeWidth={2.5} />
                                 </div>
-                                <span className="text-[12px] tracking-widest text-left flex-1 font-medium">{tab.label}</span>
+                                <span className="text-[11px] tracking-widest text-left flex-1 font-medium relative z-10">{tab.label}</span>
                                 {isActive && (
-                                    <motion.div layoutId="active-indicator-settings" className="w-1.5 h-1.5 rounded-full bg-white" />
+                                    <motion.div layoutId="active-indicator-settings" className="w-1.5 h-1.5 rounded-full bg-white relative z-10" />
                                 )}
                             </Link>
                         );
                     })}
                 </nav>
 
-                <div className="mt-auto pb-6">
-                    <div className="mx-3 p-4 rounded-2xl bg-muted/20 border border-border/50 space-y-3">
+                <div className="mt-auto px-2 pb-6">
+                    <div className="w-full p-3 rounded-2xl bg-muted/20 border border-border/50 space-y-3">
                         <div className="flex flex-col items-center gap-2 text-center">
                             <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-primary-500">
                                 <HelpCircle size={16} />
@@ -117,17 +119,8 @@ const SettingsLayout = ({ children, title }: SettingsLayoutProps) => {
                 </div>
             </aside>
 
-            {/* Main Content Area */}
             <main className="flex-1 h-full overflow-y-auto bg-muted/20 relative">
-                {/* Top Actions Bar (Sticky) */}
-                <div className="sticky top-0 z-30 flex items-center justify-between px-10 py-6 bg-white/40 backdrop-blur-md border-b border-border/10">
-                    <div>
-                        <h3 className="text-lg uppercase tracking-tight">{title}</h3>
-                    </div>
-                    <div className="flex-1"></div>
-                </div>
-
-                <div className="max-w-5xl mx-auto p-10 pb-24">
+                <div className="w-full py-10 pb-24 px-10">
                     {children}
                 </div>
             </main>
