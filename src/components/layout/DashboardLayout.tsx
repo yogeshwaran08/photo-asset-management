@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
     Menu,
     X,
@@ -42,6 +42,7 @@ interface SidebarItem {
     name: string;
     href: string;
     icon: React.ElementType;
+    subItems?: SidebarItem[];
 }
 
 interface DashboardLayoutProps {
@@ -55,6 +56,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
     const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
     const { logout, user } = useUserStore();
     const location = useLocation();
+    const navigate = useNavigate();
 
     const handleLogoutClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -81,21 +83,95 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                 </div>
 
                 <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
-                    {items.map((item) => (
-                        <NavLink
-                            key={item.href}
-                            to={item.href}
-                            className={({ isActive }) => cn(
-                                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[0.85rem] font-medium tracking-wide transition-all select-none",
-                                isActive
-                                    ? "bg-primary-500/10 text-primary-600 ring-1 ring-primary-500/20"
-                                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                            )}
-                        >
-                            <item.icon size={18} strokeWidth={2.5} />
-                            {item.name}
-                        </NavLink>
-                    ))}
+                    {items.map((item) => {
+                        const hasSubItems = item.subItems && item.subItems.length > 0;
+                        const isMainActive = location.pathname.startsWith(item.href) || 
+                            (item.subItems?.some(sub => location.pathname.startsWith(sub.href)) ?? false); 
+                        
+                        const [isOpen, setIsOpen] = useState(isMainActive || item.name === 'My Events');
+
+                        if (hasSubItems) {
+                            return (
+                                <div key={item.href} className="space-y-1"> 
+                                    <div
+                                        className={cn(
+                                            "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-[0.85rem] font-medium tracking-wide transition-all select-none",
+                                            isMainActive
+                                                ? "bg-primary-500/10 text-primary-600 ring-1 ring-primary-500/20"
+                                                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                        )}
+                                    >
+                                        <div 
+                                            className="flex items-center gap-3 flex-1 cursor-pointer"
+                                            onClick={() => {
+                                                setIsOpen(true);
+                                                navigate(item.href);
+                                            }}
+                                        >
+                                            <item.icon size={18} strokeWidth={2.5} />
+                                            {item.name}
+                                        </div>
+                                        <div 
+                                            className="cursor-pointer p-1 hover:bg-black/5 rounded-full transition-colors"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setIsOpen(!isOpen);
+                                            }}
+                                        >
+                                            <ChevronDown size={14} className={cn("transition-transform duration-200", isOpen ? "rotate-180" : "")} />
+                                        </div>
+                                    </div>
+                                    
+                                    <AnimatePresence>
+                                        {isOpen && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="overflow-hidden"
+                                            >
+                                                <div className="pl-4 space-y-1 pt-1 pb-2">
+                                                    {item.subItems!.map((subItem) => (
+                                                        <NavLink
+                                                            key={subItem.href}
+                                                            to={subItem.href}
+                                                            className={({ isActive }) => cn(
+                                                                "flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium tracking-wide transition-all select-none block",
+                                                                isActive
+                                                                    ? "bg-primary-500/10 text-primary-600 ring-1 ring-primary-500/20"
+                                                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                                                            )}
+                                                        >
+                                                            {/* <subItem.icon size={14} strokeWidth={2.5} /> */}
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40" />
+                                                            {subItem.name}
+                                                        </NavLink>
+                                                    ))}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            );
+                        }
+
+                        return (
+                            <NavLink
+                                key={item.href}
+                                to={item.href}
+                                className={({ isActive }) => cn(
+                                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[0.85rem] font-medium tracking-wide transition-all select-none",
+                                    isActive
+                                        ? "bg-primary-500/10 text-primary-600 ring-1 ring-primary-500/20"
+                                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                                )}
+                            >
+                                <item.icon size={18} strokeWidth={2.5} />
+                                {item.name}
+                            </NavLink>
+                        );
+                    })}
                 </div>
 
                 <div className="p-4 border-t border-border/50">

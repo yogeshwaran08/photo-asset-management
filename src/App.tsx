@@ -8,7 +8,8 @@ import {
   Settings,
   Image as ImageIcon,
   BarChart3,
-  CreditCard
+  CreditCard,
+  Plus
 } from 'lucide-react';
 
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -48,7 +49,15 @@ const SuperAdminLayoutWrapper = ({ children, title }: { children: React.ReactNod
 const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, title: string }) => {
   const items = [
     { name: 'Dashboard', href: '/studio/dashboard', icon: LayoutDashboard },
-    { name: 'My Events', href: '/studio/events', icon: Camera },
+    { 
+      name: 'My Events', 
+      href: '/studio/events', 
+      icon: Camera,
+      subItems: [
+        { name: 'All Events', href: '/studio/events', icon: ImageIcon }, // Icon is just a placeholder here if not used
+        { name: 'Create Event', href: '/studio/create-event', icon: Plus }
+      ]
+    },
     { name: 'All Photos', href: '/studio/photos', icon: ImageIcon },
     { name: 'Analytics', href: '/studio/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/studio/settings', icon: Settings },
