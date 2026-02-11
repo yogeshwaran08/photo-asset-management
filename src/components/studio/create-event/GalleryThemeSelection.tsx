@@ -34,6 +34,41 @@ const TEMPLATES: Template[] = [
         image: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&q=80&w=400'
     },
     {
+        id: 'tpl_5',
+        name: 'Rustic Charm',
+        description: 'Warm tones and natural textures for outdoor weddings.',
+        category: 'Wedding',
+        image: 'https://images.unsplash.com/photo-1511285560982-1351c41721b2?auto=format&fit=crop&q=80&w=400'
+    },
+    {
+        id: 'tpl_6',
+        name: 'Tech Summit',
+        description: 'Sleek, futuristic design for conferences.',
+        category: 'Events',
+        image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=400'
+    },
+    {
+        id: 'tpl_7',
+        name: 'Marathon Pro',
+        description: 'Dynamic layout highlighting movement and speed.',
+        category: 'Sports',
+        image: 'https://images.unsplash.com/photo-1552674605-4695231af34b?auto=format&fit=crop&q=80&w=400'
+    },
+    {
+        id: 'tpl_8',
+        name: 'Gala Night',
+        description: 'Sophisticated dark mode for evening events.',
+        category: 'Events',
+        image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=400'
+    },
+    {
+        id: 'tpl_9',
+        name: 'Boho Vibe',
+        description: 'Artistic and free-spirited layout style.',
+        category: 'Wedding',
+        image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=400'
+    },
+    {
         id: 'tpl_4',
         name: 'Blank Canvas',
         description: 'Build your own unique design from scratch.',
@@ -51,12 +86,12 @@ export const GalleryThemeSelection = ({ formik }: GalleryThemeSelectionProps) =>
 
     return (
         <div className="space-y-10">
-            <div className="text-center space-y-2 mb-8">
+            {/* <div className="text-center space-y-2 mb-8">
                 <h3 className="text-2xl font-bold text-gray-900">Choose Gallery Theme</h3>
                 <p className="text-muted-foreground">Select how your event photos will be presented.</p>
-            </div>
+            </div> */}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
                 {TEMPLATES.map((tpl) => (
                     <div
                         key={tpl.id}

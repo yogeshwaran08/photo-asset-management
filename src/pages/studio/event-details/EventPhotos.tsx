@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Search,
@@ -16,23 +16,37 @@ import {
     FileText,
     Star,
     Sparkles,
-    ChevronDown
+    ChevronDown,
+    ListOrdered,
+    Check,
+    ArrowLeft
 } from 'lucide-react';
 import { formatBytes } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+    DropdownMenuGroup
+} from "@/components/ui/dropdown-menu";
 import { eventService, type Photo } from '@/services/eventService';
 import { toast } from 'sonner';
 import { EventHeader } from './EventHeader';
 
 const EventPhotos = () => {
     const { eventId } = useParams();
+    const navigate = useNavigate();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [images, setImages] = useState<Photo[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [viewMode] = useState<'cards' | 'gallery' | 'list'>('gallery');
     const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState<string>('upload_desc');
 
     useEffect(() => {
         if (eventId) {
@@ -99,6 +113,34 @@ const EventPhotos = () => {
         img.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const sortedImages = [...filteredImages].sort((a, b) => {
+        switch (sortBy) {
+            case 'upload_desc': return b.id - a.id;
+            case 'upload_asc': return a.id - b.id;
+            case 'capture_desc': return b.id - a.id; // Mock capture time
+            case 'capture_asc': return a.id - b.id;
+            case 'size_desc': return (b.file_size || 0) - (a.file_size || 0);
+            case 'size_asc': return (a.file_size || 0) - (b.file_size || 0);
+            case 'name_asc': return a.title.localeCompare(b.title);
+            case 'name_desc': return b.title.localeCompare(a.title);
+            default: return 0;
+        }
+    });
+
+    const getSortLabel = (sort: string) => {
+        switch (sort) {
+            case 'upload_desc': return 'Newest first';
+            case 'upload_asc': return 'Oldest first';
+            case 'capture_desc': return 'Capture Newest';
+            case 'capture_asc': return 'Capture Oldest';
+            case 'size_desc': return 'Largest size';
+            case 'size_asc': return 'Smallest size';
+            case 'name_asc': return 'A to Z';
+            case 'name_desc': return 'Z to A';
+            default: return 'Sort';
+        }
+    };
+
     return (
         <div className="flex flex-col h-full w-full">
             <input type="file" ref={fileInputRef} onChange={handleFileSelect} multiple accept="image/*" className="hidden" />
@@ -106,19 +148,97 @@ const EventPhotos = () => {
             <EventHeader
                 actions={
                     <>
-                        <Button variant="outline" className="h-14 px-8 rounded-2xl gap-3 text-[9px] font-black uppercase tracking-widest border-border/50 hover:bg-white transition-all shadow-sm border border-border/10 bg-white/50"><Filter size={16} /> Filter</Button>
-                        <Button variant="outline" className="h-14 px-8 rounded-2xl gap-3 text-[9px] font-black uppercase tracking-widest border-border/50 hover:bg-white transition-all shadow-sm border border-border/10 bg-white/50"><Download size={16} /> Download</Button>
-                        <Button className="h-14 px-10 rounded-2xl gap-3 text-[9px] font-black uppercase tracking-widest bg-foreground text-background hover:bg-foreground/90 shadow-2xl shadow-foreground/20 active:scale-95 transition-all" onClick={triggerUpload}>
-                            {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} strokeWidth={3} />}
+                        <Button variant="outline" className="h-10 px-5 rounded-lg gap-2 font-bold text-xs uppercase tracking-wide border-[#F27963]/30 text-[#F27963] hover:bg-[#F27963]/10 hover:text-[#F27963] hover:border-[#F27963] transition-all bg-white/50 backdrop-blur-sm">
+                            <Download size={16} strokeWidth={2.5} /> Download
+                        </Button>
+                        <Button className="h-10 px-5 rounded-lg gap-2 font-bold text-xs uppercase tracking-wide bg-[#F27963] hover:bg-[#E06854] text-white shadow-lg shadow-[#F27963]/20 transition-all hover:scale-[1.02] active:scale-95" onClick={triggerUpload}>
+                            {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} strokeWidth={2.5} />}
                             Upload Media
                         </Button>
                     </>
                 }
             >
-                <div className="relative group flex-1">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-                    <Input placeholder="SEARCH WORKSPACE..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-14 h-14 w-full rounded-[1.75rem] bg-white/60 border-transparent focus:border-border/30 transition-all text-[9px] font-black uppercase tracking-[0.2em] shadow-sm hover:shadow-lg focus:bg-white border border-border/10 shadow-inner" />
-                </div>
+
+                <div className="flex items-center gap-3 flex-1 max-w-2xl">
+                    <button
+                        onClick={() => navigate('/studio/events')}
+                        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-zinc-100 transition-all text-muted-foreground hover:text-[#F27963]"
+                        title="Back to Events"
+                    >
+                        <ArrowLeft size={20} strokeWidth={2.5} />
+                    </button>
+                    <div className="flex items-center bg-white/90 backdrop-blur-xl border border-[#F27963]/30 rounded-lg h-10 w-full max-w-md transition-all duration-300 hover:border-[#F27963]">
+                        <div className="relative flex items-center flex-1 min-w-[200px]">
+                            <Search size={18} className="absolute left-4 text-[#F27963]" />
+                            <Input
+                                placeholder="Search events..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="border-0 focus-visible:ring-0 shadow-none h-full pl-11 bg-transparent w-full text-sm placeholder:text-gray-400 font-medium text-gray-700"
+                            />
+                        </div>
+                        <div className="h-5 w-px bg-[#F27963]/20 mx-2" />
+                        <Button variant="ghost" size="sm" className="h-full rounded-r-lg px-4 hover:bg-[#F27963]/10 text-[#F27963] font-bold text-xs uppercase tracking-wide transition-all duration-300 hover:text-[#d65f4d]">
+                            <Filter size={16} className="mr-2 stroke-[2.5]" />
+                            Filter
+                        </Button>
+                    </div>
+                    
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="h-10 rounded-lg border border-[#F27963]/30 bg-white/90 backdrop-blur-xl hover:bg-[#F27963]/10 transition-all text-gray-700 hover:text-[#F27963] hover:border-[#F27963] shrink-0 gap-2 px-3">
+                                <ListOrdered size={16} className="text-[#F27963]" />
+                                <span className="text-[10px] font-bold uppercase tracking-wide text-[#F27963]">{getSortLabel(sortBy)}</span>
+                                <ChevronDown size={14} className="opacity-50 ml-1 text-[#F27963]" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56 p-2 rounded-2xl shadow-xl border-border/50 bg-white/95 backdrop-blur-xl" align="end">
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Upload Time</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => setSortBy('upload_desc')} className="justify-between rounded-lg cursor-pointer focus:bg-zinc-50 font-medium text-xs">
+                                Newest first {sortBy === 'upload_desc' && <Check size={14} className="text-primary-500" />}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSortBy('upload_asc')} className="justify-between rounded-lg cursor-pointer focus:bg-zinc-50 font-medium text-xs">
+                                Oldest first {sortBy === 'upload_asc' && <Check size={14} className="text-primary-500" />}
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator className="my-1 bg-border/40" />
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">Capture Time</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => setSortBy('capture_desc')} className="justify-between rounded-lg cursor-pointer focus:bg-zinc-50 font-medium text-xs">
+                                Newest first {sortBy === 'capture_desc' && <Check size={14} className="text-primary-500" />}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSortBy('capture_asc')} className="justify-between rounded-lg cursor-pointer focus:bg-zinc-50 font-medium text-xs">
+                                Oldest first {sortBy === 'capture_asc' && <Check size={14} className="text-primary-500" />}
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator className="my-1 bg-border/40" />
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">File Size</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => setSortBy('size_desc')} className="justify-between rounded-lg cursor-pointer focus:bg-zinc-50 font-medium text-xs">
+                                Largest first {sortBy === 'size_desc' && <Check size={14} className="text-primary-500" />}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSortBy('size_asc')} className="justify-between rounded-lg cursor-pointer focus:bg-zinc-50 font-medium text-xs">
+                                Smallest first {sortBy === 'size_asc' && <Check size={14} className="text-primary-500" />}
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator className="my-1 bg-border/40" />
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-2 py-1.5">File Name</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => setSortBy('name_asc')} className="justify-between rounded-lg cursor-pointer focus:bg-zinc-50 font-medium text-xs">
+                                A to Z {sortBy === 'name_asc' && <Check size={14} className="text-primary-500" />}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSortBy('name_desc')} className="justify-between rounded-lg cursor-pointer focus:bg-zinc-50 font-medium text-xs">
+                                Z to A {sortBy === 'name_desc' && <Check size={14} className="text-primary-500" />}
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator className="my-1 bg-border/40" />
+                        <div className="p-2 text-[10px] text-muted-foreground leading-relaxed">
+                            To change the sort option in client gallery, change from design settings.
+                        </div>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
             </EventHeader>
 
             <div className="flex flex-1 h-full overflow-hidden">
@@ -206,7 +326,7 @@ const EventPhotos = () => {
                             {viewMode === 'gallery' && (
                                 <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-0.5">
                                     <AnimatePresence>
-                                        {filteredImages.map((image) => (
+                                        {sortedImages.map((image) => (
                                             <motion.div
                                                 key={image.id}
                                                 initial={{ opacity: 0 }}
@@ -227,7 +347,7 @@ const EventPhotos = () => {
                             {viewMode === 'cards' && (
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
                                     <AnimatePresence>
-                                        {filteredImages.map((image) => (
+                                        {sortedImages.map((image) => (
                                             <motion.div key={image.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="aspect-square rounded-[2.5rem] bg-white border border-border/10 overflow-hidden relative group shadow-sm hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-700">
                                                 <img src={image.url} alt={image.title} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000" />
                                                 <div className="absolute inset-x-2 bottom-2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
@@ -248,7 +368,7 @@ const EventPhotos = () => {
                             {viewMode === 'list' && (
                                 <div className="flex flex-col gap-2">
                                     <AnimatePresence>
-                                        {filteredImages.map((image) => (
+                                        {sortedImages.map((image) => (
                                             <motion.div key={image.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-6 p-2 pr-6 rounded-[1.5rem] bg-white border border-border/10 group hover:shadow-lg transition-all">
                                                 <div className="h-16 w-16 rounded-2xl overflow-hidden bg-zinc-100 shrink-0">
                                                     <img src={image.url} alt={image.title} className="w-full h-full object-cover" />

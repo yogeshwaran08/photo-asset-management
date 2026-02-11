@@ -57,7 +57,7 @@ const SuperAdminLayoutWrapper = ({ children, title }: { children: React.ReactNod
   return <DashboardLayout items={items} title={title}>{children}</DashboardLayout>;
 };
 
-const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, title: string }) => {
+const StudioLayoutWrapper = ({ children, title, noPadding }: { children: React.ReactNode, title: string, noPadding?: boolean }) => {
   const items = [
     { name: 'Dashboard', href: '/studio/dashboard', icon: LayoutDashboard },
     { 
@@ -72,7 +72,7 @@ const StudioLayoutWrapper = ({ children, title }: { children: React.ReactNode, t
     { name: 'Analytics', href: '/studio/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/studio/settings', icon: Settings },
   ];
-  return <DashboardLayout items={items} title={title}>{children}</DashboardLayout>;
+  return <DashboardLayout items={items} title={title} noPadding={noPadding}>{children}</DashboardLayout>;
 };
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) => {
@@ -199,7 +199,7 @@ const App = () => {
         } />
         <Route path="/studio/events/:eventId" element={
           <ProtectedRoute allowedRoles={['studio']}>
-            <StudioLayoutWrapper title="Event Management">
+            <StudioLayoutWrapper title="Event Management" noPadding>
               <EventDetailsLayout />
             </StudioLayoutWrapper>
           </ProtectedRoute>

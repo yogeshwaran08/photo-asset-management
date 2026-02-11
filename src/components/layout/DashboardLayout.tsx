@@ -9,7 +9,9 @@ import {
     BookOpen,
     Sparkles,
     ChevronDown,
-    LayoutDashboard
+    LayoutDashboard,
+    Headphones,
+    Share2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -49,14 +51,18 @@ interface DashboardLayoutProps {
     children: React.ReactNode;
     items: SidebarItem[];
     title: string;
+    noPadding?: boolean;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, title }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, title, noPadding = false }) => {
+    // ... existing hooks ...
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
     const { logout, user } = useUserStore();
     const location = useLocation();
     const navigate = useNavigate();
+    const isEventDetails = location.pathname.match(/\/studio\/events\/[^/]+/);
+    const [eventStatus, setEventStatus] = useState<'unpublished' | 'published' | 'expired'>('unpublished');
 
     const handleLogoutClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -67,10 +73,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
     const handleConfirmLogout = async () => {
         await logout();
     };
-
+    
     return (
         <div className="min-h-screen bg-neutral-50/50 flex font-sans">
-            {/* Desktop Sidebar */}
             <aside className="hidden md:flex flex-col w-[220px] h-screen sticky top-0 border-r border-border/50 bg-white/80 backdrop-blur-xl z-40">
                 <div className="h-16 flex items-center px-6 border-b border-border/50 shrink-0 gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-primary-500 shadow-sm shadow-primary-500/10">
@@ -143,7 +148,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                                                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                                                             )}
                                                         >
-                                                            {/* <subItem.icon size={14} strokeWidth={2.5} /> */}
                                                             <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40" />
                                                             {subItem.name}
                                                         </NavLink>
@@ -155,7 +159,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                                 </div>
                             );
                         }
-
                         return (
                             <NavLink
                                 key={item.href}
@@ -173,7 +176,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                         );
                     })}
                 </div>
-
                 <div className="p-4 border-t border-border/50">
                     <div className="bg-gradient-to-br from-neutral-100 to-white border border-border/50 rounded-2xl p-4 shadow-sm">
                         <div className="flex items-center gap-3 mb-3">
@@ -195,9 +197,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                 </div>
             </aside>
 
-            {/* Main Content Wrapper */}
             <div className="flex-1 flex flex-col min-w-0">
-                {/* Top Navigation Bar */}
                 <header className="sticky top-0 z-30 w-full border-b border-border/50 bg-white/80 backdrop-blur-xl h-16 px-6 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 md:hidden">
                         <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(true)}>
@@ -206,13 +206,71 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                         <span className="font-bold text-lg uppercase tracking-tight md:hidden">SnapVault</span>
                     </div>
 
-                    <div className="flex items-center gap-3 md:gap-4 shrink-0 max-w-full ml-auto">
-                        <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground relative transition-colors">
-                            <Bell size={18} />
+                    <div className="flex items-center gap-2 shrink-0 max-w-full ml-auto">
+                        {isEventDetails && (
+                            <>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="h-9 rounded-full border border-zinc-500 text-[10px] font-bold uppercase tracking-wide px-4 gap-2 text-zinc-700 hover:text-foreground hover:border-zinc-800 hover:bg-zinc-50 transition-all hidden sm:flex shadow-sm">
+                                            <div className={cn("w-1.5 h-1.5 rounded-full", 
+                                                eventStatus === 'published' ? "bg-green-500" : 
+                                                eventStatus === 'expired' ? "bg-red-500" : "bg-yellow-500"
+                                            )} />
+                                            {eventStatus}
+                                            <ChevronDown size={14} className="opacity-50" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl shadow-xl border-border/50 bg-white/95 backdrop-blur-xl">
+                                        {eventStatus !== 'unpublished' && (
+                                            <DropdownMenuItem onClick={() => setEventStatus('unpublished')} className="flex flex-col items-start gap-0.5 p-2.5 cursor-pointer rounded-lg focus:bg-zinc-100">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-yellow-500 shadow-sm shadow-yellow-500/50" />
+                                                    <span className="text-[0.9rem] font-bold uppercase tracking-wide text-zinc-800">Unpublished</span>
+                                                </div>
+                                                <span className="text-[10px] text-muted-foreground font-medium pl-4">Event is hidden from guests</span>
+                                            </DropdownMenuItem>
+                                        )}
+                                        {eventStatus !== 'published' && (
+                                            <DropdownMenuItem onClick={() => setEventStatus('published')} className="flex flex-col items-start gap-0.5 p-2.5 cursor-pointer rounded-lg focus:bg-zinc-100">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-green-500 shadow-sm shadow-green-500/50" />
+                                                    <span className="text-[0.9rem] font-bold uppercase tracking-wide text-zinc-800">Published</span>
+                                                </div>
+                                                <span className="text-[10px] text-muted-foreground font-medium pl-4">Event is visible to guests</span>
+                                            </DropdownMenuItem>
+                                        )}
+                                        {eventStatus !== 'expired' && (
+                                            <DropdownMenuItem onClick={() => setEventStatus('expired')} className="flex flex-col items-start gap-0.5 p-2.5 cursor-pointer rounded-lg focus:bg-zinc-100">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500/50" />
+                                                    <span className="text-[0.9rem] font-bold uppercase tracking-wide text-zinc-800">Expired</span>
+                                                </div>
+                                                <span className="text-[10px] text-muted-foreground font-medium pl-4">Event is no longer accessible</span>
+                                            </DropdownMenuItem>
+                                        )}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+
+                                <Button className="h-9 rounded-full bg-[#522B5B] border border-[#522B5B] text-[10px] font-bold uppercase tracking-wide px-5 gap-2 text-white hover:bg-[#dcaaa5] hover:border-[#dcaaa5] transition-all hidden sm:flex shadow-md shadow-[#DFB6B2]/20">
+                                    <Share2 size={14} />
+                                    Share
+                                </Button>
+                                
+                                <div className="h-4 w-px bg-zinc-300 mx-2 hidden sm:block" />
+                            </>
+                        )}
+                        
+                        <Button variant="outline" className="h-9 rounded-full border border-zinc-500 text-[10px] font-bold uppercase tracking-wide px-4 gap-2 text-zinc-700 hover:text-foreground hover:border-zinc-800 hover:bg-zinc-50 transition-all hidden sm:flex shadow-sm">
+                            <Headphones size={14} />
+                            Get Help
+                        </Button>
+
+                        <Button variant="outline" size="icon" className="w-9 h-9 rounded-full border-zinc-500 text-zinc-700 hover:bg-zinc-50 hover:text-foreground hover:border-zinc-800 relative transition-all shadow-sm">
+                            <Bell size={16} />
                             <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-error rounded-full ring-2 ring-white"></span>
                         </Button>
 
-                        <div className="w-px h-6 bg-border/50 hidden md:block"></div>
+                        <div className="w-px h-4 bg-zinc-300 hidden md:block"></div>
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -257,7 +315,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                 </header>
 
                 {/* Main Content */}
-                <main className="flex-1 w-full max-w-[1920px] mx-auto p-4 md:p-8 animate-in fade-in duration-500 slide-in-from-bottom-2">
+                <main className={cn(
+                    "flex-1 w-full animate-in fade-in duration-500 slide-in-from-bottom-2",
+                    noPadding ? "p-0" : "p-4 md:p-8 max-w-[1920px] mx-auto"
+                )}>
                     {children}
                 </main>
             </div>

@@ -5,7 +5,8 @@ import {
     Palette,
     BarChart2,
     Settings,
-    Image as ImageIcon
+    Image as ImageIcon,
+
 } from 'lucide-react';
 
 const EventDetailsLayout = () => {
@@ -30,6 +31,7 @@ const EventDetailsLayout = () => {
     return (
         <div className="flex h-full w-full bg-[#fcfcfc] dark:bg-zinc-950 overflow-hidden font-sans">
             <aside className="w-[68px] bg-white border-r border-border/10 flex flex-col items-center py-6 gap-4 z-40 shrink-0 shadow-sm">
+
                 <button
                     onClick={() => handleNavigation('photos')}
                     className={cn("w-14 h-14 rounded-xl flex flex-col items-center justify-center gap-1 transition-all duration-300 group relative", activeTab === 'photos' ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30" : "text-muted-foreground hover:bg-zinc-100")}
@@ -73,7 +75,6 @@ const EventDetailsLayout = () => {
                 </button>
             </aside>
 
-            {/* MAIN CONTENT AREA */}
             <main className="flex-1 flex flex-col min-w-0 bg-white/20 relative">
                 <Outlet />
             </main>
