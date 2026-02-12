@@ -251,7 +251,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                                     </DropdownMenuContent>
                                 </DropdownMenu>
 
-                                <Button className="h-9 rounded-full bg-[#522B5B] border border-[#522B5B] text-[10px] font-bold uppercase tracking-wide px-5 gap-2 text-white hover:bg-[#dcaaa5] hover:border-[#dcaaa5] transition-all hidden sm:flex shadow-md shadow-[#DFB6B2]/20">
+                                <Button className="h-9 rounded-full bg-[#522B5B] border border-[#522B5B] text-[10px] font-bold uppercase tracking-wide px-5 gap-2 text-white hover:bg-[#3E2045] hover:border-[#3E2045] transition-all hidden sm:flex shadow-md shadow-[#522B5B]/20">
                                     <Share2 size={14} />
                                     Share
                                 </Button>
@@ -260,7 +260,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, items, titl
                             </>
                         )}
                         
-                        <Button variant="outline" className="h-9 rounded-full border border-zinc-500 text-[10px] font-bold uppercase tracking-wide px-4 gap-2 text-zinc-700 hover:text-foreground hover:border-zinc-800 hover:bg-zinc-50 transition-all hidden sm:flex shadow-sm">
+                        <Button variant="outline" className="h-10 rounded-xl border border-zinc-200 text-[10px] font-bold uppercase tracking-wide px-4 gap-2 text-zinc-700 hover:text-foreground hover:border-zinc-300 hover:bg-zinc-50 transition-all hidden sm:flex shadow-sm">
                             <Headphones size={14} />
                             Get Help
                         </Button>

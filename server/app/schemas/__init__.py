@@ -4,3 +4,4 @@ from .super_admin_settings import SuperAdminSettings, SuperAdminSettingsCreate, 
 from .event import Event, EventCreate, EventUpdate
 from .token import Token, TokenPayload
 from .user import User, UserCreate, UserInDB, UserUpdate, UserLogin
+from .collection import Collection, CollectionCreate, CollectionUpdate

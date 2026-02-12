@@ -10,6 +10,8 @@ class Photo(Base):
     url = Column(String)
     file_size = Column(Integer, default=0)
     event_id = Column(Integer, ForeignKey("events.id"))
+    collection_id = Column(Integer, ForeignKey("collections.id"), nullable=True)
     
     # Relationship
     event = relationship("Event", back_populates="photos")
+    collection = relationship("Collection", back_populates="photos")

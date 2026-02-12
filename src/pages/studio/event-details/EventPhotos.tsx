@@ -8,13 +8,10 @@ import {
     Download,
     Image as ImageIcon,
     Loader2,
-    Monitor,
-    Smartphone,
     Pen,
     Plus,
     Folder,
     FileText,
-    Star,
     Sparkles,
     ChevronDown,
     ListOrdered,
@@ -24,6 +21,17 @@ import {
 import { formatBytes } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -34,12 +42,15 @@ import {
     DropdownMenuGroup
 } from "@/components/ui/dropdown-menu";
 import { eventService, type Photo } from '@/services/eventService';
+import { collectionService, type Collection } from '@/services/collectionService';
 import { toast } from 'sonner';
 import { EventHeader } from './EventHeader';
 
 const EventPhotos = () => {
     const { eventId } = useParams();
     const navigate = useNavigate();
+    const [isCreateCollectionOpen, setIsCreateCollectionOpen] = useState(false);
+    const [newCollectionName, setNewCollectionName] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [images, setImages] = useState<Photo[]>([]);
     const [loading, setLoading] = useState(true);
@@ -47,12 +58,24 @@ const EventPhotos = () => {
     const [viewMode] = useState<'cards' | 'gallery' | 'list'>('gallery');
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<string>('upload_desc');
+    const [collections, setCollections] = useState<Collection[]>([]);
+    const [activeCollectionId, setActiveCollectionId] = useState<number | 'all'>('all');
 
     useEffect(() => {
         if (eventId) {
             fetchPhotos();
+            fetchCollections();
         }
     }, [eventId]);
+
+    const fetchCollections = async () => {
+        try {
+            const data = await collectionService.getAll(Number(eventId));
+            setCollections(data);
+        } catch (error) {
+            console.error("Failed to fetch collections", error);
+        }
+    };
 
     const fetchPhotos = async () => {
         try {
@@ -110,6 +133,7 @@ const EventPhotos = () => {
     const triggerUpload = () => fileInputRef.current?.click();
 
     const filteredImages = images.filter(img =>
+        (activeCollectionId === 'all' || img.collection_id === activeCollectionId) &&
         img.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -242,66 +266,115 @@ const EventPhotos = () => {
             </EventHeader>
 
             <div className="flex flex-1 h-full overflow-hidden">
-                {/* PHOTOS CONTEXT SIDEBAR */}
-                <div className="w-[260px] bg-white border-r border-border/10 flex flex-col z-30 shrink-0 h-full">
-                    <div className="flex-1 overflow-y-auto p-5 space-y-6 scrollbar-hide pt-8 relative">
-                        {/* Device Toggles (Absolute Top Center) */}
-                        <div className="absolute top-2 left-0 right-0 flex items-center justify-center gap-2 z-10">
-                            <button className="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center shadow-md transition-transform active:scale-95">
-                                <Monitor size={14} />
-                            </button>
-                            <button className="w-8 h-8 rounded-full bg-white border border-border flex items-center justify-center text-muted-foreground hover:bg-zinc-50 transition-colors shadow-sm">
-                                <Smartphone size={14} />
-                            </button>
-                        </div>
+                <div className="w-[260px] bg-white border-r border-zinc-300 flex flex-col z-30 shrink-0 h-full">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide pt-5 relative">
+
 
                         {/* Cover Image */}
-                        <div className="space-y-3 pt-2">
-                            <div className="aspect-[4/3] rounded-[1.5rem] bg-zinc-200/50 relative group overflow-hidden flex flex-col items-center justify-center text-center">
+                        <div className="space-y-3 pt-2 relative mx-auto w-full max-w-[220px]">
+                            <div className="aspect-[4/3] rounded-[1.5rem] bg-zinc-200/50 overflow-hidden flex flex-col items-center justify-center text-center ring-1 ring-black/5">
                                 <ImageIcon size={32} className="text-zinc-300 mb-2" />
-
-                                {/* Change Cover Button (Dark Pill Overlay) */}
-                                <button className="absolute bottom-4 bg-slate-800 text-white text-[9px] font-bold py-1.5 px-4 rounded-full flex items-center gap-2 shadow-lg hover:scale-105 transition-all">
-                                    Change Cover Image <Pen size={8} />
-                                </button>
                             </div>
+                            
+                            <button className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] font-bold py-1.5 px-4 rounded-full flex items-center gap-2 shadow-lg hover:scale-105 transition-all whitespace-nowrap z-20">
+                                Change Cover Image <Pen size={10} />
+                            </button>
                         </div>
 
-                        {/* Stats Row */}
-                        <div className="flex items-center divide-x divide-border/40">
-                            <div className="flex-1 text-center px-2">
-                                <div className="text-2xl font-black text-slate-800 tracking-tight">{images.length.toString().padStart(2, '0')}</div>
-                                <div className="text-[8px] font-black uppercase text-muted-foreground tracking-widest mt-0.5">Photos</div>
+                        <div className="flex items-center justify-between w-full pt-1 px-1">
+                            <div className="flex-1 text-center">
+                                <div className="text-xl font-black text-slate-800 tracking-tight">{images.length.toString().padStart(2, '0')}</div>
+                                <div className="text-[9px] font-bold uppercase text-muted-foreground tracking-widest mt-0.5">Photos</div>
+                            </div>
+                            
+                            <div className="h-8 w-px bg-zinc-200" />
+                            
+                            <div className="flex-1 text-center">
+                                <div className="text-xl font-black text-slate-800 tracking-tight">00</div>
+                                <div className="text-[9px] font-bold uppercase text-muted-foreground tracking-widest mt-0.5">Videos</div>
                             </div>
                         </div>
 
                         <div className="w-full h-px bg-border/40" />
 
-                        {/* Collections Actions */}
                         <div className="space-y-4">
-                            <Button variant="outline" className="w-full rounded-2xl h-11 border-slate-200 hover:border-slate-800 hover:bg-slate-800 hover:text-white transition-all group font-black uppercase text-[10px] tracking-widest gap-2" >
-                                <Plus size={14} className="group-hover:rotate-90 transition-transform duration-300" />
-                                Add Collection
-                            </Button>
+                            <Dialog open={isCreateCollectionOpen} onOpenChange={setIsCreateCollectionOpen}>
+                                <DialogTrigger asChild>
+                                    <Button className="bg-[#F27963] w-full rounded-2xl h-11 border border-[#F27963] hover:bg-[#d65f4d] hover:border-[#d65f4d] text-white transition-all group font-black uppercase text-[10px] tracking-widest gap-2 shadow-lg shadow-[#F27963]/20" >
+                                        <Plus size={14} className="group-hover:rotate-90 transition-transform duration-300" />
+                                        Add Collection
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Create New Collection</DialogTitle>
+                                        <DialogDescription>
+                                            Enter the name for your new collection. Click create when you're done.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="flex flex-col gap-2">
+                                            <Label htmlFor="name" className="text-left font-semibold">
+                                                Collection Name
+                                            </Label>
+                                            <Input
+                                                id="name"
+                                                value={newCollectionName}
+                                                onChange={(e) => setNewCollectionName(e.target.value)}
+                                                className="col-span-3"
+                                                placeholder="e.g. Highlights"
+                                            />
+                                        </div>
+                                    </div>
+                                    <DialogFooter>
+                                        <Button variant="outline" onClick={() => setIsCreateCollectionOpen(false)}>Cancel</Button>
+                                        <Button 
+                                            onClick={async () => {
+                                                if (!newCollectionName.trim()) return;
+                                                try {
+                                                    await collectionService.create({ 
+                                                        name: newCollectionName, 
+                                                        event_id: Number(eventId) 
+                                                    });
+                                                    await fetchCollections();
+                                                    setNewCollectionName("");
+                                                    setIsCreateCollectionOpen(false);
+                                                    toast.success("Collection created");
+                                                } catch (error) {
+                                                    toast.error("Failed to create collection");
+                                                }
+                                            }}
+                                            className="bg-[#F27963] hover:bg-[#d65f4d] text-white"
+                                        >
+                                            Create Collection
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
 
                             <div className="space-y-1">
-                                <div className="flex items-center justify-between px-1 py-2 cursor-pointer hover:bg-zinc-50 rounded-lg group">
-                                    <div className="flex items-center gap-2">
-                                        <Folder size={14} className="text-muted-foreground group-hover:text-slate-800" />
-                                        <span className="text-xs font-bold text-slate-700 group-hover:text-slate-900">Collections</span>
-                                    </div>
-                                    <ChevronDown size={14} className="text-muted-foreground" />
-                                </div>
-
-                                <div className="pl-2 space-y-1">
-                                    <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-orange-50/50 text-orange-600 border-l-2 border-orange-500">
-                                        <FileText size={14} />
-                                        <span className="text-[10px] font-black uppercase tracking-wider">All Assets</span>
+                                <button 
+                                    onClick={() => setActiveCollectionId('all')}
+                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${activeCollectionId === 'all' ? 'bg-orange-50/50 text-[#F27963] border-l-2 border-[#F27963]' : 'text-muted-foreground hover:bg-zinc-50'}`}
+                                >
+                                    <FileText size={14} />
+                                    <span className="text-[10px] font-black uppercase tracking-wider">All Assets</span>
+                                    <span className="ml-auto text-[9px] font-bold text-muted-foreground bg-zinc-100 px-1.5 py-0.5 rounded-md">{images.length}</span>
+                                </button>
+                                
+                                {collections.map(collection => (
+                                    <button 
+                                        key={collection.id}
+                                        onClick={() => setActiveCollectionId(collection.id)}
+                                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${activeCollectionId === collection.id ? 'bg-orange-50/50 text-[#F27963] border-l-2 border-[#F27963]' : 'text-muted-foreground hover:bg-zinc-50'}`}
+                                    >
+                                        <Folder size={14} />
+                                        <span className="text-[10px] font-black uppercase tracking-wider truncate">{collection.name}</span>
+                                        <span className="ml-auto text-[9px] font-bold text-muted-foreground bg-zinc-100 px-1.5 py-0.5 rounded-md">
+                                            {images.filter(img => img.collection_id === collection.id).length}
+                                        </span>
                                     </button>
-                                    <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:bg-zinc-50 transition-colors">
-                                        <Star size={14} />
-                                        <span className="text-[10px] font-black uppercase tracking-wider">Highlights</span>
-                                    </button>
+                                ))}
                                     <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-muted-foreground hover:bg-zinc-50 transition-colors group">
                                         <div className="flex items-center gap-3">
                                             <Sparkles size={14} />
@@ -313,7 +386,7 @@ const EventPhotos = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+
 
                 <div className="flex-1 p-12 overflow-y-auto w-full scrollbar-hide">
                     {loading ? (
@@ -390,13 +463,20 @@ const EventPhotos = () => {
                         </>
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center text-center pb-20">
-                            <div className="w-44 h-44 bg-white rounded-[4rem] shadow-[0_40px_100px_rgba(0,0,0,0.05)] border border-border/10 flex items-center justify-center mb-12 relative group overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <ImageIcon size={64} className="text-zinc-100 relative z-10 scale-110 group-hover:text-primary-500/10 transition-all duration-500" />
+                            <div className="w-32 h-32 bg-orange-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-orange-50/50">
+                                <ImageIcon size={48} className="text-orange-500 opacity-80" />
                             </div>
-                            <h3 className="text-4xl font-black uppercase tracking-tight mb-4 text-foreground">No items found</h3>
-                            <p className="text-muted-foreground font-black mb-12 max-w-sm text-[11px] uppercase tracking-[0.4em] opacity-30 leading-relaxed italic">Start Uploading Images.</p>
-                            <Button onClick={triggerUpload} className="h-16 px-14 rounded-[1.75rem] gap-4 text-[11px] font-black uppercase tracking-[0.3em] bg-foreground text-background hover:bg-foreground/90 shadow-2xl shadow-foreground/20 hover:scale-105 active:scale-95 transition-all uppercase">Upload photo</Button>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">No items found</h3>
+                            <p className="text-sm text-muted-foreground max-w-xs mx-auto mb-8">
+                                Start by uploading your first batch of photos to this event or collection.
+                            </p>
+                            <Button 
+                                onClick={triggerUpload} 
+                                className="h-11 px-8 rounded-xl bg-[#F27963] hover:bg-[#d65f4d] text-white font-bold text-xs uppercase tracking-wide shadow-lg shadow-orange-500/20 transition-all hover:scale-105 active:scale-95"
+                            >
+                                <Upload size={16} className="mr-2" />
+                                Upload Media
+                            </Button>
                         </div>
                     )}
                 </div>

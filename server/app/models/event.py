@@ -23,3 +23,4 @@ class Event(Base):
 
     # Relationships
     photos = relationship("Photo", back_populates="event", cascade="all, delete-orphan")
+    collections = relationship("Collection", back_populates="event", cascade="all, delete-orphan")

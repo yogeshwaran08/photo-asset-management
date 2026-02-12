@@ -25,6 +25,7 @@ export interface Photo {
     url: string;
     event_id: number;
     file_size?: number;
+    collection_id?: number | null;
 }
 
 export interface PhotoCreate {

@@ -6,6 +6,7 @@ class PhotoBase(BaseModel):
     url: str
     file_size: int = 0
     event_id: int
+    collection_id: Optional[int] = None
 
 class PhotoCreate(PhotoBase):
     pass
